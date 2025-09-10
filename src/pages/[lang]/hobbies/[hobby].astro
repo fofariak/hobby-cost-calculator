@@ -2,7 +2,6 @@
 import Layout from '../../../layouts/Layout.astro';
 import { hobbies } from '../../../data/hobbies.json';
 import currencyData from '../../../data/currencies.json';
-import CurrencyConverter from '../../../components/CurrencyConverter.astro';
 
 // --- Page Generation Logic ---
 export function getStaticPaths() {
@@ -23,6 +22,8 @@ const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
 const level = Astro.url.searchParams.get('level') || 'beginner';
+const currency = Astro.url.searchParams.get('currency') || 'USD';
+const rate = currencyData.rates[currency] || 1;
 
 // Helper functions
 const getText = (field, fallback = '') => {
@@ -39,6 +40,19 @@ const getArray = (field) => {
   if (field[lang]) return field[lang];
   if (field['en']) return field['en'];
   return [];
+};
+
+const formatCurrency = (value) => {
+  if (typeof value !== 'number') return '?';
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 0
+    }).format(value * rate);
+  } catch {
+    return `${(value * rate).toFixed(0)} ${currency}`;
+  }
 };
 
 // Calculate totals
@@ -61,16 +75,19 @@ currentItems.forEach(item => {
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
         <div class="lg:col-span-2 space-y-8">
-
-          <!-- Equipment + Currency Converter -->
           <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
               <div role="tablist" class="tabs tabs-boxed bg-gray-200">
-                <a role="tab" href={`?level=beginner`} class:list={["tab sm:tab-lg", { "tab-active": level === 'beginner' }]}>Beginner</a>
-                <a role="tab" href={`?level=intermediate`} class:list={["tab sm:tab-lg", { "tab-active": level === 'intermediate' }]}>Intermediate</a>
-                <a role="tab" href={`?level=advanced`} class:list={["tab sm:tab-lg", { "tab-active": level === 'advanced' }]}>Advanced</a>
+                <a role="tab" href={`?level=beginner&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'beginner' }]}>Beginner</a>
+                <a role="tab" href={`?level=intermediate&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'intermediate' }]}>Intermediate</a>
+                <a role="tab" href={`?level=advanced&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'advanced' }]}>Advanced</a>
               </div>
-              <CurrencyConverter baseCostRange={[totalMin, totalMax]} rates={currencyData.rates} />
+              <form class="w-full sm:w-auto">
+                <input type="hidden" name="level" value={level} />
+                <select id="currency-select" name="currency" class="select select-bordered">
+                  {Object.keys(currencyData.rates).map(c => <option value={c} selected={c === currency}>{c}</option>)}
+                </select>
+              </form>
             </div>
             <div class="divider my-6"></div>
 
@@ -83,22 +100,21 @@ currentItems.forEach(item => {
                       <input 
                         type="checkbox" 
                         class="checkbox checkbox-primary equipment-checkbox" 
-                        checked
                         data-min={item.cost[0]} 
                         data-max={item.cost[1] || item.cost[0]} 
+                        checked 
                       />
                       <div>
                         <span class="label-text font-medium">{getText(item.name)}</span>
                         <div class="text-xs text-gray-500">{getText(item.desc)}</div>
                       </div>
                       <span class="label-text ml-auto font-semibold text-gray-600 item-price">
-                        ${item.cost[0]} - ${item.cost[1] || item.cost[0]}
+                        {formatCurrency(item.cost[0])} - {formatCurrency(item.cost[1] || item.cost[0])}
                       </span>
                     </label>
                   </div>
                 ))}
               </div>
-
               <div>
                 <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
                 {currentItems.filter(i => i.category === 'software').map(item => (
@@ -107,16 +123,16 @@ currentItems.forEach(item => {
                       <input 
                         type="checkbox" 
                         class="checkbox checkbox-primary equipment-checkbox" 
-                        checked
                         data-min={item.cost[0]} 
                         data-max={item.cost[1] || item.cost[0]} 
+                        checked 
                       />
                       <div>
                         <span class="label-text font-medium">{getText(item.name)}</span>
                         <div class="text-xs text-gray-500">{getText(item.desc)}</div>
                       </div>
                       <span class="label-text ml-auto font-semibold text-gray-600 item-price">
-                        ${item.cost[0]} - ${item.cost[1] || item.cost[0]}
+                        {formatCurrency(item.cost[0])}
                       </span>
                     </label>
                   </div>
@@ -126,12 +142,11 @@ currentItems.forEach(item => {
 
             <div class="bg-indigo-700 text-white rounded-lg p-6 mt-8 text-center">
               <h2 id="total-cost" class="text-4xl font-bold">
-                ${totalMin} - ${totalMax}
+                {formatCurrency(totalMin)} - {formatCurrency(totalMax)}
               </h2>
             </div>
           </div>
 
-          <!-- Money Saving Tips -->
           {getArray(hobby.tips).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
                <h2 class="text-2xl font-bold mb-4">Money-Saving Tips</h2>
@@ -146,22 +161,17 @@ currentItems.forEach(item => {
             </div>
           }
 
-          <!-- FAQ -->
           {getArray(hobby.faq).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
               <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
               <div class="space-y-2">
                 {getArray(hobby.faq).map((item, idx) => (
                   <div class="border rounded-lg">
-                    <button 
-                      class="w-full text-left px-4 py-2 font-medium bg-gray-100 hover:bg-gray-200"
-                      onclick="this.nextElementSibling.classList.toggle('hidden')"
-                    >
+                    <button type="button" class="w-full text-left p-3 font-medium flex justify-between items-center" onclick={`this.nextElementSibling.classList.toggle('hidden')`}>
                       {getText(item.q)}
+                      <span>+</span>
                     </button>
-                    <div class="px-4 py-2 hidden">
-                      <p>{getText(item.a)}</p>
-                    </div>
+                    <div class="hidden p-3 text-sm text-gray-700">{getText(item.a)}</div>
                   </div>
                 ))}
               </div>
@@ -169,7 +179,6 @@ currentItems.forEach(item => {
           }
         </div>
 
-        <!-- Sidebar -->
         <div class="lg:col-span-1 space-y-8">
           {getArray(hobby.recommendedGear).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg">
@@ -183,7 +192,6 @@ currentItems.forEach(item => {
                       </div>
                       <div>
                         <p class="font-bold leading-tight">{getText(gear.name)}</p>
-                        <!-- ⚠️ No price here (as requested) -->
                         <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p>
                       </div>
                     </div>
@@ -198,12 +206,21 @@ currentItems.forEach(item => {
               <div class="card-body">
                 <h3 class="card-title">{getText(hobby.name)} Stats</h3>
                 <ul class="space-y-2 mt-2">
-                  {getArray(hobby.stats).map(stat => (
-                     <li class="flex justify-between text-sm py-1 border-b border-gray-200/80">
-                       <span class="text-gray-500">{getText(stat.label)}</span>
-                       <span class="font-semibold">{getText(stat.value)}</span>
-                     </li>
-                  ))}
+                  {getArray(hobby.stats).map(stat => {
+                    const rawVal = getText(stat.value);
+                    const numeric = parseFloat(rawVal.replace(/[^0-9.]/g, ""));
+                    const isMoney = !isNaN(numeric) && rawVal.includes("$");
+                    return (
+                      <li class="flex justify-between text-sm py-1 border-b border-gray-200/80">
+                        <span class="text-gray-500">{getText(stat.label)}</span>
+                        {isMoney ? (
+                          <span class="font-semibold stat-price" data-value={numeric}>{rawVal}</span>
+                        ) : (
+                          <span class="font-semibold">{rawVal}</span>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </div>
@@ -213,45 +230,58 @@ currentItems.forEach(item => {
     </div>
   </div>
 
-  <!-- Currency + Checkbox Sync Script -->
-  <script>
-    const rates = JSON.parse(`{JSON.stringify(currencyData.rates)}`);
+  <script define:vars={{ currencyData }}>
+    const currencySelect = document.getElementById("currency-select");
+    const checkboxes = document.querySelectorAll(".equipment-checkbox");
+    const totalBox = document.getElementById("total-cost");
 
-    function format(val, currency) {
-      const rate = rates[currency] || 1;
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency,
-        maximumFractionDigits: 0
-      }).format(val * rate);
+    function format(value, currency) {
+      try {
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency,
+          maximumFractionDigits: 0
+        }).format(value * (currencyData.rates[currency] || 1));
+      } catch {
+        return `${value} ${currency}`;
+      }
     }
 
-    function recalc(currency) {
+    function recalc() {
+      const currency = currencySelect.value;
       let min = 0, max = 0;
-      document.querySelectorAll(".equipment-checkbox").forEach(cb => {
-        const itemMin = parseFloat(cb.dataset.min) || 0;
-        const itemMax = parseFloat(cb.dataset.max) || itemMin;
+
+      checkboxes.forEach(cb => {
+        const minVal = parseFloat(cb.dataset.min) || 0;
+        const maxVal = parseFloat(cb.dataset.max) || minVal;
         if (cb.checked) {
-          min += itemMin;
-          max += itemMax;
+          min += minVal;
+          max += maxVal;
         }
-        const priceLabel = cb.closest("label").querySelector(".item-price");
-        if (priceLabel) {
-          priceLabel.textContent = itemMax > itemMin ? `${format(itemMin, currency)} - ${format(itemMax, currency)}` : format(itemMin, currency);
+
+        // update per-item price
+        const label = cb.closest("label").querySelector(".item-price");
+        if (label) {
+          label.textContent = maxVal > minVal 
+            ? `${format(minVal, currency)} - ${format(maxVal, currency)}`
+            : format(minVal, currency);
         }
       });
-      document.getElementById("total-cost").textContent = `${format(min, currency)} - ${format(max, currency)}`;
+
+      // update blue box
+      totalBox.textContent = `${format(min, currency)} - ${format(max, currency)}`;
+
+      // update stats
+      document.querySelectorAll(".stat-price").forEach(el => {
+        const base = parseFloat(el.dataset.value);
+        if (!isNaN(base)) {
+          el.textContent = format(base, currency);
+        }
+      });
     }
 
-    // Checkbox toggle
-    document.querySelectorAll(".equipment-checkbox").forEach(cb =>
-      cb.addEventListener("change", () => recalc(localStorage.getItem("currency") || "USD"))
-    );
-
-    // Currency change from CurrencyConverter.astro
-    window.addEventListener("currency-change", e => recalc(e.detail));
-
-    // Initial run
-    recalc(localStorage.getItem("currency") || "USD");
+    currencySelect.addEventListener("change", recalc);
+    checkboxes.forEach(cb => cb.addEventListener("change", recalc));
+    recalc();
   </script>
 </Layout>
