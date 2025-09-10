@@ -1,45 +1,79 @@
 ---
-interface Props {
-  title: string;
-  lang: string;
-}
-const { title, lang = 'en' } = Astro.props;
-const languages = { en: 'EN', es: 'Español', de: 'Deutsch', fr: 'Français', pt: 'Português', ja: '日本語', ar: 'العربية', hi: 'हिन्दी' };
+import Layout from '../../../layouts/Layout.astro';
+import { hobbies } from '../../../data/hobbies.json';
+import currencyData from '../../../data/currencies.json';
+import CurrencyConverter from '../../../components/CurrencyConverter.astro';
 
-// This logic creates the correct URL for other languages
-const currentPath = Astro.url.pathname;
-const pathWithoutLang = currentPath.startsWith(`/${lang}`) ? currentPath.substring(3) : currentPath;
+export function getStaticPaths() {
+  const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
+  const paths = [];
+
+  // This loop builds a list of all possible pages
+  // e.g., /en/hobbies/photography, /es/hobbies/photography, etc.
+  if (hobbies && Array.isArray(hobbies)) {
+    hobbies.forEach(hobby => {
+      if (hobby && hobby.id && hobby.name) {
+        languages.forEach(lang => {
+          // Only generate a page if a translation for the name exists in the JSON
+          if (typeof hobby.name === 'object' && hobby.name[lang]) {
+            paths.push({ params: { lang, hobby: hobby.id } });
+          }
+        });
+      }
+    });
+  }
+  return paths;
+}
+
+const { lang, hobby: hobbyId } = Astro.params;
+const hobby = hobbies.find(h => h.id === hobbyId);
+
+// Helper function to safely get translated text, falling back to English
+const getText = (field, fallback = '') => {
+  if (!field) return fallback;
+  if (typeof field === 'string') return field; // Handles old data format
+  return field[lang] || field['en'] || fallback;
+};
+
+// Helper function to safely get translated array
+const getArray = (field) => {
+    if (!field) return [];
+    return field[lang] || field['en'] || [];
+}
+
+const beginnerBreakdown = hobby.breakdown?.beginner;
 ---
-<!doctype html>
-<html lang={lang} data-theme="light" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{title}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-  </head>
-  <body>
-    <main class="container">
-      <nav>
+
+<Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
+    <nav class="container-fluid">
         <ul>
-          <li><a href={`/${lang}/`} class="font-bold">🎨 HobbyCalc</a></li>
+            <li><a href={`/${lang}/`}>&larr; Back to all hobbies</a></li>
         </ul>
-        <ul>
-          <li>
-            <details role="list" dir="ltr">
-              <summary aria-haspopup="listbox" class="cursor-pointer">{languages[lang]}</summary>
-              <ul role="listbox">
-                {Object.entries(languages).map(([code, name]) => (
-                  <li>
-                    <a href={`/${code}${pathWithoutLang}`}>{name}</a>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          </li>
-        </ul>
-      </nav>
-      <slot />
-    </main>
-  </body>
-</html>
+    </nav>
+    <article class="container">
+        <header>
+            <h1>{getText(hobby.name)}</h1>
+            <p><strong>{getText(hobby.category, 'General')}</strong></p>
+        </header>
+
+        {beginnerBreakdown ? (
+            <>
+                <h2>Estimated Beginner Cost</h2>
+                <h2 style="margin-top: -1rem;">
+                    ${beginnerBreakdown.costRangeUSD[0]} - ${beginnerBreakdown.costRangeUSD[1]} <small>USD</small>
+                </h2>
+                <CurrencyConverter baseCostRange={beginnerBreakdown.costRangeUSD} rates={currencyData.rates} />
+                
+                <h3>Key Items for a Starter Kit</h3>
+                <ul>
+                    {beginnerBreakdown.keyItems.map((item) => {
+                        const itemName = (typeof item === 'object' && item.name) ? item.name : item;
+                        return <li>{itemName}</li>
+                    })}
+                </ul>
+            </>
+        ) : (
+            <p>Cost breakdown for this hobby is not available yet.</p>
+        )}
+    </article>
+</Layout>
