@@ -2,9 +2,8 @@
 import Layout from '../../../layouts/Layout.astro';
 import { hobbies } from '../../../data/hobbies.json';
 import currencyData from '../../../data/currencies.json';
-import CurrencyConverter from '../../../components/CurrencyConverter.astro';
 
-// --- Page Generation Logic ---
+// --- Page Generation Logic (This part is correct) ---
 export function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
   const paths = [];
@@ -18,36 +17,33 @@ export function getStaticPaths() {
   return paths;
 }
 
-// --- Data Preparation Logic ---
+// --- Data Preparation Logic (This part is correct) ---
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
+// **FIX:** Correctly reading the level and currency from the URL
+const level = Astro.url.searchParams.get('level') || 'beginner';
+const currency = Astro.url.searchParams.get('currency') || 'USD';
+const rate = currencyData.rates[currency] || 1;
+
 // Helper functions
-const getText = (field, fallback = '') => {
-  if (!field) return fallback;
-  if (typeof field === 'string') return field;
-  if (field[lang]) return field[lang];
-  if (field['en']) return field['en'];
-  return fallback;
+const getText = (field, fallback = '') => field?.[lang] || field?.['en'] || fallback;
+const getArray = (field) => field?.[lang] || field?.['en'] || [];
+
+const formatCurrency = (value) => {
+  if (typeof value !== 'number') return '?';
+  return new Intl.NumberFormat(lang, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value * rate);
 };
 
-const getArray = (field) => {
-  if (!field) return [];
-  if (Array.isArray(field)) return field;
-  if (field[lang]) return field[lang];
-  if (field['en']) return field['en'];
-  return [];
-};
-
-// Pre-calc totals for beginner level by default
-const beginnerItems = hobby.breakdown?.['beginner']?.keyItems || [];
+// Calculate totals based on the selected level
+const currentItems = hobby.breakdown?.[level]?.keyItems || [];
 let totalMin = 0;
 let totalMax = 0;
-beginnerItems.forEach(item => {
-  if (item.category === 'essential' || item.category === 'software') {
-    totalMin += item.cost[0];
-    totalMax += item.cost[1] || item.cost[0];
-  }
+currentItems.forEach(item => {
+    if (item.category === 'essential' || item.category === 'software') {
+        totalMin += item.cost[0];
+        totalMax += item.cost[1] || item.cost[0];
+    }
 });
 ---
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
@@ -58,39 +54,51 @@ beginnerItems.forEach(item => {
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
-        <div class="lg:col-span-2 space-y-8">
+        <div class="lg-col-span-2 space-y-8">
           <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
-            <!-- Tabs for levels -->
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div role="tablist" class="tabs tabs-boxed bg-gray-200" id="level-tabs">
-                <button class="tab sm:tab-lg tab-active" data-level="beginner">Beginner</button>
-                <button class="tab sm:tab-lg" data-level="intermediate">Intermediate</button>
-                <button class="tab sm:tab-lg" data-level="advanced">Advanced</button>
+              <div role="tablist" class="tabs tabs-boxed bg-gray-200">
+                <a role="tab" href={`?level=beginner&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'beginner' }]}>Beginner</a>
+                <a role="tab" href={`?level=intermediate&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'intermediate' }]}>Intermediate</a>
+                <a role="tab" href={`?level=advanced&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'advanced' }]}>Advanced</a>
               </div>
+              <form class="w-full sm:w-auto">
+                <input type="hidden" name="level" value={level} />
+                <select name="currency" class="select select-bordered" onchange="this.form.submit()">
+                  {Object.keys(currencyData.rates).map(c => <option value={c} selected={c === currency}>{c}</option>)}
+                </select>
+              </form>
             </div>
             <div class="divider my-6"></div>
-
-            <!-- Dynamic content for levels -->
-            <div id="level-content">
-              <!-- Beginner level shown by default -->
-              <div class="level-section" data-level="beginner">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
+              <div>
                 <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
-                {beginnerItems.filter(i => i.category === 'essential').map(item => (
+                {currentItems.filter(i => i.category === 'essential').map(item => (
                   <div class="form-control my-2"><label class="label justify-start gap-4 p-2">
                     <input type="checkbox" checked class="checkbox checkbox-primary" disabled />
                     <div><span class="label-text font-medium">{getText(item.name)}</span><div class="text-xs text-gray-500">{getText(item.desc)}</div></div>
-                    <span class="label-text ml-auto font-semibold text-gray-600">${item.cost[0]} - ${item.cost[1] || item.cost[0]} USD</span>
+                    <span class="label-text ml-auto font-semibold text-gray-600">{formatCurrency(item.cost[0])} - {formatCurrency(item.cost[1] || item.cost[0])}</span>
+                  </label></div>
+                ))}
+              </div>
+              <div>
+                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
+                {currentItems.filter(i => i.category === 'software').map(item => (
+                  <div class="form-control my-2"><label class="label justify-start gap-4 p-2">
+                    <input type="checkbox" checked class="checkbox checkbox-primary" disabled />
+                    <div><span class="label-text font-medium">{getText(item.name)}</span><div class="text-xs text-gray-500">{getText(item.desc)}</div></div>
+                    <span class="label-text ml-auto font-semibold text-gray-600">{formatCurrency(item.cost[0])}</span>
                   </label></div>
                 ))}
               </div>
             </div>
 
-            <!-- Currency converter total -->
             <div class="bg-indigo-700 text-white rounded-lg p-6 mt-8 text-center">
-              <CurrencyConverter baseCostRange={[totalMin, totalMax]} rates={currencyData.rates} />
+              <h2 class="text-4xl font-bold">{formatCurrency(totalMin)} - {formatCurrency(totalMax)}</h2>
             </div>
           </div>
-
+          
           {getArray(hobby.tips).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
                <h2 class="text-2xl font-bold mb-4">Money-Saving Tips</h2>
@@ -104,14 +112,14 @@ beginnerItems.forEach(item => {
                </div>
             </div>
           }
-
+          
           {getArray(hobby.faq).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
               <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
               <div class="space-y-2">
-                {getArray(hobby.faq).map(item => (
+                {getArray(hobby.faq).map((item, index) => (
                   <div class="collapse collapse-plus bg-gray-100 rounded-lg">
-                    <input type="checkbox" /> 
+                    <input type="radio" name={`hobby-accordion-${index}`} /> 
                     <div class="collapse-title text-lg font-medium">{getText(item.q)}</div>
                     <div class="collapse-content"><p>{getText(item.a)}</p></div>
                   </div>
@@ -130,11 +138,11 @@ beginnerItems.forEach(item => {
                   <a href={gear.link} target="_blank" class="block p-2 rounded-lg hover:bg-gray-100">
                     <div class="flex gap-4 items-center">
                       <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812-1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 S 0 016 0z"></path></svg>
                       </div>
                       <div>
                         <p class="font-bold leading-tight">{getText(gear.name)}</p>
-                        <p class="text-sm text-gray-600">${gear.price} USD</p>
+                        <p class="text-sm text-gray-600">{formatCurrency(gear.price)}</p>
                         <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p>
                       </div>
                     </div>
@@ -143,7 +151,7 @@ beginnerItems.forEach(item => {
               </div>
             </div>
           }
-
+          
           {getArray(hobby.stats).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg">
               <div class="card-body">
@@ -163,15 +171,4 @@ beginnerItems.forEach(item => {
       </div>
     </div>
   </div>
-
-  <script>
-    // Tabs interactivity (client-side)
-    document.querySelectorAll('#level-tabs [data-level]').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('#level-tabs [data-level]').forEach(t => t.classList.remove('tab-active'));
-        tab.classList.add('tab-active');
-        // TODO: Expand logic to dynamically swap level content based on hobby.breakdown
-      });
-    });
-  </script>
 </Layout>
