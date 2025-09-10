@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { hobbies } from '../../data/hobbies.json';
 
+// This function now correctly tells Astro to build pages for ALL your languages
 export function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
   return languages.map(lang => ({ params: { lang } }));
@@ -9,13 +10,13 @@ export function getStaticPaths() {
 
 const { lang } = Astro.params;
 
+// **FIX:** All titles and subtitles are now fully translated for better SEO
 const translations = {
-  title: { en: "Hobby Cost Calculator | Find Your Next Passion", es: "Calculadora de Costos de Hobbies | Encuentra Tu Pasión", de: "Hobby-Kosten-Rechner | Finde deine Leidenschaft" },
-  subtitle: { en: "Estimate startup costs for 50+ hobbies with our free calculator and currency conversion.", es: "Estima los costos iniciales para más de 50 pasatiempos con nuestra calculadora gratuita y conversión de moneda.", de: "Schätzen Sie die Anschaffungskosten für über 50 Hobbys mit unserem kostenlosen Rechner und Währungsumrechnung." },
-  popular_hobbies: { en: "Popular Hobby Calculators", es: "Calculadoras de Hobbies Populares", de: "Beliebte Hobby-Rechner" },
-  explore_btn: { en: "Explore Hobbies", es: "Explorar Hobbies", de: "Hobbys erkunden" }
+  title: { en: "Hobby Cost Calculator | Find Your Next Passion", es: "Calculadora de Costos de Hobbies | Encuentra Tu Pasión", de: "Hobby-Kosten-Rechner | Finde deine Leidenschaft", fr: "Calculateur de Coût de Loisir | Trouvez Votre Passion", pt: "Calculadora de Custos de Hobby | Encontre Sua Paixão", ja: "趣味の費用計算機 | あなたの情熱を見つけよう", ar: "حاسبة تكلفة الهوايات | ابحث عن شغفك التالي", hi: "शौक लागत कैलकुलेटर | अपना अगला जुनून खोजें" },
+  subtitle: { en: "Estimate startup costs for 50+ hobbies with our free calculator and currency conversion.", es: "Estima los costos iniciales para más de 50 pasatiempos con nuestra calculadora gratuita y conversión de moneda.", de: "Schätzen Sie die Anschaffungskosten für über 50 Hobbys mit unserem kostenlosen Rechner und Währungsumrechnung.", fr: "Estimez les coûts de démarrage pour plus de 50 loisirs avec notre calculateur gratuit et notre conversion de devises.", pt: "Estime os custos iniciais para mais de 50 hobbies com nossa calculadora gratuita e conversão de moeda.", ja: "無料の計算機と通貨換算で50以上の趣味の開始費用を見積もります。", ar: "قدر تكاليف بدء التشغيل لأكثر من 50 هواية باستخدام الآلة الحاسبة المجانية وتحويل العملات.", hi: "हमारे मुफ्त कैलकुलेटर और मुद्रा रूपांतरण के साथ 50+ शौक के लिए स्टार्टअप लागत का अनुमान लगाएं।" },
+  popular_hobbies: { en: "Popular Hobby Calculators", es: "Calculadoras de Hobbies Populares", de: "Beliebte Hobby-Rechner", fr: "Calculateurs de Loisirs Populaires", pt: "Calculadoras de Hobbies Populares", ja: "人気の趣味計算機", ar: "حاسبات الهوايات الشائعة", hi: "लोकप्रिय शौक कैलकुलेटर" },
+  explore_btn: { en: "Explore Hobbies", es: "Explorar Hobbies", de: "Hobbys erkunden", fr: "Explorer les Loisirs", pt: "Explorar Hobbies", ja: "趣味を探る", ar: "استكشف الهوايات", hi: "शौक खोजें" }
 };
-// Add translations for fr, pt, ja, ar, hi as needed
 
 const getText = (key, currentLang) => translations[key]?.[currentLang] || translations[key]?.['en'];
 ---
@@ -28,7 +29,7 @@ const getText = (key, currentLang) => translations[key]?.[currentLang] || transl
   <div id="popular-hobbies" class="max-w-6xl mx-auto py-12 px-4">
     <h2 class="text-3xl font-bold text-center mb-8">{getText('popular_hobbies', lang)}</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {hobbies.filter(h => h.name[lang]).map(hobby => (
+      {hobbies.filter(h => h.name && h.name[lang]).map(hobby => (
         <a href={`/${lang}/hobbies/${hobby.id}`} class="card bg-white shadow-lg hover:shadow-2xl transition-shadow">
           <div class="card-body">
             <h3 class="card-title text-2xl">
