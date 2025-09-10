@@ -1,90 +1,47 @@
 {
-  "hobbies": [
-    {
-      "id": "photography",
-      "emoji": "📸",
-      "name": { "en": "Photography", "es": "Fotografía", "de": "Fotografie", "fr": "Photographie", "pt": "Fotografia", "ja": "写真撮影", "ar": "التصوير الفوتوغرافي", "hi": "फोटोग्राफी" },
-      "description": { "en": "Cameras, lenses, editing software, and accessories.", "es": "Cámaras, lentes, software de edición y accesorios.", "de": "Kameras, Objektive, Bearbeitungssoftware und Zubehör.", "fr": "Appareils photo, objectifs, logiciels de retouche et accessoires.", "pt": "Câmeras, lentes, software de edição e acessórios.", "ja": "カメラ、レンズ、編集ソフトウェア、アクセサリー。", "ar": "كاميرات، عدسات، برامج تحرير، وإكسسوارات.", "hi": "कैमरे, लेंस, संपादन सॉफ्टवेयर, और सहायक उपकरण।" },
-      "breakdown": {
-        "beginner": {
-          "keyItems": [
-            { "name": { "en": "Entry-Level DSLR/Mirrorless", "es": "Cámara DSLR/Sin Espejo de Entrada" }, "cost": [400, 600], "desc": { "en": "Canon T8i, Sony a6100, Nikon D3500" }, "category": "essential" },
-            { "name": { "en": "Kit Lens (18-55mm)", "es": "Lente de Kit (18-55mm)" }, "cost": [0, 200], "desc": { "en": "Usually included with camera body." }, "category": "essential" },
-            { "name": { "en": "Memory Card (64GB)", "es": "Tarjeta de Memoria (64GB)" }, "cost": [20, 40], "desc": { "en": "SanDisk or Lexar SD Card" }, "category": "essential" },
-            { "name": { "en": "Camera Bag", "es": "Bolsa para Cámara" }, "cost": [30, 80], "desc": { "en": "Protection and storage" }, "category": "essential" },
-            { "name": { "en": "Adobe Lightroom", "es": "Adobe Lightroom" }, "cost": [120, 120], "desc": { "en": "Photo editing software (per year)" }, "category": "software" }
-          ]
-        },
-        "intermediate": {
-          "keyItems": [
-            { "name": { "en": "Mid-Range Camera Body", "es": "Cuerpo de Cámara de Gama Media" }, "cost": [800, 1200], "desc": { "en": "Canon R10, Sony a6600, Fuji X-T4" }, "category": "essential" },
-            { "name": { "en": "Prime Lens (50mm f/1.8)", "es": "Lente Fijo (50mm f/1.8)" }, "cost": [150, 300], "desc": { "en": "Great for portraits and low light" }, "category": "essential" },
-            { "name": { "en": "External Flash", "es": "Flash Externo" }, "cost": [100, 300], "desc": { "en": "Godox V1, Profoto A10" }, "category": "essential" },
-            { "name": { "en": "Sturdy Tripod", "es": "Trípode Robusto" }, "cost": [150, 300], "desc": { "en": "Carbon fiber or heavy-duty aluminum" }, "category": "essential" },
-            { "name": { "en": "Adobe Photoshop & Lightroom", "es": "Adobe Photoshop y Lightroom" }, "cost": [120, 120], "desc": { "en": "Photography plan (per year)" }, "category": "software" }
-          ]
-        },
-        "advanced": {
-          "keyItems": [
-            { "name": { "en": "Professional Full-Frame Camera", "es": "Cámara Profesional Full-Frame" }, "cost": [2000, 4000], "desc": { "en": "Sony A7IV, Canon R5, Nikon Z7" }, "category": "essential" },
-            { "name": { "en": "Pro Zoom Lens (24-70mm f/2.8)", "es": "Lente Zoom Pro (24-70mm f/2.8)" }, "cost": [1800, 2300], "desc": { "en": "The workhorse lens for professionals" }, "category": "essential" },
-            { "name": { "en": "Studio Lighting Kit", "es": "Kit de Iluminación de Estudio" }, "cost": [500, 1500], "desc": { "en": "2-3 strobes, softboxes, and stands" }, "category": "essential" },
-            { "name": { "en": "Capture One Pro", "es": "Capture One Pro" }, "cost": [300, 300], "desc": { "en": "Professional editing suite (per year)" }, "category": "software" }
-          ]
-        }
-      },
-      "recommendedGear": [
-        { "name": { "en": "Canon EOS Rebel T8i" }, "price": 899, "desc": { "en": "Perfect beginner DSLR with great features." }, "link": "#", "image": "https://i.ibb.co/b3wJz85/camera.png" },
-        { "name": { "en": "Sony FE 50mm f/1.8 Lens" }, "price": 249, "desc": { "en": "Great portrait lens for Sony cameras." }, "link": "#", "image": "https://i.ibb.co/M7bF0Jd/lens.png" },
-        { "name": { "en": "Peak Design Everyday Sling" }, "price": 149, "desc": { "en": "A versatile and stylish camera bag." }, "link": "#", "image": "https://i.ibb.co/c8w2khp/bag.png" }
-      ],
-      "tips": {
-        "en": [ { "title": "Buy Used Equipment", "desc": "You can save 30-50% on quality gear." }, { "title": "Start with Kit Lens", "desc": "Learn its limits before buying expensive ones." } ],
-        "es": [ { "title": "Compra Equipo Usado", "desc": "Puedes ahorrar 30-50% en equipo de calidad." }, { "title": "Empieza con el Lente de Kit", "desc": "Aprende sus límites antes de comprar lentes caros." } ]
-      },
-      "faq": {
-        "en": [
-          { "q": "How much should a beginner spend on photography?", "a": "For beginners, $500-800 is sufficient for a good camera body, kit lens, and basic accessories." },
-          { "q": "What's the most important equipment to buy first?", "a": "Start with a decent camera body and lens. Everything else (tripod, extra lenses, filters) can be added gradually." },
-          { "q": "How often should I upgrade my camera?", "a": "A good camera can last 5-7 years easily. Focus on improving your skills rather than constantly upgrading equipment." },
-          { "q": "DSLR vs Mirrorless for beginners?", "a": "Mirrorless cameras are generally more compact and have better video features, while DSLRs typically have longer battery life." }
-        ],
-        "es": [
-          { "q": "¿Cuánto debería gastar un principiante en fotografía?", "a": "Para principiantes, $500-800 es suficiente para un buen cuerpo de cámara, lente de kit y accesorios básicos." },
-          { "q": "¿Cuál es el equipo más importante para comprar primero?", "a": "Empieza con un cuerpo de cámara y lente decentes. Todo lo demás (trípode, lentes extra, filtros) se puede agregar gradualmente." }
-        ]
-      }
+  "id": "photography",
+  "emoji": "📸",
+  "name": { "en": "Photography", "es": "Fotografía", "de": "Fotografie", "fr": "Photographie", "pt": "Fotografia", "ja": "写真撮影", "ar": "التصوير الفوتوغرافي", "hi": "फोटोग्राफी" },
+  "description": { "en": "Cameras, lenses, editing software, and accessories.", "es": "Cámaras, lentes, software de edición y accesorios.", "de": "Kameras, Objektive, Bearbeitungssoftware und Zubehör.", "fr": "Appareils photo, objectifs, logiciels de retouche et accessoires.", "pt": "Câmeras, lentes, software de edição e acessórios.", "ja": "カメラ、レンズ、編集ソフトウェア、アクセサリー。", "ar": "كاميرات، عدسات، برامج تحرير، وإكسسوارات.", "hi": "कैमरे, लेंस, संपादन सॉफ्टवेयर, और सहायक उपकरण।" },
+  "breakdown": {
+    "beginner": {
+      "keyItems": [
+        { "name": { "en": "Entry-Level DSLR/Mirrorless" }, "cost": [400, 600], "desc": { "en": "Canon T8i, Sony a6100, Nikon D3500" }, "category": "essential" },
+        { "name": { "en": "Kit Lens (18-55mm)" }, "cost": [0, 200], "desc": { "en": "Usually included with camera body." }, "category": "essential" },
+        { "name": { "en": "Memory Card (64GB)" }, "cost": [20, 40], "desc": { "en": "SanDisk or Lexar SD Card" }, "category": "essential" }
+      ]
     },
-    {
-      "id": "pc-gaming",
-      "emoji": "🎮",
-      "name": { "en": "PC Gaming", "es": "Videojuegos en PC", "de": "PC-Spiele", "fr": "Jeu sur PC", "pt": "Jogos de PC", "ja": "PCゲーム", "ar": "ألعاب الكمبيوتر", "hi": "पीसी गेमिंग" },
-      "description": { "en": "Build a rig, games, and gaming accessories.", "es": "Construye una PC, juegos y accesorios para jugar.", "de": "Stelle einen PC zusammen, Spiele und Gaming-Zubehör.", "fr": "Montez une configuration, jeux et accessoires de jeu.", "pt": "Monte um PC, jogos e acessórios para jogos.", "ja": "リグ、ゲーム、ゲーミングアクセサリーを構築します。", "ar": "قم ببناء جهاز كمبيوتر، ألعاب، وإكسسوارات الألعاب.", "hi": "एक रिग, गेम्स और गेमिंग एक्सेसरीज बनाएं।" },
-      "breakdown": {
-        "beginner": {
-          "keyItems": [
-            { "name": { "en": "Entry-Level Gaming PC" }, "cost": [800, 1200], "desc": { "en": "Pre-built or custom with RTX 4060" }, "category": "essential" },
-            { "name": { "en": "1080p 144Hz Monitor" }, "cost": [150, 250], "desc": { "en": "The sweet spot for beginner gaming" }, "category": "essential" },
-            { "name": { "en": "Gaming Mouse & Keyboard" }, "cost": [50, 100], "desc": { "en": "Basic combo from a reputable brand" }, "category": "essential" },
-            { "name": { "en": "Steam / Epic Games Store" }, "cost": [60, 120], "desc": { "en": "Budget for 1-2 new full-price games" }, "category": "software" }
-          ]
-        },
-        "intermediate": {
-          "keyItems": [
-            { "name": { "en": "Mid-Range Gaming PC" }, "cost": [1500, 2500], "desc": { "en": "Custom build with RTX 4070 Ti" }, "category": "essential" },
-            { "name": { "en": "1440p 165Hz Monitor" }, "cost": [300, 500], "desc": { "en": "High resolution and high refresh rate" }, "category": "essential" },
-            { "name": { "en": "Mechanical Keyboard" }, "cost": [80, 150], "desc": { "en": "Improved feel and response time" }, "category": "essential" }
-          ]
-        },
-        "advanced": {
-          "keyItems": [
-            { "name": { "en": "Enthusiast-Grade PC" }, "cost": [3500, 7000], "desc": { "en": "Custom build with RTX 4090, water cooling" }, "category": "essential" },
-            { "name": { "en": "4K 144Hz or Ultrawide OLED Monitor" }, "cost": [800, 1500], "desc": { "en": "Top-tier visual experience" }, "category": "essential" },
-            { "name": { "en": "VR Headset" }, "cost": [500, 1000], "desc": { "en": "Valve Index or Meta Quest 3" }, "category": "essential" }
-          ]
-        }
-      },
-      "recommendedGear": [], "tips": {}, "faq": {}
-    }
-  ]
+    "intermediate": { "keyItems": [] },
+    "advanced": { "keyItems": [] }
+  },
+  "recommendedGear": [
+    { "name": { "en": "Canon EOS Rebel T8i" }, "price": 899, "desc": { "en": "Perfect beginner DSLR with great features." }, "link": "#" },
+    { "name": { "en": "Sony FE 50mm f/1.8 Lens" }, "price": 249, "desc": { "en": "Great portrait lens for Sony cameras." }, "link": "#" }
+  ],
+  "tips": {
+    "en": [ { "title": "Buy Used Equipment", "desc": "You can save 30-50% on quality gear." }, { "title": "Start with Kit Lens", "desc": "Learn its limits before buying expensive ones." } ],
+    "es": [ { "title": "Compra Equipo Usado", "desc": "Puedes ahorrar 30-50% en equipo de calidad." }, { "title": "Empieza con el Lente de Kit", "desc": "Aprende sus límites antes de comprar lentes caros." } ]
+  },
+  "faq": {
+    "en": [
+      { "q": "How much should a beginner spend on photography?", "a": "For beginners, $500-800 is sufficient." },
+      { "q": "What's the most important equipment to buy first?", "a": "Start with a decent camera body and lens." }
+    ],
+    "es": [
+      { "q": "¿Cuánto debería gastar un principiante en fotografía?", "a": "Para principiantes, $500-800 es suficiente." },
+      { "q": "¿Cuál es el equipo más importante para comprar primero?", "a": "Empieza con un cuerpo de cámara y lente decentes." }
+    ]
+  },
+  "stats": {
+    "en": [
+      { "label": "Average startup cost", "value": "$650" },
+      { "label": "Time to learn basics", "value": "3-5 months" },
+      { "label": "Potential earnings", "value": "$25-200/hour" }
+    ],
+    "es": [
+      { "label": "Costo inicial promedio", "value": "€600" },
+      { "label": "Tiempo para aprender", "value": "3-5 meses" },
+      { "label": "Ganancias potenciales", "value": "€25-180/hora" }
+    ]
+  }
 }
