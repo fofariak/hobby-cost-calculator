@@ -137,18 +137,19 @@ currentItems.forEach(item => {
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
               <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
               <div class="space-y-2">
-                 {getArray(hobby.faq).map((item, idx) => (
-                   <div class="collapse collapse-plus bg-gray-100 rounded-lg">
-                      <input type="checkbox" id={`faq-${hobby.id}-${idx}`} />
-                      <div class="collapse-title text-lg font-medium cursor-pointer">
-                        {getText(item.q)}
-                      </div>
-                      <div class="collapse-content">
-                        <p>{getText(item.a)}</p>
-                      </div>
+                {getArray(hobby.faq).map((item, idx) => (
+                  <div class="border rounded-lg">
+                    <button 
+                      class="w-full text-left px-4 py-2 font-medium bg-gray-100 hover:bg-gray-200"
+                      onclick="this.nextElementSibling.classList.toggle('hidden')"
+                    >
+                      {getText(item.q)}
+                    </button>
+                    <div class="px-4 py-2 hidden">
+                      <p>{getText(item.a)}</p>
                     </div>
+                  </div>
                 ))}
-
               </div>
             </div>
           }
