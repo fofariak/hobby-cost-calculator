@@ -23,14 +23,6 @@ const hobby = hobbies.find(h => h.id === hobbyId);
 
 const getText = (field, fallback = '') => field?.[lang] || field?.['en'] || fallback;
 const getArray = (field) => field?.[lang] || field?.['en'] || [];
-
-const allItems = {
-    beginner: hobby.breakdown?.beginner?.keyItems || [],
-    intermediate: hobby.breakdown?.intermediate?.keyItems || [],
-    advanced: hobby.breakdown?.advanced?.keyItems || []
-};
-
-const currentStats = getArray(hobby.stats);
 ---
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
   <div class="bg-gray-50/50 py-8">
@@ -135,12 +127,12 @@ const currentStats = getArray(hobby.stats);
             </div>
           }
           
-          {currentStats.length > 0 &&
+          {getArray(hobby.stats).length > 0 &&
             <div class="card bg-white shadow-xl">
               <div class="card-body">
                 <h3 class="card-title">{getText(hobby.name)} Stats</h3>
                 <ul class="space-y-2 mt-2">
-                  {currentStats.map(stat => (
+                  {getArray(hobby.stats).map(stat => (
                      <li class="flex justify-between text-sm py-1 border-b border-gray-100">
                        <span class="text-gray-500">{getText(stat.label)}</span>
                        <span class="font-semibold">{getText(stat.value)}</span>
@@ -156,16 +148,20 @@ const currentStats = getArray(hobby.stats);
   </div>
 
   <script is:inline src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <script define:vars={{ allItems, rates: currencyData.rates, lang }}>
+  <script define:vars={{ hobby, rates: currencyData.rates, lang }}>
     document.addEventListener('alpine:init', () => {
       Alpine.data('calculatorData', () => ({
         level: 'beginner', currency: 'USD', selectedItems: [], totalMin: 0, totalMax: 0,
-        allItems: allItems, rates: rates,
+        hobbyData: hobby, rates: rates,
         getText(field) { return field?.[lang] || field?.['en'] || ''; },
-        get currentItems() { return this.allItems[this.level] || []; },
+        // **FIX:** These getters now correctly reference the full hobbyData object
+        get currentItems() { return this.hobbyData.breakdown?.[this.level]?.keyItems || []; },
+        get tips() { return this.hobbyData.tips?.[lang] || this.hobbyData.tips?.['en'] || []; },
+        get faq() { return this.hobbyData.faq?.[lang] || this.hobbyData.faq?.['en'] || []; },
+
         setLevel(newLevel) {
           this.level = newLevel;
-          const essentialIndices = this.currentItems.map((item, index) => ({ item, index }))
+          const essentialIndices = (this.currentItems || []).map((item, index) => ({ item, index }))
             .filter(p => p.item.category === 'essential').map(p => p.index.toString());
           this.selectedItems = essentialIndices;
           this.updateTotals();
