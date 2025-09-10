@@ -1,0 +1,67 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() {
+  const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
+  return languages.map(lang => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+
+const content = {
+  en: {
+    title: "About HobbyCalc - Free Hobby Cost Calculator",
+    heading: "About HobbyCalc",
+    mission: "Our Mission",
+    mission_text: "HobbyCalc was created to help people discover and budget for new hobbies. We believe everyone deserves to pursue their passions without financial surprises. Our free calculator provides accurate cost estimates for over 50 different hobbies, from photography to cooking to gaming.",
+    how_it_works: "How It Works",
+    how_text: "Our team researches and analyzes the startup costs for various hobbies across different skill levels. We provide cost breakdowns from beginner to expert level, including equipment, materials, and ongoing expenses. All costs can be converted to your local currency using real-time exchange rates.",
+    why_free: "Why It's Free",
+    free_text: "We believe financial planning tools should be accessible to everyone. HobbyCalc is completely free to use with no hidden fees, subscriptions, or limits. We support the site through ethical advertising partnerships.",
+    team: "Our Team",
+    team_text: "HobbyCalc is maintained by a passionate team of hobby enthusiasts and financial researchers who understand the importance of budgeting for personal interests and creative pursuits."
+  },
+  es: {
+    title: "Acerca de HobbyCalc - Calculadora Gratuita de Costos de Hobbies",
+    heading: "Acerca de HobbyCalc",
+    mission: "Nuestra Misión",
+    mission_text: "HobbyCalc fue creado para ayudar a las personas a descubrir y presupuestar nuevos hobbies. Creemos que todos merecen perseguir sus pasiones sin sorpresas financieras. Nuestra calculadora gratuita proporciona estimaciones precisas de costos para más de 50 hobbies diferentes.",
+    how_it_works: "Cómo Funciona",
+    how_text: "Nuestro equipo investiga y analiza los costos de inicio para varios hobbies en diferentes niveles de habilidad. Proporcionamos desgloses de costos desde principiante hasta nivel experto.",
+    why_free: "Por Qué Es Gratis",
+    free_text: "Creemos que las herramientas de planificación financiera deben ser accesibles para todos. HobbyCalc es completamente gratuito sin tarifas ocultas.",
+    team: "Nuestro Equipo",
+    team_text: "HobbyCalc es mantenido por un equipo apasionado de entusiastas de hobbies e investigadores financieros."
+  }
+};
+
+const text = content[lang] || content.en;
+---
+
+<Layout title={text.title} lang={lang}>
+  <div class="container mx-auto px-6 py-12 max-w-4xl">
+    <h1 class="text-4xl font-bold mb-8 text-gray-800">{text.heading}</h1>
+    
+    <div class="prose prose-lg max-w-none">
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.mission}</h2>
+        <p class="text-gray-700 leading-relaxed">{text.mission_text}</p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.how_it_works}</h2>
+        <p class="text-gray-700 leading-relaxed">{text.how_text}</p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.why_free}</h2>
+        <p class="text-gray-700 leading-relaxed">{text.free_text}</p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.team}</h2>
+        <p class="text-gray-700 leading-relaxed">{text.team_text}</p>
+      </section>
+    </div>
+  </div>
+</Layout>
