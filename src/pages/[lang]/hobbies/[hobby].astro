@@ -2,78 +2,170 @@
 import Layout from '../../../layouts/Layout.astro';
 import { hobbies } from '../../../data/hobbies.json';
 import currencyData from '../../../data/currencies.json';
-import CurrencyConverter from '../../../components/CurrencyConverter.astro';
 
-export function getStaticPaths() {
+// This function generates all the pages for every language and hobby
+export async function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
   const paths = [];
-
-  // This loop builds a list of all possible pages
-  // e.g., /en/hobbies/photography, /es/hobbies/photography, etc.
-  if (hobbies && Array.isArray(hobbies)) {
-    hobbies.forEach(hobby => {
-      if (hobby && hobby.id && hobby.name) {
-        languages.forEach(lang => {
-          // Only generate a page if a translation for the name exists in the JSON
-          if (typeof hobby.name === 'object' && hobby.name[lang]) {
-            paths.push({ params: { lang, hobby: hobby.id } });
-          }
-        });
-      }
-    });
-  }
+  hobbies.forEach(hobby => {
+    if (hobby && hobby.id && hobby.name) {
+      languages.forEach(lang => {
+        if (hobby.name[lang]) { // Only create a page if a translation exists
+          paths.push({ params: { lang, hobby: hobby.id } });
+        }
+      });
+    }
+  });
   return paths;
 }
 
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
-// Helper function to safely get translated text, falling back to English
-const getText = (field, fallback = '') => {
-  if (!field) return fallback;
-  if (typeof field === 'string') return field; // Handles old data format
-  return field[lang] || field['en'] || fallback;
-};
-
-// Helper function to safely get translated array
-const getArray = (field) => {
-    if (!field) return [];
-    return field[lang] || field['en'] || [];
-}
-
-const beginnerBreakdown = hobby.breakdown?.beginner;
+// Helper functions to safely get translated data
+const getText = (field, fallback = '') => field?.[lang] || field?.['en'] || fallback;
+const getArray = (field) => field?.[lang] || field?.['en'] || [];
 ---
-
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
-    <nav class="container-fluid">
-        <ul>
-            <li><a href={`/${lang}/`}>&larr; Back to all hobbies</a></li>
-        </ul>
-    </nav>
-    <article class="container">
-        <header>
-            <h1>{getText(hobby.name)}</h1>
-            <p><strong>{getText(hobby.category, 'General')}</strong></p>
-        </header>
+  <div class="bg-gray-100 py-8">
+    <div class="max-w-6xl mx-auto px-4">
 
-        {beginnerBreakdown ? (
-            <>
-                <h2>Estimated Beginner Cost</h2>
-                <h2 style="margin-top: -1rem;">
-                    ${beginnerBreakdown.costRangeUSD[0]} - ${beginnerBreakdown.costRangeUSD[1]} <small>USD</small>
-                </h2>
-                <CurrencyConverter baseCostRange={beginnerBreakdown.costRangeUSD} rates={currencyData.rates} />
-                
-                <h3>Key Items for a Starter Kit</h3>
-                <ul>
-                    {beginnerBreakdown.keyItems.map((item) => {
-                        const itemName = (typeof item === 'object' && item.name) ? item.name : item;
-                        return <li>{itemName}</li>
-                    })}
-                </ul>
-            </>
-        ) : (
-            <p>Cost breakdown for this hobby is not available yet.</p>
-        )}
-    </article>
+      <div class="text-sm breadcrumbs">
+        <ul>
+          <li><a href={`/${lang}/`}>Home</a></li>
+          <li><a href={`/${lang}/`}>Hobbies</a></li>
+          <li>{getText(hobby.name)}</li>
+        </ul>
+      </div>
+      <h1 class="text-4xl font-bold mt-2">{getText(hobby.name)} Cost Calculator</h1>
+      <p class="text-lg text-gray-600 mb-8">Calculate your startup and equipment costs with this free itemized tool.</p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" x-data="calculatorData()">
+        
+        <div class="lg:col-span-2">
+          <div class="card bg-white shadow-xl p-4 sm:p-8">
+            <div class="flex justify-between items-center">
+                <div class="tabs tabs-boxed">
+                    <a class="tab" :class="{ 'tab-active': level === 'beginner' }" @click="setLevel('beginner')">Beginner</a>
+                    <a class="tab" :class="{ 'tab-active': level === 'intermediate' }" @click="setLevel('intermediate')">Intermediate</a>
+                    <a class="tab" :class="{ 'tab-active': level === 'advanced' }" @click="setLevel('advanced')">Advanced</a>
+                </div>
+                <div class="form-control">
+                    <select class="select select-bordered" x-model="currency" @change="updateTotals()">
+                        <template x-for="curr in Object.keys(rates)">
+                            <option :value="curr" x-text="curr"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mt-6">
+              <div>
+                <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
+                <template x-for="(item, index) in currentItems.filter(i => i.category === 'essential')">
+                  <div class="form-control">
+                    <label class="label cursor-pointer justify-start gap-4 p-2 hover:bg-gray-50 rounded-lg">
+                      <input type="checkbox" class="checkbox" :value="index" x-model="selectedItems" @change="updateTotals()"/>
+                      <div>
+                        <span class="label-text" x-text="item.name"></span>
+                        <div class="text-xs text-gray-500" x-text="item.desc"></div>
+                      </div>
+                      <span class="label-text ml-auto font-semibold" x-text="formatCost(item.cost)"></span>
+                    </label>
+                  </div>
+                </template>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
+                <template x-for="(item, index) in currentItems.filter(i => i.category === 'software')">
+                   <div class="form-control">
+                    <label class="label cursor-pointer justify-start gap-4 p-2 hover:bg-gray-50 rounded-lg">
+                      <input type="checkbox" class="checkbox" :value="index" x-model="selectedItems" @change="updateTotals()"/>
+                       <div>
+                        <span class="label-text" x-text="item.name"></span>
+                        <div class="text-xs text-gray-500" x-text="item.desc"></div>
+                      </div>
+                      <span class="label-text ml-auto font-semibold" x-text="formatCost(item.cost)"></span>
+                    </label>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <div class="bg-indigo-600 text-white rounded-lg p-6 mt-8 text-center">
+              <h2 class="text-4xl font-bold" x-text="formatTotal(totalMin, totalMax)"></h2>
+            </div>
+          </div>
+          
+          </div>
+
+        <div class="lg:col-span-1 space-y-8">
+          <div class="card bg-white shadow-xl">
+            <div class="card-body">
+              <h3 class="card-title">Recommended Gear</h3>
+              {hobby.recommendedGear?.map(gear => (
+                <div class="flex gap-4 items-center mt-2">
+                  <img src={gear.image} alt={gear.name} class="w-20 h-20 object-cover rounded-lg bg-gray-200" />
+                  <div>
+                    <p class="font-bold">{gear.name}</p>
+                    <p class="text-sm text-gray-500">${gear.price}</p>
+                    <a href={gear.link} target="_blank" class="btn btn-xs btn-outline btn-primary mt-1">View on Amazon</a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script define:vars={{ hobby, rates: currencyData.rates }}>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('calculatorData', () => ({
+        level: 'beginner',
+        currency: 'USD',
+        selectedItems: [],
+        totalMin: 0,
+        totalMax: 0,
+        hobbyData: hobby,
+        rates: rates,
+        get currentItems() { return this.hobbyData.breakdown[this.level]?.keyItems || []; },
+        setLevel(newLevel) {
+          this.level = newLevel;
+          this.selectedItems = Array.from(Array(this.currentItems.length).keys()); // Select all by default
+          this.updateTotals();
+        },
+        updateTotals() {
+          let min = 0, max = 0;
+          this.selectedItems.forEach(index => {
+            const item = this.currentItems[parseInt(index)];
+            if(item) {
+              min += item.cost[0];
+              max += item.cost[1] || item.cost[0];
+            }
+          });
+          this.totalMin = min * this.rates[this.currency];
+          this.totalMax = max * this.rates[this.currency];
+        },
+        formatCost(cost) {
+            const rate = this.rates[this.currency];
+            const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: this.currency, maximumFractionDigits: 0 });
+            const cost1 = formatter.format(cost[0] * rate);
+            if (!cost[1] || cost[0] === cost[1]) return cost1;
+            const cost2 = formatter.format(cost[1] * rate);
+            return `${cost1} - ${cost2}`;
+        },
+        formatTotal(min, max) {
+            const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: this.currency, maximumFractionDigits: 0 });
+            if(min === 0 && max === 0) return formatter.format(0);
+            return `${formatter.format(min)} - ${formatter.format(max)}`;
+        },
+        init() {
+            this.setLevel('beginner');
+        }
+      }));
+    });
+  </script>
 </Layout>
