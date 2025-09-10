@@ -1,0 +1,68 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() {
+  const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
+  return languages.map(lang => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+---
+
+<Layout title="Disclaimer - HobbyCalc" lang={lang}>
+  <div class="container mx-auto px-6 py-12 max-w-4xl">
+    <h1 class="text-4xl font-bold mb-8 text-gray-800">Disclaimer</h1>
+    <p class="text-gray-600 mb-8">Last updated: January 2025</p>
+    
+    <div class="prose prose-lg max-w-none space-y-6">
+      <section>
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Cost Information Accuracy</h2>
+        <p class="text-gray-700 leading-relaxed">
+          The cost estimates provided by HobbyCalc are for informational and educational purposes only. While we strive to provide accurate and up-to-date information, actual costs may vary significantly based on:
+        </p>
+        <ul class="list-disc pl-6 text-gray-700">
+          <li>Geographic location and local market conditions</li>
+          <li>Brand preferences and quality choices</li>
+          <li>Seasonal price fluctuations</li>
+          <li>Individual shopping habits and deals found</li>
+          <li>Exchange rate fluctuations</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">No Financial Advice</h2>
+        <p class="text-gray-700 leading-relaxed">
+          HobbyCalc does not provide financial, investment, or budgeting advice. Our cost estimates are general information only and should not be considered as professional financial guidance.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Third-Party Links</h2>
+        <p class="text-gray-700 leading-relaxed">
+          Our website may contain links to external websites. We are not responsible for the content, privacy policies, or practices of third-party sites.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Currency Conversion</h2>
+        <p class="text-gray-700 leading-relaxed">
+          Currency conversion rates are provided by third-party services and may not reflect real-time market rates. Actual exchange rates may vary.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Limitation of Liability</h2>
+        <p class="text-gray-700 leading-relaxed">
+          HobbyCalc and its operators shall not be held liable for any decisions made based on the information provided on this website. Users are responsible for conducting their own research and making informed decisions.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Updates and Changes</h2>
+        <p class="text-gray-700 leading-relaxed">
+          Cost information and website content may be updated without notice. We recommend checking current market prices before making any purchases.
+        </p>
+      </section>
+    </div>
+  </div>
+</Layout>
