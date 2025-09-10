@@ -1,5 +1,4 @@
 ---
-// CORRECTED VERSION
 import Layout from '../../layouts/Layout.astro';
 import { hobbies } from '../../data/hobbies.json';
 
@@ -10,28 +9,31 @@ export function getStaticPaths() {
 
 const { lang } = Astro.params;
 
-// Helper function to safely get translated text
-const getText = (field, fallback = '') => {
-  if (!field) return fallback;
-  return field[lang] || field['en'] || fallback;
-}
+const translations = {
+  title: { en: "Hobby Cost Calculator", es: "Calculadora de Costos de Hobbies", de: "Hobby-Kosten-Rechner", fr: "Calculateur de Coût de Loisir", pt: "Calculadora de Custos de Hobby", ja: "趣味の費用計算機", ar: "حاسبة تكلفة الهوايات", hi: "शौक लागत कैलक्यूलेटर" },
+  subtitle: { en: "Discover startup and ongoing costs for 50+ popular hobbies with real-time currency conversion.", es: "Descubra los costos iniciales y continuos de más de 50 pasatiempos populares con conversión de moneda en tiempo real.", de: "Entdecken Sie die Start- und laufenden Kosten für über 50 beliebte Hobbys mit Echtzeit-Währungsumrechnung.", fr: "Découvrez les coûts de démarrage et récurrents de plus de 50 passe-temps populaires avec conversion de devises en temps réel.", pt: "Descubra os custos iniciais e contínuos de mais de 50 hobbies populares com conversão de moeda em tempo real.", ja: "50以上の人気のある趣味の開始費用と継続費用をリアルタイムの通貨換算で発見してください。", ar: "اكتشف تكاليف بدء التشغيل والتكاليف المستمرة لأكثر من 50 هواية شائعة مع تحويل العملات في الوقت الفعلي.", hi: "वास्तविक समय मुद्रा रूपांतरण के साथ 50+ लोकप्रिय शौकों के लिए स्टार्टअप और चल रही लागतों की खोज करें।" },
+  popular_hobbies: { en: "Popular Hobby Calculators", es: "Calculadoras de Hobbies Populares", de: "Beliebte Hobby-Rechner", fr: "Calculateurs de Loisirs Populaires", pt: "Calculadoras de Hobbies Populares", ja: "人気の趣味計算機", ar: "حاسبات الهوايات الشائعة", hi: "लोकप्रिय शौक कैलकुलेटर" },
+  explore_btn: { en: "Explore Hobbies", es: "Explorar Hobbies", de: "Hobbys erkunden", fr: "Explorer les Loisirs", pt: "Explorar Hobbies", ja: "趣味を探る", ar: "استكشف الهوايات", hi: "शौक खोजें" }
+};
+
+const getText = (key, currentLang) => translations[key]?.[currentLang] || translations[key]?.['en'];
 ---
-<Layout title="HobbyCalc - Cost Calculator" lang={lang}>
-  <div class="text-center p-12 bg-indigo-600 text-white">
-    <h1 class="text-5xl font-bold">HobbyCalc</h1>
-    <p class="py-6">Discover startup and ongoing costs for 50+ popular hobbies with real-time currency conversion.</p>
-    <a href="#popular-hobbies" class="btn btn-warning">Explore Hobbies</a>
+<Layout title={getText('title', lang)} lang={lang}>
+  <div class="text-center p-12" style="background-color: #4f46e5;">
+    <h1 class="text-5xl font-bold text-white">HobbyCalc</h1>
+    <p class="py-6 text-lg text-indigo-200">{getText('subtitle', lang)}</p>
+    <a href="#popular-hobbies" class="btn btn-warning">{getText('explore_btn', lang)}</a>
   </div>
   <div id="popular-hobbies" class="max-w-6xl mx-auto py-12 px-4">
-    <h2 class="text-3xl font-bold text-center mb-8">Popular Hobby Calculators</h2>
+    <h2 class="text-3xl font-bold text-center mb-8">{getText('popular_hobbies', lang)}</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {hobbies.map(hobby => (
+      {hobbies.filter(h => h.name[lang]).map(hobby => (
         <a href={`/${lang}/hobbies/${hobby.id}`} class="card bg-white shadow-lg hover:shadow-2xl transition-shadow">
           <div class="card-body">
             <h3 class="card-title text-2xl">
-              {hobby.emoji || '🎨'} {getText(hobby.name)}
+              {hobby.emoji || '🎨'} {hobby.name[lang]}
             </h3>
-            <p>{getText(hobby.description, 'Click to see a cost breakdown.')}</p>
+            <p>{hobby.description[lang]}</p>
             <div class="badge badge-outline mt-2">${hobby.breakdown.beginner.costRangeUSD[0]}+</div>
           </div>
         </a>
