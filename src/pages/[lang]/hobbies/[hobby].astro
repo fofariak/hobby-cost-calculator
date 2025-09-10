@@ -21,9 +21,14 @@ export function getStaticPaths() {
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
-// Helper functions to safely get data
 const getText = (field, fallback = '') => field?.[lang] || field?.['en'] || fallback;
 const getArray = (field) => field?.[lang] || field?.['en'] || [];
+
+const allItems = {
+    beginner: getArray(hobby.breakdown?.beginner?.keyItems),
+    intermediate: getArray(hobby.breakdown?.intermediate?.keyItems),
+    advanced: getArray(hobby.breakdown?.advanced?.keyItems)
+};
 ---
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
   <div class="bg-white py-8">
@@ -36,10 +41,10 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
         <div class="lg:col-span-2 space-y-8">
           <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div role="tablist" class="tabs tabs-boxed bg-gray-200">
-                <button type="button" role="tab" @click="setLevel('beginner')" :class="level === 'beginner' && 'tab-active'" class="tab sm:tab-lg">Beginner</button>
-                <button type="button" role="tab" @click="setLevel('intermediate')" :class="level === 'intermediate' && 'tab-active'" class="tab sm:tab-lg">Intermediate</button>
-                <button type="button" role="tab" @click="setLevel('advanced')" :class="level === 'advanced' && 'tab-active'" class="tab sm:tab-lg">Advanced</button>
+              <div role="tablist" class="tabs tabs-boxed bg-gray-200 p-1">
+                <button role="tab" @click="setLevel('beginner')" :class="level === 'beginner' ? 'bg-indigo-600 text-white' : 'text-gray-500'" class="tab sm:tab-lg rounded-lg">Beginner</button>
+                <button role="tab" @click="setLevel('intermediate')" :class="level === 'intermediate' ? 'bg-indigo-600 text-white' : 'text-gray-500'" class="tab sm:tab-lg rounded-lg">Intermediate</button>
+                <button role="tab" @click="setLevel('advanced')" :class="level === 'advanced' ? 'bg-indigo-600 text-white' : 'text-gray-500'" class="tab sm:tab-lg rounded-lg">Advanced</button>
               </div>
               <div class="w-full sm:w-auto">
                 <select x-model="currency" class="select select-bordered">
@@ -105,9 +110,9 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
               <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
               <div class="space-y-2">
-                {getArray(hobby.faq).map((item, index) => (
+                {getArray(hobby.faq).map(item => (
                   <div class="collapse collapse-plus bg-gray-100 rounded-lg">
-                    <input type="radio" name={`hobby-accordion-${index}`} /> 
+                    <input type="radio" name="hobby-accordion" /> 
                     <div class="collapse-title text-lg font-medium">{getText(item.q)}</div>
                     <div class="collapse-content"><p>{getText(item.a)}</p></div>
                   </div>
@@ -126,7 +131,7 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
                   <a href={gear.link} target="_blank" class="block p-2 rounded-lg hover:bg-gray-100">
                     <div class="flex gap-4 items-center">
                       <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812-1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                       </div>
                       <div>
                         <p class="font-bold leading-tight">{getText(gear.name)}</p>
@@ -168,55 +173,30 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
         level: 'beginner',
         currency: 'USD',
         selectedItems: [],
-        totalMin: 0,
-        totalMax: 0,
         
         // --- DATA FROM ASTRO ---
         hobbyData: hobby,
         rates: rates,
         
         // --- INITIALIZATION ---
-        init() {
-          this.setLevel('beginner');
-        },
+        init() { this.setLevel('beginner'); },
         
         // --- HELPER FUNCTIONS ---
-        getText(field) {
-          return field?.[lang] || field?.['en'] || '';
-        },
+        getText(field) { return field?.[lang] || field?.['en'] || ''; },
         
         // --- GETTERS ---
-        get currentItems() {
-          return this.hobbyData.breakdown?.[this.level]?.keyItems || [];
-        },
+        get currentItems() { return this.hobbyData.breakdown?.[this.level]?.keyItems || []; },
         
         // --- CORE LOGIC ---
         setLevel(newLevel) {
           this.level = newLevel;
-          // Pre-select only essential items when the level changes
           this.selectedItems = (this.currentItems || [])
             .map((item, index) => ({ item, index }))
             .filter(p => p.item.category === 'essential')
             .map(p => p.index.toString());
-          this.updateTotals();
         },
         
-        updateTotals() {
-          let min = 0;
-          let max = 0;
-          this.selectedItems.forEach(indexStr => {
-            const index = parseInt(indexStr);
-            const item = this.currentItems[index];
-            if (item && item.cost) {
-              min += item.cost[0];
-              max += item.cost[1] || item.cost[0];
-            }
-          });
-          this.totalMin = min;
-          this.totalMax = max;
-        },
-        
-        // --- FORMATTING ---
+        // --- FORMATTING (CALCULATIONS ARE DONE HERE) ---
         formatCost(cost) {
             if (!cost) return '';
             const rate = this.rates[this.currency] || 1;
@@ -226,16 +206,23 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
             const cost2 = formatter.format(cost[1] * rate);
             return `${cost1} - ${cost2}`;
         },
-
         formatTotal() {
-            // No need to call updateTotals() here, it's called whenever a change happens
+            let min = 0, max = 0;
+            this.selectedItems.forEach(indexStr => {
+                const index = parseInt(indexStr);
+                const item = this.currentItems[index];
+                if(item && item.cost) {
+                    min += item.cost[0];
+                    max += item.cost[1] || item.cost[0];
+                }
+            });
             const rate = this.rates[this.currency] || 1;
             const formatter = new Intl.NumberFormat(lang, { style: 'currency', currency: this.currency, maximumFractionDigits: 0 });
             if (this.selectedItems.length === 0) return formatter.format(0);
-            const min = this.totalMin * rate;
-            const max = this.totalMax * rate;
-            if (min === max) return formatter.format(min);
-            return `${formatter.format(min)} - ${formatter.format(max)}`;
+            const finalMin = min * rate;
+            const finalMax = max * rate;
+            if (finalMin === finalMax) return formatter.format(finalMin);
+            return `${formatter.format(finalMin)} - ${formatter.format(finalMax)}`;
         },
       }));
     });
