@@ -137,14 +137,18 @@ currentItems.forEach(item => {
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
               <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
               <div class="space-y-2">
-                {getArray(hobby.faq).map((item, idx) => (
-                  <div class="collapse collapse-plus bg-gray-100 rounded-lg">
-                    <!-- use unique name per FAQ group so DaisyUI accordion works -->
-                    <input type="radio" name={`faq-${hobby.id}`} id={`faq-${hobby.id}-${idx}`} />
-                    <div class="collapse-title text-lg font-medium">{getText(item.q)}</div>
-                    <div class="collapse-content"><p>{getText(item.a)}</p></div>
-                  </div>
+                 {getArray(hobby.faq).map((item, idx) => (
+                   <div class="collapse collapse-plus bg-gray-100 rounded-lg">
+                      <input type="checkbox" id={`faq-${hobby.id}-${idx}`} />
+                      <div class="collapse-title text-lg font-medium cursor-pointer">
+                        {getText(item.q)}
+                      </div>
+                      <div class="collapse-content">
+                        <p>{getText(item.a)}</p>
+                      </div>
+                    </div>
                 ))}
+
               </div>
             </div>
           }
