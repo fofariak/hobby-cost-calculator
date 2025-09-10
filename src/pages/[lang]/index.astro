@@ -10,46 +10,494 @@ export function getStaticPaths() {
 const { lang } = Astro.params;
 
 const translations = {
-  title: { en: "Hobby Cost Calculator | Find Your Next Passion", es: "Calculadora de Costos de Hobbies | Encuentra Tu Pasión", de: "Hobby-Kosten-Rechner | Finde deine Leidenschaft", fr: "Calculateur de Coût de Loisir | Trouvez Votre Passion", pt: "Calculadora de Custos de Hobby | Encontre Sua Paixão", ja: "趣味の費用計算機 | あなたの情熱を見つけよう", ar: "حاسبة تكلفة الهوايات | ابحث عن شغفك التالي", hi: "शौक लागत कैलकुलेटर | अपना अगला जुनून खोजें" },
-  subtitle: { en: "Estimate startup costs for 50+ hobbies with our free calculator and currency conversion.", es: "Estima los costos iniciales para más de 50 pasatiempos con nuestra calculadora gratuita y conversión de moneda.", de: "Schätzen Sie die Anschaffungskosten für über 50 Hobbys mit unserem kostenlosen Rechner und Währungsumrechnung.", fr: "Estimez les coûts de démarrage pour plus de 50 loisirs avec notre calculateur gratuit et notre conversion de devises.", pt: "Estime os custos iniciais para mais de 50 hobbies com nossa calculadora gratuita e conversão de moeda.", ja: "無料の計算機と通貨換算で50以上の趣味の開始費用を見積もります。", ar: "قدر تكاليف بدء التشغيل لأكثر من 50 هواية باستخدام الآلة الحاسبة المجانية وتحويل العملات.", hi: "हमारे मुफ्त कैलकुलेटर और मुद्रा रूपांतरण के साथ 50+ शौक के लिए स्टार्टअप लागत का अनुमान लगाएं।" },
-  popular_hobbies: { en: "Popular Hobby Calculators", es: "Calculadoras de Hobbies Populares", de: "Beliebte Hobby-Rechner", fr: "Calculateurs de Loisirs Populaires", pt: "Calculadoras de Hobbies Populares", ja: "人気の趣味計算機", ar: "حاسبات الهوايات الشائعة", hi: "लोकप्रिय शौक कैलकुलेटर" },
-  explore_btn: { en: "Explore Hobbies", es: "Explorar Hobbies", de: "Hobbys erkunden", fr: "Explorer les Loisirs", pt: "Explorar Hobbies", ja: "趣味を探る", ar: "استكشف الهوايات", hi: "शौक खोजें" }
+  title: { 
+    en: "Hobby Cost Calculator 2025 | Calculate Startup Costs for 50+ Hobbies", 
+    es: "Calculadora de Costos de Hobbies 2025 | Calcula Costos Iniciales para 50+ Hobbies", 
+    de: "Hobby-Kosten-Rechner 2025 | Berechne Startkosten für 50+ Hobbys", 
+    fr: "Calculateur de Coût de Loisirs 2025 | Calculez les Coûts de Démarrage pour 50+ Loisirs", 
+    pt: "Calculadora de Custos de Hobby 2025 | Calcule Custos Iniciais para 50+ Hobbies", 
+    ja: "趣味の費用計算機 2025 | 50以上の趣味の開始費用を計算", 
+    ar: "حاسبة تكلفة الهوايات 2025 | احسب تكاليف البدء لأكثر من 50 هواية", 
+    hi: "शौक लागत कैलकुलेटर 2025 | 50+ शौक के लिए स्टार्टअप लागत की गणना करें" 
+  },
+  description: {
+    en: "Free hobby cost calculator with currency conversion. Calculate startup costs for photography, gaming, cooking, crafts & 50+ hobbies. Get accurate budget estimates instantly.",
+    es: "Calculadora gratuita de costos de hobbies con conversión de moneda. Calcula costos iniciales para fotografía, gaming, cocina, manualidades y 50+ hobbies.",
+    de: "Kostenloser Hobby-Kosten-Rechner mit Währungsumrechnung. Berechne Startkosten für Fotografie, Gaming, Kochen, Basteln und 50+ Hobbys.",
+    fr: "Calculateur gratuit de coût de loisirs avec conversion de devises. Calculez les coûts de démarrage pour la photographie, les jeux, la cuisine et 50+ loisirs.",
+    pt: "Calculadora gratuita de custos de hobby com conversão de moeda. Calcule custos iniciais para fotografia, gaming, culinária e 50+ hobbies.",
+    ja: "通貨換算付き無料趣味費用計算機。写真、ゲーム、料理、クラフトなど50以上の趣味の開始費用を計算。",
+    ar: "حاسبة مجانية لتكلفة الهوايات مع تحويل العملات. احسب تكاليف البدء للتصوير والألعاب والطبخ والحرف اليدوية وأكثر من 50 هواية.",
+    hi: "मुद्रा रूपांतरण के साथ मुफ्त शौक लागत कैलकुलेटर। फोटोग्राफी, गेमिंग, खाना पकाने, शिल्प और 50+ शौक के लिए स्टार्टअप लागत की गणना करें।"
+  },
+  hero_title: { 
+    en: "Find Your Perfect Hobby", 
+    es: "Encuentra Tu Hobby Perfecto", 
+    de: "Finde dein Perfektes Hobby", 
+    fr: "Trouvez Votre Loisir Parfait", 
+    pt: "Encontre Seu Hobby Perfeito", 
+    ja: "完璧な趣味を見つけよう", 
+    ar: "ابحث عن هوايتك المثالية", 
+    hi: "अपना परफेक्ट शौक खोजें" 
+  },
+  hero_subtitle: { 
+    en: "Calculate startup costs for 50+ hobbies with real-time currency conversion", 
+    es: "Calcula costos iniciales para 50+ hobbies con conversión de moneda en tiempo real", 
+    de: "Berechne Startkosten für 50+ Hobbys mit Echtzeit-Währungsumrechnung", 
+    fr: "Calculez les coûts de démarrage pour 50+ loisirs avec conversion de devises en temps réel", 
+    pt: "Calcule custos iniciais para 50+ hobbies com conversão de moeda em tempo real", 
+    ja: "リアルタイム通貨換算で50以上の趣味の開始費用を計算", 
+    ar: "احسب تكاليف البدء لأكثر من 50 هواية مع تحويل العملات في الوقت الفعلي", 
+    hi: "रियल-टाइम मुद्रा रूपांतरण के साथ 50+ शौक के लिए स्टार्टअप लागत की गणना करें" 
+  },
+  popular_hobbies: { 
+    en: "Popular Hobby Calculators", 
+    es: "Calculadoras de Hobbies Populares", 
+    de: "Beliebte Hobby-Rechner", 
+    fr: "Calculateurs de Loisirs Populaires", 
+    pt: "Calculadoras de Hobbies Populares", 
+    ja: "人気の趣味計算機", 
+    ar: "حاسبات الهوايات الشائعة", 
+    hi: "लोकप्रिय शौक कैलकुलेटर" 
+  },
+  explore_btn: { 
+    en: "Explore All Hobbies", 
+    es: "Explorar Todos los Hobbies", 
+    de: "Alle Hobbys erkunden", 
+    fr: "Explorer Tous les Loisirs", 
+    pt: "Explorar Todos os Hobbies", 
+    ja: "すべての趣味を探る", 
+    ar: "استكشف جميع الهوايات", 
+    hi: "सभी शौक खोजें" 
+  },
+  features_title: {
+    en: "Why Choose HobbyCalc?",
+    es: "¿Por Qué Elegir HobbyCalc?",
+    de: "Warum HobbyCalc Wählen?",
+    fr: "Pourquoi Choisir HobbyCalc?",
+    pt: "Por Que Escolher HobbyCalc?",
+    ja: "なぜHobbyCalcを選ぶのか？",
+    ar: "لماذا تختار HobbyCalc؟",
+    hi: "HobbyCalc क्यों चुनें?"
+  },
+  search_placeholder: {
+    en: "Search hobbies...",
+    es: "Buscar hobbies...",
+    de: "Hobbys suchen...",
+    fr: "Rechercher des loisirs...",
+    pt: "Pesquisar hobbies...",
+    ja: "趣味を検索...",
+    ar: "البحث عن الهوايات...",
+    hi: "शौक खोजें..."
+  }
 };
 
 const getText = (key, currentLang) => translations[key]?.[currentLang] || translations[key]?.['en'];
+
+// Get featured hobbies (first 9 for better layout)
+const featuredHobbies = hobbies.slice(0, 9);
 ---
-<Layout title={getText('title', lang)} lang={lang}>
-  <div class="text-center p-12" style="background-color: #4f46e5;">
-    <h1 class="text-5xl font-bold text-white">HobbyCalc</h1>
-    <p class="py-6 text-lg text-indigo-200">{getText('subtitle', lang)}</p>
-    <a href="#popular-hobbies" class="btn btn-warning">{getText('explore_btn', lang)}</a>
-  </div>
-  <div id="popular-hobbies" class="max-w-6xl mx-auto py-12 px-4">
-    <h2 class="text-3xl font-bold text-center mb-8">{getText('popular_hobbies', lang)}</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {hobbies.map(hobby => {
-        // **FIX:** These lines safely get the text, falling back to English, then to an empty string.
-        const name = hobby.name?.[lang] || hobby.name?.['en'];
-        const description = hobby.description?.[lang] || hobby.description?.['en'] || '';
-        const beginnerCost = hobby.breakdown?.beginner?.costRangeUSD?.[0];
 
-        // Only render the card if the hobby has a name for the current language (or English)
-        if (!name) return null;
-
-        return (
-          <a href={`/${lang}/hobbies/${hobby.id}`} class="card bg-white shadow-lg hover:shadow-2xl transition-shadow">
-            <div class="card-body">
-              <h3 class="card-title text-2xl">
-                {hobby.emoji || '🎨'} {name}
-              </h3>
-              <p>{description}</p>
-              {beginnerCost && (
-                <div class="badge badge-outline mt-2">${beginnerCost}+</div>
-              )}
-            </div>
-          </a>
-        )
-      })}
+<Layout 
+  title={getText('title', lang)} 
+  description={getText('description', lang)}
+  lang={lang}
+>
+  <!-- Enhanced Hero Section with Interactive Elements -->
+  <section class="hero-gradient min-h-screen flex items-center justify-center relative overflow-hidden">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="floating-shapes"></div>
     </div>
-  </div>
+    
+    <div class="container mx-auto px-6 relative z-10">
+      <div class="text-center max-w-4xl mx-auto">
+        <!-- Main Hero Content -->
+        <div class="animate-fade-in-up">
+          <h1 class="text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
+            <span class="gradient-text">HobbyCalc</span>
+          </h1>
+          <h2 class="text-2xl md:text-3xl font-semibold text-indigo-100 mb-4">
+            {getText('hero_title', lang)}
+          </h2>
+          <p class="text-xl text-indigo-200 mb-8 max-w-2xl mx-auto leading-relaxed">
+            {getText('hero_subtitle', lang)}
+          </p>
+        </div>
+
+        <!-- Interactive Search Bar -->
+        <div class="animate-fade-in-up animation-delay-200 mb-8">
+          <div class="relative max-w-md mx-auto">
+            <input 
+              type="text" 
+              id="hobby-search"
+              placeholder={getText('search_placeholder', lang)}
+              class="w-full px-6 py-4 rounded-full text-lg border-0 shadow-2xl focus:ring-4 focus:ring-yellow-300 focus:outline-none transition-all duration-300"
+            />
+            <button class="absolute right-2 top-2 bottom-2 px-6 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full hover:shadow-lg transition-all duration-300">
+              🔍
+            </button>
+          </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="animate-fade-in-up animation-delay-400 space-x-4">
+          <a 
+            href="#popular-hobbies" 
+            class="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-2xl hover:scale-105 transition-all duration-300"
+          >
+            {getText('explore_btn', lang)}
+          </a>
+          <a 
+            href="#features" 
+            class="inline-block bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-full text-lg font-semibold border border-white/20 hover:bg-white/20 transition-all duration-300"
+          >
+            Learn More
+          </a>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+          <div class="text-center animate-fade-in-up animation-delay-600">
+            <div class="text-3xl font-bold text-yellow-400">50+</div>
+            <div class="text-sm text-indigo-200">Hobbies</div>
+          </div>
+          <div class="text-center animate-fade-in-up animation-delay-700">
+            <div class="text-3xl font-bold text-yellow-400">8</div>
+            <div class="text-sm text-indigo-200">Languages</div>
+          </div>
+          <div class="text-center animate-fade-in-up animation-delay-800">
+            <div class="text-3xl font-bold text-yellow-400">Free</div>
+            <div class="text-sm text-indigo-200">Forever</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-6">
+      <h2 class="text-4xl font-bold text-center mb-16 text-gray-800">
+        {getText('features_title', lang)}
+      </h2>
+      <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div class="feature-card text-center p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+          <div class="text-5xl mb-4">💰</div>
+          <h3 class="text-xl font-semibold mb-4">Accurate Cost Estimates</h3>
+          <p class="text-gray-600">Get detailed breakdowns of startup costs from beginner to expert levels</p>
+        </div>
+        <div class="feature-card text-center p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+          <div class="text-5xl mb-4">🌍</div>
+          <h3 class="text-xl font-semibold mb-4">Multi-Currency Support</h3>
+          <p class="text-gray-600">Real-time currency conversion for accurate local pricing</p>
+        </div>
+        <div class="feature-card text-center p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+          <div class="text-5xl mb-4">🎯</div>
+          <h3 class="text-xl font-semibold mb-4">Personalized Recommendations</h3>
+          <p class="text-gray-600">Find hobbies that match your budget and interests</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Hobbies Section -->
+  <section id="popular-hobbies" class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold text-gray-800 mb-4">
+          {getText('popular_hobbies', lang)}
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Discover the most popular hobbies and their startup costs
+        </p>
+      </div>
+
+      <!-- Hobby Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        {featuredHobbies.map((hobby, index) => {
+          const name = hobby.name?.[lang] || hobby.name?.['en'];
+          const description = hobby.description?.[lang] || hobby.description?.['en'] || '';
+          const beginnerCost = hobby.breakdown?.beginner?.costRangeUSD?.[0];
+          
+          if (!name) return null;
+          
+          return (
+            <div class={`hobby-card animate-fade-in-up animation-delay-${(index + 1) * 100}`}>
+              <a 
+                href={`/${lang}/hobbies/${hobby.id}`} 
+                class="block bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group"
+              >
+                <div class="p-6">
+                  <div class="flex items-center justify-between mb-4">
+                    <span class="text-4xl group-hover:scale-110 transition-transform duration-300">
+                      {hobby.emoji || '🎨'}
+                    </span>
+                    {beginnerCost && (
+                      <span class="px-3 py-1 bg-gradient-to-r from-green-400 to-blue-500 text-white text-sm font-semibold rounded-full">
+                        From ${beginnerCost}
+                      </span>
+                    )}
+                  </div>
+                  <h3 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-indigo-600 transition-colors">
+                    {name}
+                  </h3>
+                  <p class="text-gray-600 text-sm leading-relaxed">
+                    {description}
+                  </p>
+                </div>
+                <div class="px-6 pb-6">
+                  <div class="flex items-center text-indigo-600 font-medium group-hover:text-indigo-800 transition-colors">
+                    Calculate Cost 
+                    <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+            </div>
+          );
+        })}
+      </div>
+
+      <!-- View All Button -->
+      <div class="text-center mt-12">
+        <a 
+          href={`/${lang}/hobbies`}
+          class="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-2xl hover:scale-105 transition-all duration-300"
+        >
+          View All {hobbies.length} Hobbies →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter/CTA Section -->
+  <section class="py-20 bg-gradient-to-r from-indigo-600 to-purple-600">
+    <div class="container mx-auto px-6 text-center">
+      <h2 class="text-4xl font-bold text-white mb-4">Ready to Start Your Hobby Journey?</h2>
+      <p class="text-xl text-indigo-100 mb-8 max-w-2xl mx-auto">
+        Get personalized hobby recommendations and cost estimates tailored to your budget
+      </p>
+      <a 
+        href={`/${lang}/calculator`}
+        class="inline-block bg-yellow-400 text-indigo-900 px-8 py-4 rounded-full text-lg font-bold hover:bg-yellow-300 hover:shadow-2xl transition-all duration-300"
+      >
+        Start Calculating Now
+      </a>
+    </div>
+  </section>
 </Layout>
+
+<style>
+/* Enhanced CSS for modern, interactive design */
+.hero-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.floating-shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.floating-shapes::before,
+.floating-shapes::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-shapes::before {
+  width: 200px;
+  height: 200px;
+  top: 20%;
+  left: 10%;
+  animation-delay: -2s;
+}
+
+.floating-shapes::after {
+  width: 150px;
+  height: 150px;
+  bottom: 20%;
+  right: 10%;
+  animation-delay: -4s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animation-delay-100 { animation-delay: 0.1s; }
+.animation-delay-200 { animation-delay: 0.2s; }
+.animation-delay-300 { animation-delay: 0.3s; }
+.animation-delay-400 { animation-delay: 0.4s; }
+.animation-delay-500 { animation-delay: 0.5s; }
+.animation-delay-600 { animation-delay: 0.6s; }
+.animation-delay-700 { animation-delay: 0.7s; }
+.animation-delay-800 { animation-delay: 0.8s; }
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.hobby-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Search functionality */
+#hobby-search {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .text-6xl { font-size: 3rem; }
+  .text-7xl { font-size: 3.5rem; }
+  .grid { gap: 1rem; }
+}
+
+/* Performance optimizations */
+.hero-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  will-change: transform;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .floating-shapes::before,
+  .floating-shapes::after {
+    animation: none;
+  }
+  
+  .animate-fade-in-up {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Focus states for better accessibility */
+a:focus,
+button:focus,
+input:focus {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+}
+</style>
+
+<script>
+// Interactive search functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('hobby-search');
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+      const query = e.target.value.toLowerCase();
+      // Add debounced search functionality here
+      // This could filter visible hobby cards or redirect to search results
+    });
+
+    // Add enter key functionality
+    searchInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        const query = e.target.value;
+        if (query.trim()) {
+          // Redirect to search results or filter page
+          window.location.href = `/${document.documentElement.lang}/search?q=${encodeURIComponent(query)}`;
+        }
+      }
+    });
+  }
+
+  // Add intersection observer for animation triggers
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate-fade-in-up');
+      }
+    });
+  }, observerOptions);
+
+  // Observe all hobby cards
+  document.querySelectorAll('.hobby-card').forEach(card => {
+    observer.observe(card);
+  });
+
+  // Add smooth scrolling for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+});
+</script>
+
+<!-- Structured Data for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "HobbyCalc - Hobby Cost Calculator",
+  "description": "Free hobby cost calculator with currency conversion for 50+ hobbies including photography, gaming, cooking, and crafts.",
+  "url": "https://hobbycalc.com",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Cost calculation for 50+ hobbies",
+    "Multi-currency support",
+    "Beginner to expert level breakdowns",
+    "Real-time currency conversion",
+    "8 language support"
+  ]
+}
+</script>
