@@ -1,0 +1,47 @@
+---
+// src/components/CurrencyConverter.astro
+
+export interface Props {
+  baseCostRange: [number, number];
+  rates: Record<string, number>;
+}
+const { baseCostRange, rates } = Astro.props;
+const currencies = Object.keys(rates);
+---
+<details open>
+  <summary>Convert Currency</summary>
+  <div>
+    <select id="currency-select">
+      {currencies.map(currency => <option value={currency}>{currency}</option>)}
+    </select>
+    <h3 id="converted-price" style="margin-top: 0.5rem;"></h3>
+  </div>
+</details>
+
+<script define:vars={{ baseCostRange, rates }}>
+  const select = document.getElementById('currency-select');
+  const priceDisplay = document.getElementById('converted-price');
+
+  function calculate() {
+    const selectedCurrency = select.value;
+    if (rates[selectedCurrency]) {
+      const convertedMin = baseCostRange[0] * rates[selectedCurrency];
+      const convertedMax = baseCostRange[1] * rates[selectedCurrency];
+
+      const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: selectedCurrency,
+        maximumFractionDigits: 0
+      });
+
+      priceDisplay.textContent = `${formatter.format(convertedMin)} - ${formatter.format(convertedMax)}`;
+    }
+  }
+
+  // Set the initial value on page load
+  select.value = 'USD'; // Default to USD
+  calculate();
+
+  // Recalculate when the user changes the selection
+  select.addEventListener('change', calculate);
+</script>
