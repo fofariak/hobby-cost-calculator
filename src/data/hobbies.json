@@ -3,57 +3,48 @@
     {
       "id": "photography",
       "emoji": "📸",
-      "name": { "en": "Photography", "es": "Fotografía", "de": "Fotografie", "fr": "Photographie", "pt": "Fotografia", "ja": "写真撮影", "ar": "التصوير الفوتوغرافي", "hi": "फोटोग्राफी" },
-      "description": { "en": "Cameras, lenses, editing software, and accessories.", "es": "Cámaras, lentes, software de edición y accesorios.", "de": "Kameras, Objektive, Bearbeitungssoftware und Zubehör.", "fr": "Appareils photo, objectifs, logiciels de retouche et accessoires.", "pt": "Câmeras, lentes, software de edição e acessórios.", "ja": "カメラ、レンズ、編集ソフトウェア、アクセサリー。", "ar": "كاميرات، عدسات، برامج تحرير، وإكسسوارات.", "hi": "कैमरे, लेंस, संपादन सॉफ्टवेयर, और सहायक उपकरण।" },
+      "name": { "en": "Photography", "es": "Fotografía", "de": "Fotografie" },
+      "description": { "en": "Cameras, lenses, editing software, and accessories.", "es": "Cámaras, lentes, software de edición y accesorios." },
       "breakdown": {
         "beginner": {
           "keyItems": [
-            { "name": { "en": "Entry-Level DSLR/Mirrorless" }, "cost": [400, 600], "desc": { "en": "Canon T8i, Sony a6100, Nikon D3500" }, "category": "essential" },
-            { "name": { "en": "Kit Lens (18-55mm)" }, "cost": [0, 200], "desc": { "en": "Usually included with camera body." }, "category": "essential" },
+            { "name": { "en": "Entry-Level DSLR/Mirrorless" }, "cost": [400, 600], "desc": { "en": "Canon T8i, Sony a6100" }, "category": "essential" },
+            { "name": { "en": "Kit Lens (18-55mm)" }, "cost": [0, 200], "desc": { "en": "Usually included with camera." }, "category": "essential" },
             { "name": { "en": "Memory Card (64GB)" }, "cost": [20, 40], "desc": { "en": "SanDisk or Lexar SD Card" }, "category": "essential" },
-            { "name": { "en": "Camera Bag" }, "cost": [30, 80], "desc": { "en": "Protection and storage" }, "category": "essential" },
             { "name": { "en": "Adobe Lightroom" }, "cost": [120, 120], "desc": { "en": "Photo editing software (per year)" }, "category": "software" }
           ]
         },
         "intermediate": {
           "keyItems": [
-            { "name": { "en": "Mid-Range Camera Body" }, "cost": [800, 1200], "desc": { "en": "Canon R10, Sony a6600, Fuji X-T4" }, "category": "essential" },
+            { "name": { "en": "Mid-Range Camera Body" }, "cost": [800, 1200], "desc": { "en": "Canon R10, Sony a6600" }, "category": "essential" },
             { "name": { "en": "Prime Lens (50mm f/1.8)" }, "cost": [150, 300], "desc": { "en": "Great for portraits and low light" }, "category": "essential" },
-            { "name": { "en": "External Flash" }, "cost": [100, 300], "desc": { "en": "Godox V1, Profoto A10" }, "category": "essential" },
-            { "name": { "en": "Sturdy Tripod" }, "cost": [150, 300], "desc": { "en": "Carbon fiber or heavy-duty aluminum" }, "category": "essential" },
-            { "name": { "en": "Adobe Photoshop & Lightroom" }, "cost": [120, 120], "desc": { "en": "Photography plan (per year)" }, "category": "software" }
+            { "name": { "en": "External Flash" }, "cost": [100, 300], "desc": { "en": "Godox V1, Profoto A10" }, "category": "essential" }
           ]
         },
         "advanced": {
           "keyItems": [
-            { "name": { "en": "Professional Full-Frame Camera" }, "cost": [2000, 4000], "desc": { "en": "Sony A7IV, Canon R5, Nikon Z7" }, "category": "essential" },
-            { "name": { "en": "Pro Zoom Lens (24-70mm f/2.8)" }, "cost": [1800, 2300], "desc": { "en": "The workhorse lens for professionals" }, "category": "essential" },
-            { "name": { "en": "Studio Lighting Kit" }, "cost": [500, 1500], "desc": { "en": "2-3 strobes, softboxes, and stands" }, "category": "essential" },
-            { "name": { "en": "Capture One Pro" }, "cost": [300, 300], "desc": { "en": "Professional editing suite (per year)" }, "category": "software" }
+            { "name": { "en": "Professional Full-Frame Camera" }, "cost": [2000, 4000], "desc": { "en": "Sony A7IV, Canon R5" }, "category": "essential" },
+            { "name": { "en": "Pro Zoom Lens (24-70mm f/2.8)" }, "cost": [1800, 2300], "desc": { "en": "The workhorse lens for pros" }, "category": "essential" }
           ]
         }
       },
       "recommendedGear": {
         "en": [
-          { "name": { "en": "Canon EOS Rebel T8i" }, "price": 899, "desc": { "en": "Perfect beginner DSLR with great features." }, "link": "#" },
-          { "name": { "en": "Sony FE 50mm f/1.8 Lens" }, "price": 249, "desc": { "en": "Great portrait lens for Sony cameras." }, "link": "#" },
-          { "name": { "en": "Peak Design Everyday Sling" }, "price": 149, "desc": { "en": "A versatile and stylish camera bag." }, "link": "#" }
+          { "name": { "en": "Canon EOS Rebel T8i" }, "price": 899, "link": "#" },
+          { "name": { "en": "Sony FE 50mm f/1.8 Lens" }, "price": 249, "link": "#" },
+          { "name": { "en": "Peak Design Everyday Sling" }, "price": 149, "link": "#" }
         ]
       },
       "tips": {
-        "en": [ 
-          { "title": "Buy Used Equipment", "desc": "You can save 30-50% on quality gear from reputable stores like KEH or MPB." }, 
-          { "title": "Start with Kit Lens", "desc": "Learn its limits before buying expensive ones. Good lighting is more important than expensive glass." },
-          { "title": "Free Editing Software", "desc": "Try DaVinci Resolve (for video) or GIMP (for photos) before committing to a paid subscription." },
-          { "title": "Rent Before Buying", "desc": "Use services like Lensrentals to try expensive gear before making a major purchase." }
+        "en": [
+          { "title": "Buy Used Equipment", "desc": "You can save 30-50% on quality gear from reputable stores like KEH or MPB." },
+          { "title": "Start with a Kit Lens", "desc": "Learn its limits before buying expensive ones. Good lighting is more important than expensive glass." }
         ]
       },
       "faq": {
         "en": [
           { "q": "How much should a beginner spend?", "a": "For beginners, $500-800 is sufficient for a good camera body, kit lens, and basic accessories." },
-          { "q": "What's the most important equipment?", "a": "Start with a decent camera body and lens. Everything else (tripod, extra lenses, filters) can be added gradually." },
-          { "q": "How often should I upgrade my camera?", "a": "A good camera can last 5-7 years easily. Focus on improving your skills rather than constantly upgrading equipment." },
-          { "q": "DSLR vs Mirrorless for beginners?", "a": "Mirrorless cameras are generally more compact and have better video features, while DSLRs typically have longer battery life." }
+          { "q": "What's the most important equipment?", "a": "Start with a decent camera body and lens. Everything else can be added gradually as you develop your skills." }
         ]
       },
       "stats": {
@@ -63,33 +54,6 @@
           { "label": "Potential earnings", "value": "$25-200/hour" }
         ]
       }
-    },
-    {
-      "id": "pc-gaming",
-      "emoji": "🎮",
-      "name": { "en": "PC Gaming", "es": "Videojuegos en PC", "de": "PC-Spiele" },
-      "description": { "en": "Build a rig, games, and gaming accessories.", "es": "Construye una PC, juegos y accesorios para jugar." },
-      "breakdown": {
-        "beginner": {
-          "keyItems": [
-            { "name": { "en": "Entry-Level Gaming PC" }, "cost": [800, 1200], "desc": { "en": "Pre-built or custom with RTX 4060" }, "category": "essential" },
-            { "name": { "en": "1080p 144Hz Monitor" }, "cost": [150, 250], "desc": { "en": "The sweet spot for beginner gaming" }, "category": "essential" },
-            { "name": { "en": "Gaming Mouse & Keyboard" }, "cost": [50, 100], "desc": { "en": "Basic combo from a reputable brand" }, "category": "essential" }
-          ]
-        },
-        "intermediate": {
-          "keyItems": [
-            { "name": { "en": "Mid-Range Gaming PC" }, "cost": [1500, 2500], "desc": { "en": "Custom build with RTX 4070 Ti" }, "category": "essential" },
-            { "name": { "en": "1440p 165Hz Monitor" }, "cost": [300, 500], "desc": { "en": "High resolution and high refresh rate" }, "category": "essential" }
-          ]
-        },
-        "advanced": {
-          "keyItems": [
-            { "name": { "en": "Enthusiast-Grade PC" }, "cost": [3500, 7000], "desc": { "en": "Custom build with RTX 4090, water cooling" }, "category": "essential" }
-          ]
-        }
-      },
-      "recommendedGear": { "en": [] }, "tips": { "en": [] }, "faq": { "en": [] }, "stats": { "en": [] }
     }
   ]
 }
