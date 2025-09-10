@@ -1,0 +1,27 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { hobbies } from '../../data/hobbies.json';
+export function getStaticPaths() { return [{ params: { lang: 'en' } }, { params: { lang: 'es' } }]; }
+const { lang } = Astro.params;
+---
+<Layout title="HobbyCalc - Cost Calculator" lang={lang}>
+  <div class="text-center p-12 bg-indigo-600 text-white">
+    <h1 class="text-5xl font-bold">HobbyCalc</h1>
+    <p class="py-6">Discover startup and ongoing costs for 50+ popular hobbies with real-time currency conversion.</p>
+    <button class="btn btn-warning">Explore Hobbies</button>
+  </div>
+  <div class="max-w-6xl mx-auto py-12">
+    <h2 class="text-3xl font-bold text-center mb-8">Popular Hobby Calculators</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {hobbies.map(hobby => (
+        <a href={`/${lang}/hobbies/${hobby.id}`} class="card bg-white shadow-lg hover:shadow-2xl transition-shadow">
+          <div class="card-body">
+            <h3 class="card-title text-2xl">{hobby.emoji} {hobby.name[lang]}</h3>
+            <p>{hobby.description[lang]}</p>
+            <div class="badge badge-outline mt-2">${hobby.breakdown.beginner.costRangeUSD[0]}+</div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</Layout>
