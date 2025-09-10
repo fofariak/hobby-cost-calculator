@@ -10,11 +10,12 @@ export function getStaticPaths() {
 const { lang } = Astro.params;
 
 const translations = {
-  title: { en: "Hobby Cost Calculator", es: "Calculadora de Costos de Hobbies", de: "Hobby-Kosten-Rechner", fr: "Calculateur de Coût de Loisir", pt: "Calculadora de Custos de Hobby", ja: "趣味の費用計算機", ar: "حاسبة تكلفة الهوايات", hi: "शौक लागत कैलक्यूलेटर" },
-  subtitle: { en: "Discover startup and ongoing costs for 50+ popular hobbies with real-time currency conversion.", es: "Descubra los costos iniciales y continuos de más de 50 pasatiempos populares con conversión de moneda en tiempo real.", de: "Entdecken Sie die Start- und laufenden Kosten für über 50 beliebte Hobbys mit Echtzeit-Währungsumrechnung.", fr: "Découvrez les coûts de démarrage et récurrents de plus de 50 passe-temps populaires avec conversion de devises en temps réel.", pt: "Descubra os custos iniciais e contínuos de mais de 50 hobbies populares com conversão de moeda em tempo real.", ja: "50以上の人気のある趣味の開始費用と継続費用をリアルタイムの通貨換算で発見してください。", ar: "اكتشف تكاليف بدء التشغيل والتكاليف المستمرة لأكثر من 50 هواية شائعة مع تحويل العملات في الوقت الفعلي.", hi: "वास्तविक समय मुद्रा रूपांतरण के साथ 50+ लोकप्रिय शौकों के लिए स्टार्टअप और चल रही लागतों की खोज करें।" },
-  popular_hobbies: { en: "Popular Hobby Calculators", es: "Calculadoras de Hobbies Populares", de: "Beliebte Hobby-Rechner", fr: "Calculateurs de Loisirs Populaires", pt: "Calculadoras de Hobbies Populares", ja: "人気の趣味計算機", ar: "حاسبات الهوايات الشائعة", hi: "लोकप्रिय शौक कैलकुलेटर" },
-  explore_btn: { en: "Explore Hobbies", es: "Explorar Hobbies", de: "Hobbys erkunden", fr: "Explorer les Loisirs", pt: "Explorar Hobbies", ja: "趣味を探る", ar: "استكشف الهوايات", hi: "शौक खोजें" }
+  title: { en: "Hobby Cost Calculator | Find Your Next Passion", es: "Calculadora de Costos de Hobbies | Encuentra Tu Pasión", de: "Hobby-Kosten-Rechner | Finde deine Leidenschaft" },
+  subtitle: { en: "Estimate startup costs for 50+ hobbies with our free calculator and currency conversion.", es: "Estima los costos iniciales para más de 50 pasatiempos con nuestra calculadora gratuita y conversión de moneda.", de: "Schätzen Sie die Anschaffungskosten für über 50 Hobbys mit unserem kostenlosen Rechner und Währungsumrechnung." },
+  popular_hobbies: { en: "Popular Hobby Calculators", es: "Calculadoras de Hobbies Populares", de: "Beliebte Hobby-Rechner" },
+  explore_btn: { en: "Explore Hobbies", es: "Explorar Hobbies", de: "Hobbys erkunden" }
 };
+// Add translations for fr, pt, ja, ar, hi as needed
 
 const getText = (key, currentLang) => translations[key]?.[currentLang] || translations[key]?.['en'];
 ---
