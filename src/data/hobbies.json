@@ -1,174 +1,59 @@
----
-import Layout from '../../../layouts/Layout.astro';
-import { hobbies } from '../../../data/hobbies.json';
-import currencyData from '../../../data/currencies.json';
-
-// --- Page Generation Logic ---
-export function getStaticPaths() {
-  const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
-  const paths = [];
-  hobbies.forEach(hobby => {
-    if (hobby?.id && hobby.name?.['en']) {
-      languages.forEach(lang => {
-        paths.push({ params: { lang, hobby: hobby.id } });
-      });
+{
+  "hobbies": [
+    {
+      "id": "photography",
+      "emoji": "📸",
+      "name": { "en": "Photography", "es": "Fotografía", "de": "Fotografie" },
+      "description": { "en": "Cameras, lenses, editing software, and accessories.", "es": "Cámaras, lentes, software de edición y accesorios." },
+      "breakdown": {
+        "beginner": {
+          "keyItems": [
+            { "name": { "en": "Entry-Level DSLR/Mirrorless" }, "cost": [400, 600], "desc": { "en": "Canon T8i, Sony a6100" }, "category": "essential" },
+            { "name": { "en": "Kit Lens (18-55mm)" }, "cost": [0, 200], "desc": { "en": "Usually included with camera." }, "category": "essential" },
+            { "name": { "en": "Memory Card (64GB)" }, "cost": [20, 40], "desc": { "en": "SanDisk or Lexar SD Card" }, "category": "essential" },
+            { "name": { "en": "Adobe Lightroom" }, "cost": [120, 120], "desc": { "en": "Photo editing software (per year)" }, "category": "software" }
+          ]
+        },
+        "intermediate": {
+          "keyItems": [
+            { "name": { "en": "Mid-Range Camera Body" }, "cost": [800, 1200], "desc": { "en": "Canon R10, Sony a6600" }, "category": "essential" },
+            { "name": { "en": "Prime Lens (50mm f/1.8)" }, "cost": [150, 300], "desc": { "en": "Great for portraits and low light" }, "category": "essential" },
+            { "name": { "en": "External Flash" }, "cost": [100, 300], "desc": { "en": "Godox V1, Profoto A10" }, "category": "essential" }
+          ]
+        },
+        "advanced": {
+          "keyItems": [
+            { "name": { "en": "Professional Full-Frame Camera" }, "cost": [2000, 4000], "desc": { "en": "Sony A7IV, Canon R5" }, "category": "essential" },
+            { "name": { "en": "Pro Zoom Lens (24-70mm f/2.8)" }, "cost": [1800, 2300], "desc": { "en": "The workhorse lens for pros" }, "category": "essential" }
+          ]
+        }
+      },
+      "recommendedGear": {
+        "en": [
+          { "name": { "en": "Canon EOS Rebel T8i" }, "price": 899, "link": "#" },
+          { "name": { "en": "Sony FE 50mm f/1.8 Lens" }, "price": 249, "link": "#" },
+          { "name": { "en": "Peak Design Everyday Sling" }, "price": 149, "link": "#" }
+        ]
+      },
+      "tips": {
+        "en": [
+          { "title": "Buy Used Equipment", "desc": "You can save 30-50% on quality gear from reputable stores like KEH or MPB." },
+          { "title": "Start with a Kit Lens", "desc": "Learn its limits before buying expensive ones. Good lighting is more important than expensive glass." }
+        ]
+      },
+      "faq": {
+        "en": [
+          { "q": "How much should a beginner spend?", "a": "For beginners, $500-800 is sufficient for a good camera body, kit lens, and basic accessories." },
+          { "q": "What's the most important equipment?", "a": "Start with a decent camera body and lens. Everything else can be added gradually as you develop your skills." }
+        ]
+      },
+      "stats": {
+        "en": [
+          { "label": "Average startup cost", "value": "$650" },
+          { "label": "Time to learn basics", "value": "3-5 months" },
+          { "label": "Potential earnings", "value": "$25-200/hour" }
+        ]
+      }
     }
-  });
-  return paths;
+  ]
 }
-
-// --- Data Preparation Logic ---
-const { lang, hobby: hobbyId } = Astro.params;
-const hobby = hobbies.find(h => h.id === hobbyId);
-
-// **FIX:** Reading the level and currency from the URL correctly
-const level = Astro.url.searchParams.get('level') || 'beginner';
-const currency = Astro.url.searchParams.get('currency') || 'USD';
-const rate = currencyData.rates[currency] || 1;
-
-// Helper functions to safely get data
-const getText = (field, fallback = '') => field?.[lang] || field?.['en'] || fallback;
-const getArray = (field) => field?.[lang] || field?.['en'] || [];
-
-const formatCurrency = (value) => {
-    if (typeof value !== 'number') return '$?';
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(value * rate);
-};
-
-// Calculate totals based on the selected level
-const currentItems = hobby.breakdown?.[level]?.keyItems || [];
-let totalMin = 0;
-let totalMax = 0;
-currentItems.forEach(item => {
-    if (item.category === 'essential' || item.category === 'software') {
-        totalMin += item.cost[0];
-        totalMax += item.cost[1] || item.cost[0];
-    }
-});
----
-<Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
-  <div class="bg-white py-8">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="text-sm breadcrumbs">
-        <ul><li><a href={`/${lang}/`}>Home</a></li> <li><a>Hobbies</a></li> <li>{getText(hobby.name)}</li></ul>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
-        <div class="lg:col-span-2 space-y-8">
-          <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div role="tablist" class="tabs tabs-boxed bg-gray-200">
-                <a role="tab" href={`?level=beginner&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'beginner' }]}>Beginner</a>
-                <a role="tab" href={`?level=intermediate&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'intermediate' }]}>Intermediate</a>
-                <a role="tab" href={`?level=advanced&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'advanced' }]}>Advanced</a>
-              </div>
-              <form class="w-full sm:w-auto">
-                <input type="hidden" name="level" value={level} />
-                <select name="currency" class="select select-bordered" onchange="this.form.submit()">
-                  {Object.keys(currencyData.rates).map(c => <option value={c} selected={c === currency}>{c}</option>)}
-                </select>
-              </form>
-            </div>
-            <div class="divider my-6"></div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
-              <div>
-                <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
-                {currentItems.filter(i => i.category === 'essential').map(item => (
-                  <div class="form-control my-2"><label class="label justify-start gap-4 p-2">
-                    <input type="checkbox" checked class="checkbox checkbox-primary" disabled />
-                    <div><span class="label-text font-medium">{getText(item.name)}</span><div class="text-xs text-gray-500">{getText(item.desc)}</div></div>
-                    <span class="label-text ml-auto font-semibold text-gray-600">{formatCurrency(item.cost[0])} - {formatCurrency(item.cost[1] || item.cost[0])}</span>
-                  </label></div>
-                ))}
-              </div>
-              <div>
-                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
-                {currentItems.filter(i => i.category === 'software').map(item => (
-                  <div class="form-control my-2"><label class="label justify-start gap-4 p-2">
-                    <input type="checkbox" checked class="checkbox checkbox-primary" disabled />
-                    <div><span class="label-text font-medium">{getText(item.name)}</span><div class="text-xs text-gray-500">{getText(item.desc)}</div></div>
-                    <span class="label-text ml-auto font-semibold text-gray-600">{formatCurrency(item.cost[0])}</span>
-                  </label></div>
-                ))}
-              </div>
-            </div>
-
-            <div class="bg-indigo-700 text-white rounded-lg p-6 mt-8 text-center">
-              <h2 class="text-4xl font-bold">{formatCurrency(totalMin)} - {formatCurrency(totalMax)}</h2>
-            </div>
-          </div>
-          
-          {getArray(hobby.tips).length > 0 &&
-            <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
-               <h2 class="text-2xl font-bold mb-4">Money-Saving Tips</h2>
-               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 {getArray(hobby.tips).map(tip => (
-                   <div class="bg-green-100/50 border border-green-200 rounded-lg p-4">
-                     <h4 class="font-bold text-green-800">{getText(tip.title)}</h4>
-                     <p class="text-sm text-green-700">{getText(tip.desc)}</p>
-                   </div>
-                 ))}
-               </div>
-            </div>
-          }
-          
-          {getArray(hobby.faq).length > 0 &&
-            <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
-              <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
-              <div class="space-y-2">
-                {getArray(hobby.faq).map(item => (
-                  <div class="collapse collapse-plus bg-gray-100 rounded-lg">
-                    <input type="radio" name="hobby-accordion" /> 
-                    <div class="collapse-title text-lg font-medium">{getText(item.q)}</div>
-                    <div class="collapse-content"><p>{getText(item.a)}</p></div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          }
-        </div>
-
-        <div class="lg:col-span-1 space-y-8">
-          {getArray(hobby.recommendedGear).length > 0 &&
-            <div class="card bg-gray-50/60 shadow-lg">
-              <div class="card-body">
-                <h3 class="card-title">Recommended Gear</h3>
-                {getArray(hobby.recommendedGear).map(gear => (
-                  <a href={gear.link} target="_blank" class="block p-2 rounded-lg hover:bg-gray-100">
-                    <div class="flex gap-4 items-center">
-                      <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                      </div>
-                      <div>
-                        <p class="font-bold leading-tight">{getText(gear.name)}</p>
-                        <p class="text-sm text-gray-600">{formatCurrency(gear.price)}</p>
-                        <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p>
-                      </div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-          }
-          
-          {getArray(hobby.stats).length > 0 &&
-            <div class="card bg-gray-50/60 shadow-lg">
-              <div class="card-body">
-                <h3 class="card-title">{getText(hobby.name)} Stats</h3>
-                <ul class="space-y-2 mt-2">
-                  {getArray(hobby.stats).map(stat => (
-                     <li class="flex justify-between text-sm py-1 border-b border-gray-200/80">
-                       <span class="text-gray-500">{getText(stat.label)}</span>
-                       <span class="font-semibold">{getText(stat.value)}</span>
-                     </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-    </div>
-  </div>
-</Layout>
