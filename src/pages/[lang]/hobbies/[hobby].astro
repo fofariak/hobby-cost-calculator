@@ -8,7 +8,7 @@ export function getStaticPaths() {
   const paths = [];
   if (hobbies && Array.isArray(hobbies)) {
     hobbies.forEach(hobby => {
-      if (hobby?.id && hobby?.name && hobby.name['en']) { // We only need English to exist to build all pages
+      if (hobby?.id && hobby?.name && hobby.name['en']) {
         languages.forEach(lang => {
           paths.push({ params: { lang, hobby: hobby.id } });
         });
@@ -21,7 +21,6 @@ export function getStaticPaths() {
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
-// **FIX:** Bulletproof helper functions that NEVER fail
 const getText = (field, fallback = '') => field?.[lang] || field?.['en'] || fallback;
 const getArray = (field) => field?.[lang] || field?.['en'] || [];
 
@@ -30,6 +29,12 @@ const allItems = {
     intermediate: hobby.breakdown?.intermediate?.keyItems || [],
     advanced: hobby.breakdown?.advanced?.keyItems || []
 };
+
+const stats = {
+    en: [ { label: "Average startup cost", value: "$650" }, { label: "Time to learn basics", value: "3-5 months" }, { label: "Potential earnings", value: "$20-200/hour" } ],
+    es: [ { label: "Costo inicial promedio", value: "€600" }, { label: "Tiempo para aprender lo básico", value: "3-5 meses" }, { label: "Ganancias potenciales", value: "€20-180/hora" } ]
+}
+const currentStats = stats[lang] || stats['en'];
 ---
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
   <div class="bg-gray-50/50 py-8">
@@ -77,7 +82,7 @@ const allItems = {
               </div>
             </div>
             <div class="bg-indigo-700 text-white rounded-lg p-6 mt-8 text-center">
-              <h2 class="text-4xl font-bold" x-text="formatTotal(totalMin, totalMax)"></h2>
+              <h2 class="text-4xl font-bold" x-text="formatTotal()"></h2>
             </div>
           </div>
           
@@ -112,21 +117,25 @@ const allItems = {
         </div>
 
         <div class="lg:col-span-1 space-y-8">
-          {hobby.recommendedGear && hobby.recommendedGear.length > 0 &&
-            <div class="card bg-white shadow-xl">
-              <div class="card-body">
-                <h3 class="card-title">Recommended Gear</h3>
-                {hobby.recommendedGear.map(gear => (
-                  <a href={gear.link} target="_blank" class="block p-2 rounded-lg hover:bg-gray-50">
-                    <div class="flex gap-4 items-center">
-                      <img src={gear.image} alt={getText(gear.name)} class="w-16 h-16 object-cover rounded-lg bg-gray-200" />
-                      <div><p class="font-bold leading-tight">{getText(gear.name)}</p><p class="text-sm text-gray-600">${gear.price}</p><p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p></div>
+          <div class="card bg-white shadow-xl">
+            <div class="card-body">
+              <h3 class="card-title">Recommended Gear</h3>
+              {getArray(hobby.recommendedGear).map(gear => (
+                <a href={gear.link} target="_blank" class="block p-2 rounded-lg hover:bg-gray-50">
+                  <div class="flex gap-4 items-center">
+                    <div class="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </div>
-                  </a>
-                ))}
-              </div>
+                    <div>
+                      <p class="font-bold leading-tight">{getText(gear.name)}</p>
+                      <p class="text-sm text-gray-600">${gear.price}</p>
+                      <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p>
+                    </div>
+                  </div>
+                </a>
+              ))}
             </div>
-          }
+          </div>
         </div>
       </div>
     </div>
@@ -147,9 +156,30 @@ const allItems = {
           this.selectedItems = essentialIndices;
           this.updateTotals();
         },
-        updateTotals() { /* ... same as before ... */ },
-        formatCost(cost) { /* ... same as before ... */ },
-        formatTotal(min, max) { /* ... same as before ... */ },
+        updateTotals() {
+          let min = 0, max = 0;
+          this.selectedItems.forEach(indexStr => {
+            const index = parseInt(indexStr);
+            const item = this.currentItems[index];
+            if(item) { min += item.cost[0]; max += item.cost[1] || item.cost[0]; }
+          });
+          this.totalMin = min; this.totalMax = max;
+        },
+        formatCost(cost) {
+            if (!cost) return ''; // Safety check
+            const rate = this.rates[this.currency] || 1;
+            const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: this.currency, maximumFractionDigits: 0 });
+            const cost1 = formatter.format(cost[0] * rate);
+            if (!cost[1] || cost[0] === cost[1]) return cost1;
+            const cost2 = formatter.format(cost[1] * rate);
+            return `${cost1} - ${cost2}`;
+        },
+        formatTotal() {
+            const rate = this.rates[this.currency] || 1;
+            const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: this.currency, maximumFractionDigits: 0 });
+            if (this.selectedItems.length === 0) return formatter.format(0);
+            return `${formatter.format(this.totalMin * rate)} - ${formatter.format(this.totalMax * rate)}`;
+        },
         init() { this.setLevel('beginner'); }
       }));
     });
