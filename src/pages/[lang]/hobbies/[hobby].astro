@@ -3,7 +3,7 @@ import Layout from '../../../layouts/Layout.astro';
 import { hobbies } from '../../../data/hobbies.json';
 import currencyData from '../../../data/currencies.json';
 
-// --- Page Generation Logic (This part is correct) ---
+// --- Page Generation Logic ---
 export function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
   const paths = [];
@@ -36,9 +36,9 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
           <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
               <div role="tablist" class="tabs tabs-boxed bg-gray-200 p-1">
-                <button type="button" role="tab" @click="setLevel('beginner')" :class="level === 'beginner' ? 'bg-indigo-600 text-white' : 'text-gray-500'" class="tab sm:tab-lg rounded-lg">Beginner</button>
-                <button type="button" role="tab" @click="setLevel('intermediate')" :class="level === 'intermediate' ? 'bg-indigo-600 text-white' : 'text-gray-500'" class="tab sm:tab-lg rounded-lg">Intermediate</button>
-                <button type="button" role="tab" @click="setLevel('advanced')" :class="level === 'advanced' ? 'bg-indigo-600 text-white' : 'text-gray-500'" class="tab sm:tab-lg rounded-lg">Advanced</button>
+                <button type="button" role="tab" @click="setLevel('beginner')" :class="level === 'beginner' ? 'bg-indigo-600 text-white shadow' : 'text-gray-600'" class="tab sm:tab-lg rounded-lg transition-all duration-300">Beginner</button>
+                <button type="button" role="tab" @click="setLevel('intermediate')" :class="level === 'intermediate' ? 'bg-indigo-600 text-white shadow' : 'text-gray-600'" class="tab sm:tab-lg rounded-lg transition-all duration-300">Intermediate</button>
+                <button type="button" role="tab" @click="setLevel('advanced')" :class="level === 'advanced' ? 'bg-indigo-600 text-white shadow' : 'text-gray-600'" class="tab sm:tab-lg rounded-lg transition-all duration-300">Advanced</button>
               </div>
               <div class="w-full sm:w-auto">
                 <select x-model="currency" class="select select-bordered">
@@ -50,7 +50,7 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
               <div>
-                <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
+                <h3 class="text-lg font-bold mb-4">Essential Equipment</h3>
                 <template x-for="(item, index) in currentItems.filter(i => i.category === 'essential')">
                   <div class="form-control my-2">
                     <label class="label justify-start gap-4 p-2 cursor-pointer">
@@ -59,13 +59,13 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
                         <span class="label-text font-medium" x-text="getText(item.name)"></span>
                         <div class="text-xs text-gray-500" x-text="getText(item.desc)"></div>
                       </div>
-                      <span class="label-text ml-auto font-semibold text-gray-600" x-text="formatCost(item.cost)"></span>
+                      <span class="label-text ml-auto font-semibold text-gray-700 text-right" x-text="formatCost(item.cost)"></span>
                     </label>
                   </div>
                 </template>
               </div>
               <div>
-                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
+                <h3 class="text-lg font-bold mb-4">Software & Ongoing</h3>
                 <template x-for="(item, index) in currentItems.filter(i => i.category === 'software')">
                   <div class="form-control my-2">
                     <label class="label justify-start gap-4 p-2 cursor-pointer">
@@ -74,7 +74,7 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
                         <span class="label-text font-medium" x-text="getText(item.name)"></span>
                         <div class="text-xs text-gray-500" x-text="getText(item.desc)"></div>
                       </div>
-                      <span class="label-text ml-auto font-semibold text-gray-600" x-text="formatCost(item.cost)"></span>
+                      <span class="label-text ml-auto font-semibold text-gray-700 text-right" x-text="formatCost(item.cost)"></span>
                     </label>
                   </div>
                 </template>
@@ -88,16 +88,72 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
           
           {getArray(hobby.tips).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
-              </div>
+               <h2 class="text-2xl font-bold mb-4">Money-Saving Tips</h2>
+               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 {getArray(hobby.tips).map(tip => (
+                   <div class="bg-green-100/50 border border-green-200 rounded-lg p-4">
+                     <h4 class="font-bold text-green-800">{getText(tip.title)}</h4>
+                     <p class="text-sm text-green-700">{getText(tip.desc)}</p>
+                   </div>
+                 ))}
+               </div>
+            </div>
           }
+          
           {getArray(hobby.faq).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
+              <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
+              <div class="space-y-2">
+                {getArray(hobby.faq).map((item, index) => (
+                  <div class="collapse collapse-plus bg-gray-100 rounded-lg">
+                    <input type="radio" name={`hobby-accordion-${index}`} /> 
+                    <div class="collapse-title text-lg font-medium">{getText(item.q)}</div>
+                    <div class="collapse-content"><p>{getText(item.a)}</p></div>
+                  </div>
+                ))}
               </div>
+            </div>
           }
         </div>
 
         <div class="lg:col-span-1 space-y-8">
-          </div>
+          {getArray(hobby.recommendedGear).length > 0 &&
+            <div class="card bg-gray-50/60 shadow-lg">
+              <div class="card-body">
+                <h3 class="card-title">Recommended Gear</h3>
+                {getArray(hobby.recommendedGear).map(gear => (
+                  <a href={gear.link} target="_blank" class="block p-2 rounded-lg hover:bg-gray-100">
+                    <div class="flex gap-4 items-center">
+                      <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812-1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                      </div>
+                      <div>
+                        <p class="font-bold leading-tight">{getText(gear.name)}</p>
+                        <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          }
+          
+          {getArray(hobby.stats).length > 0 &&
+            <div class="card bg-gray-50/60 shadow-lg">
+              <div class="card-body">
+                <h3 class="card-title">{getText(hobby.name)} Stats</h3>
+                <ul class="space-y-2 mt-2">
+                  {getArray(hobby.stats).map(stat => (
+                     <li class="flex justify-between text-sm py-1 border-b border-gray-200/80">
+                       <span class="text-gray-500">{getText(stat.label)}</span>
+                       <span class="font-semibold">{stat.value.includes('$') ? formatCurrency(parseFloat(stat.value.replace('$', ''))) : getText(stat.value)}</span>
+                     </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          }
+        </div>
       </div>
     </div>
   </div>
@@ -106,40 +162,18 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
   <script define:vars={{ hobby, rates: currencyData.rates, lang }}>
     document.addEventListener('alpine:init', () => {
       Alpine.data('calculatorData', () => ({
-        // --- STATE ---
         level: 'beginner',
         currency: 'USD',
         selectedItems: [],
-        
-        // --- DATA FROM ASTRO ---
         hobbyData: hobby,
         rates: rates,
-        
-        // --- INITIALIZATION ---
-        init() {
-          this.setLevel('beginner');
-        },
-        
-        // --- HELPER FUNCTIONS ---
-        getText(field) {
-          return field?.[lang] || field?.['en'] || '';
-        },
-        
-        // --- GETTERS ---
-        get currentItems() {
-          return this.hobbyData.breakdown?.[this.level]?.keyItems || [];
-        },
-        
-        // --- CORE LOGIC ---
+        init() { this.setLevel('beginner'); },
+        getText(field) { return field?.[lang] || field?.['en'] || ''; },
+        get currentItems() { return this.hobbyData.breakdown?.[this.level]?.keyItems || []; },
         setLevel(newLevel) {
           this.level = newLevel;
-          this.selectedItems = (this.currentItems || [])
-            .map((item, index) => ({ item, index }))
-            .filter(p => p.item.category === 'essential')
-            .map(p => p.index.toString());
+          this.selectedItems = (this.currentItems || []).map((item, index) => index.toString());
         },
-        
-        // --- FORMATTING (CALCULATIONS ARE DONE HERE) ---
         formatCost(cost) {
             if (!cost) return '';
             const rate = this.rates[this.currency] || 1;
@@ -149,7 +183,6 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
             const cost2 = formatter.format(cost[1] * rate);
             return `${cost1} - ${cost2}`;
         },
-
         formatTotal() {
             let min = 0, max = 0;
             this.selectedItems.forEach(indexStr => {
