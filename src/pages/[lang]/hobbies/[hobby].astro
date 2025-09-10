@@ -1,92 +1,218 @@
 ---
-// This file would contain the complex logic for tabs and calculations.
-// For a non-coder, building the full interactivity from the screenshot
-// requires significant JavaScript.
 import Layout from '../../../layouts/Layout.astro';
 import { hobbies } from '../../../data/hobbies.json';
-export function getStaticPaths() {
+import currencyData from '../../../data/currencies.json';
+
+// --- Static Path Generation ---
+export async function getStaticPaths() {
+  const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
   const paths = [];
-  const languages = ['en', 'es'];
   hobbies.forEach(hobby => {
     languages.forEach(lang => {
-      paths.push({ params: { lang, hobby: hobby.id } });
+      // Only generate a page if a translation exists for that hobby
+      if (hobby.name && hobby.name[lang]) {
+        paths.push({ params: { lang, hobby: hobby.id } });
+      }
     });
   });
   return paths;
 }
+
+// --- Data Fetching ---
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
-const beginnerItems = hobby.breakdown.beginner.keyItems;
+
+// --- Helper function to get translated text with fallback ---
+const getText = (field, fallback = '') => {
+  if (!field) return fallback;
+  return field[lang] || field['en'] || fallback;
+}
 ---
-<Layout title={`Cost of ${hobby.name[lang]}`} lang={lang}>
-  <div class="max-w-6xl mx-auto p-4">
-    <div class="text-sm breadcrumbs">
-      <ul>
-        <li><a href={`/${lang}/`}>Home</a></li>
-        <li><a>Hobbies</a></li>
-        <li>{hobby.name[lang]}</li>
-      </ul>
-    </div>
-    <h1 class="text-4xl font-bold my-4">{hobby.name[lang]} Cost Calculator</h1>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <div class="md:col-span-2">
-        {/* --- Main Calculator Area --- */}
-        <div class="card bg-white shadow-xl">
-          <div class="card-body">
-            <div class="tabs tabs-boxed">
-              <a class="tab tab-active">Beginner</a>
-              <a class="tab">Intermediate</a>
-              <a class="tab">Advanced</a>
+
+<Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
+  <div class="bg-gray-100 py-8">
+    <div class="max-w-6xl mx-auto px-4">
+
+      <div class="text-sm breadcrumbs">
+        <ul>
+          <li><a href={`/${lang}/`}>Home</a></li>
+          <li><a href={`/${lang}/`}>Hobbies</a></li>
+          <li>{getText(hobby.name)}</li>
+        </ul>
+      </div>
+      <h1 class="text-4xl font-bold mt-2">{getText(hobby.name)} Cost Calculator</h1>
+      <p class="text-lg text-gray-600 mb-8">Calculate your startup and equipment costs with this free itemized tool.</p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2">
+          <div class="card bg-white shadow-xl p-4 sm:p-8" x-data="calculatorData()">
+            
+            <div class="tabs tabs-boxed mb-6">
+              <a class="tab" :class="{ 'tab-active': level === 'beginner' }" @click="setLevel('beginner')">Beginner</a>
+              <a class="tab" :class="{ 'tab-active': level === 'intermediate' }" @click="setLevel('intermediate')">Intermediate</a>
+              <a class="tab" :class="{ 'tab-active': level === 'advanced' }" @click="setLevel('advanced')">Advanced</a>
             </div>
-            <div class="grid grid-cols-2 gap-4 mt-4">
+
+            <div class="mb-6">
+              <label class="label font-semibold">Currency:</label>
+              <select class="select select-bordered w-full max-w-xs" x-model="currency" @change="updateTotals()">
+                <template x-for="rate in Object.keys(rates)">
+                  <option :value="rate" x-text="rate"></option>
+                </template>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <h3 class="font-bold mb-2">Essential Equipment</h3>
-                {beginnerItems.filter(i => i.category === 'essential').map(item => (
+                <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
+                <template x-for="(item, index) in currentItems.filter(i => i.category === 'essential')">
                   <div class="form-control">
-                    <label class="label cursor-pointer justify-start gap-4">
-                      <input type="checkbox" class="checkbox" />
-                      <span class="label-text">{item.name} <span class="text-gray-400">${item.cost[0]}-${item.cost[1]}</span></span>
+                    <label class="label cursor-pointer justify-start gap-4 p-2 hover:bg-gray-50 rounded-lg">
+                      <input type="checkbox" class="checkbox" :value="index" x-model="selectedItems" @change="updateTotals()"/>
+                      <div>
+                        <span class="label-text" x-text="item.name"></span>
+                        <div class="text-xs text-gray-500" x-text="item.desc"></div>
+                      </div>
+                      <span class="label-text ml-auto font-semibold" x-text="formatCost(item.cost[0] * rates[currency], item.cost[1] * rates[currency])"></span>
                     </label>
                   </div>
-                ))}
+                </template>
               </div>
               <div>
-                <h3 class="font-bold mb-2">Software & Ongoing</h3>
-                 {beginnerItems.filter(i => i.category === 'software').map(item => (
+                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
+                <template x-for="(item, index) in currentItems.filter(i => i.category === 'software')">
                   <div class="form-control">
-                   <label class="label cursor-pointer justify-start gap-4">
-                      <input type="checkbox" class="checkbox" />
-                      <span class="label-text">{item.name} <span class="text-gray-400">${item.cost[0]}</span></span>
+                    <label class="label cursor-pointer justify-start gap-4 p-2 hover:bg-gray-50 rounded-lg">
+                      <input type="checkbox" class="checkbox" :value="index" x-model="selectedItems" @change="updateTotals()"/>
+                       <div>
+                        <span class="label-text" x-text="item.name"></span>
+                        <div class="text-xs text-gray-500" x-text="item.desc"></div>
+                      </div>
+                      <span class="label-text ml-auto font-semibold" x-text="formatCost(item.cost[0] * rates[currency])"></span>
                     </label>
-                   </div>
-                ))}
+                  </div>
+                </template>
               </div>
             </div>
-            <div class="bg-indigo-600 text-white rounded-lg p-6 mt-6 text-center">
-              <h2 class="text-3xl font-bold">$425 - $1060</h2>
-              <p>Startup: $495 - $1,220 | Per Year: $0 - $150</p>
+
+            <div class="bg-indigo-600 text-white rounded-lg p-6 mt-8 text-center">
+              <p class="text-lg opacity-80">Your Estimated Startup Cost</p>
+              <h2 class="text-4xl font-bold" x-text="formatTotal(totalMin, totalMax)"></h2>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="md:col-span-1">
-         {/* --- Sidebar Area --- */}
-        <div class="card bg-white shadow-xl">
-          <div class="card-body">
-            <h3 class="card-title">Recommended Gear</h3>
-            {hobby.recommendedGear.map(gear => (
-              <div class="flex gap-4 items-center mt-2">
-                <img src={gear.image} alt={gear.name} class="w-16 h-16 object-cover rounded-lg" />
-                <div>
-                  <p class="font-bold">{gear.name}</p>
-                  <p class="text-sm">{gear.desc}</p>
-                  <button class="btn btn-xs btn-outline mt-1">View on Amazon</button>
+
+          <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4">Money-Saving Tips</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <template x-for="tip in tips">
+                 <div class="card bg-green-50 border border-green-200">
+                    <div class="card-body">
+                      <h4 class="card-title text-base" x-text="tip.title"></h4>
+                      <p class="text-sm" x-text="tip.desc"></p>
+                    </div>
+                  </div>
+              </template>
+            </div>
+          </div>
+          <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
+            <template x-for="item in faq">
+              <div class="collapse collapse-plus bg-white mb-2 shadow-md">
+                <input type="radio" name="my-accordion-3" /> 
+                <div class="collapse-title text-xl font-medium" x-text="item.q"></div>
+                <div class="collapse-content"> 
+                  <p x-text="item.a"></p>
                 </div>
               </div>
-            ))}
+            </template>
+          </div>
+        </div>
+
+        <div class="lg:col-span-1 space-y-8">
+          <div class="card bg-white shadow-xl">
+            <div class="card-body">
+              <h3 class="card-title">Recommended Gear</h3>
+              <template x-for="gear in recommendedGear">
+                <div class="flex gap-4 items-center mt-2">
+                  <img :src="gear.image" :alt="gear.name" class="w-20 h-20 object-cover rounded-lg bg-gray-200" />
+                  <div>
+                    <p class="font-bold" x-text="gear.name"></p>
+                    <p class="text-sm text-gray-500" x-text="`$${gear.price}`"></p>
+                    <a :href="gear.link" target="_blank" class="btn btn-xs btn-outline btn-primary mt-1">View on Amazon</a>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+          <div class="card bg-white shadow-xl">
+            <div class="card-body">
+               <h3 class="card-title">Related Calculators</h3>
+               </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script is:inline src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+  <script define:vars={{ hobby, rates: currencyData.rates }}>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('calculatorData', () => ({
+        level: 'beginner',
+        currency: 'USD',
+        selectedItems: [],
+        totalMin: 0,
+        totalMax: 0,
+        hobbyData: hobby,
+        rates: rates,
+        get currentItems() {
+          return this.hobbyData.breakdown[this.level]?.keyItems || [];
+        },
+        get recommendedGear() {
+          return this.hobbyData.recommendedGear || [];
+        },
+        get tips() {
+          return this.hobbyData.tips?.['en'] || []; // Add logic for lang
+        },
+        get faq() {
+          return this.hobbyData.faq?.['en'] || []; // Add logic for lang
+        },
+        setLevel(newLevel) {
+          this.level = newLevel;
+          this.selectedItems = [];
+          this.updateTotals();
+        },
+        updateTotals() {
+          let min = 0;
+          let max = 0;
+          this.selectedItems.forEach(index => {
+            const item = this.currentItems[index];
+            if(item) {
+              min += item.cost[0];
+              max += item.cost[1] || item.cost[0];
+            }
+          });
+          this.totalMin = min * this.rates[this.currency];
+          this.totalMax = max * this.rates[this.currency];
+        },
+        formatCost(cost1, cost2) {
+          const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: this.currency, maximumFractionDigits: 0 });
+          if (!cost2 || cost1 === cost2) {
+            return formatter.format(cost1);
+          }
+          return `${formatter.format(cost1)} - ${formatter.format(cost2)}`;
+        },
+        formatTotal(min, max) {
+            const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: this.currency, maximumFractionDigits: 0 });
+            if(min === 0 && max === 0) return formatter.format(0);
+            return `${formatter.format(min)} - ${formatter.format(max)}`;
+        },
+        init() {
+            this.updateTotals();
+        }
+      }));
+    });
+  </script>
 </Layout>
