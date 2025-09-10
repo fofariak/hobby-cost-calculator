@@ -10,7 +10,9 @@ export function getStaticPaths() {
     hobbies.forEach(hobby => {
       if (hobby?.id && hobby?.name) {
         languages.forEach(lang => {
-          if (typeof hobby.name === 'object' && hobby.name[lang]) {
+          // **FIX:** We now only build pages if an ENGLISH translation exists.
+          // This ensures all language pages can be created and fall back safely.
+          if (typeof hobby.name === 'object' && hobby.name['en']) {
             paths.push({ params: { lang, hobby: hobby.id } });
           }
         });
@@ -23,28 +25,19 @@ export function getStaticPaths() {
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
-// Helper functions to safely get translated data
+// Helper functions to safely get translated data, always falling back to English
 const getText = (field, fallback = '') => field?.[lang] || field?.['en'] || fallback;
 const getArray = (field) => field?.[lang] || field?.['en'] || [];
 
-// Pre-calculate data for the template
-const beginnerItems = hobby.breakdown?.beginner?.keyItems || [];
-const intermediateItems = hobby.breakdown?.intermediate?.keyItems || [];
-const advancedItems = hobby.breakdown?.advanced?.keyItems || [];
-const allItems = { beginner: beginnerItems, intermediate: intermediateItems, advanced: advancedItems };
+const allItems = {
+    beginner: getArray(hobby.breakdown?.beginner?.keyItems),
+    intermediate: getArray(hobby.breakdown?.intermediate?.keyItems),
+    advanced: getArray(hobby.breakdown?.advanced?.keyItems)
+};
 
-// **NEW:** Sample stats data (you can add this to your JSON later)
 const stats = {
-    en: [
-        { label: "Average startup cost", value: "$650" },
-        { label: "Time to learn basics", value: "3-5 months" },
-        { label: "Potential earnings", value: "$20-200/hour" }
-    ],
-    es: [
-        { label: "Costo inicial promedio", value: "€600" },
-        { label: "Tiempo para aprender lo básico", value: "3-5 meses" },
-        { label: "Ganancias potenciales", value: "€20-180/hora" }
-    ]
+    en: [ { label: "Average startup cost", value: "$650" }, { label: "Time to learn basics", value: "3-5 months" }, { label: "Potential earnings", value: "$20-200/hour" } ],
+    es: [ { label: "Costo inicial promedio", value: "€600" }, { label: "Tiempo para aprender lo básico", value: "3-5 meses" }, { label: "Ganancias potenciales", value: "€20-180/hora" } ]
 }
 const currentStats = stats[lang] || stats['en'];
 ---
@@ -77,7 +70,7 @@ const currentStats = stats[lang] || stats['en'];
                 <template x-for="(item, index) in currentItems.filter(i => i.category === 'essential')">
                   <div class="form-control my-1"><label class="label cursor-pointer justify-start gap-4 p-2 hover:bg-gray-50 rounded-lg">
                     <input type="checkbox" class="checkbox checkbox-primary" :value="index" x-model="selectedItems" @change="updateTotals()"/>
-                    <div><span class="label-text font-medium" x-text="item.name"></span><div class="text-xs text-gray-500" x-text="item.desc"></div></div>
+                    <div><span class="label-text font-medium" x-text="getText(item.name)"></span><div class="text-xs text-gray-500" x-text="getText(item.desc)"></div></div>
                     <span class="label-text ml-auto font-semibold text-gray-600" x-text="formatCost(item.cost)"></span>
                   </label></div>
                 </template>
@@ -87,7 +80,7 @@ const currentStats = stats[lang] || stats['en'];
                 <template x-for="(item, index) in currentItems.filter(i => i.category === 'software')">
                    <div class="form-control my-1"><label class="label cursor-pointer justify-start gap-4 p-2 hover:bg-gray-50 rounded-lg">
                     <input type="checkbox" class="checkbox checkbox-primary" :value="index" x-model="selectedItems" @change="updateTotals()"/>
-                    <div><span class="label-text font-medium" x-text="item.name"></span><div class="text-xs text-gray-500" x-text="item.desc"></div></div>
+                    <div><span class="label-text font-medium" x-text="getText(item.name)"></span><div class="text-xs text-gray-500" x-text="getText(item.desc)"></div></div>
                     <span class="label-text ml-auto font-semibold text-gray-600" x-text="formatCost(item.cost)"></span>
                   </label></div>
                 </template>
@@ -103,8 +96,8 @@ const currentStats = stats[lang] || stats['en'];
              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                {getArray(hobby.tips).map(tip => (
                  <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                   <h4 class="font-bold text-green-800">{tip.title}</h4>
-                   <p class="text-sm text-green-700">{tip.desc}</p>
+                   <h4 class="font-bold text-green-800">{getText(tip.title)}</h4>
+                   <p class="text-sm text-green-700">{getText(tip.desc)}</p>
                  </div>
                ))}
              </div>
@@ -112,12 +105,12 @@ const currentStats = stats[lang] || stats['en'];
           
           <div class="card bg-white shadow-xl p-4 sm:p-8">
             <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
-            <div class="join join-vertical w-full">
-              {getArray(hobby.faq).map(item => (
-                <div class="collapse collapse-arrow join-item border-base-300 border">
-                  <input type="radio" name="my-accordion-4" /> 
-                  <div class="collapse-title text-xl font-medium">{item.q}</div>
-                  <div class="collapse-content"><p>{item.a}</p></div>
+            <div class="space-y-2">
+              {getArray(hobby.faq).map((item, index) => (
+                <div class="collapse collapse-plus bg-base-200">
+                  <input type="radio" name={`hobby-accordion-${index}`} /> 
+                  <div class="collapse-title text-xl font-medium">{getText(item.q)}</div>
+                  <div class="collapse-content"><p>{getText(item.a)}</p></div>
                 </div>
               ))}
             </div>
@@ -128,16 +121,21 @@ const currentStats = stats[lang] || stats['en'];
           <div class="card bg-white shadow-xl">
             <div class="card-body">
               <h3 class="card-title">Recommended Gear</h3>
-              {getArray(hobby.recommendedGear).map(gear => (
+              {hobby.recommendedGear?.map(gear => (
                 <a href={gear.link} target="_blank" class="block p-2 rounded-lg hover:bg-gray-50">
                   <div class="flex gap-4 items-center">
-                    <img src={gear.image} alt={gear.name} class="w-16 h-16 object-cover rounded-lg bg-gray-200" />
-                    <div><p class="font-bold leading-tight">{gear.name}</p><p class="text-sm text-gray-600">${gear.price}</p><p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p></div>
+                    <img src={gear.image} alt={getText(gear.name)} class="w-16 h-16 object-cover rounded-lg bg-gray-200" />
+                    <div>
+                      <p class="font-bold leading-tight">{getText(gear.name)}</p>
+                      <p class="text-sm text-gray-600">${gear.price}</p>
+                      <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p>
+                    </div>
                   </div>
                 </a>
               ))}
             </div>
           </div>
+          
           <div class="card bg-white shadow-xl">
             <div class="card-body">
               <h3 class="card-title">{getText(hobby.name)} Stats</h3>
@@ -157,16 +155,13 @@ const currentStats = stats[lang] || stats['en'];
   </div>
 
   <script is:inline src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <script define:vars={{ allItems, rates: currencyData.rates }}>
+  <script define:vars={{ allItems, rates: currencyData.rates, lang }}>
     document.addEventListener('alpine:init', () => {
       Alpine.data('calculatorData', () => ({
-        level: 'beginner',
-        currency: 'USD',
-        selectedItems: [],
-        totalMin: 0,
-        totalMax: 0,
-        allItems: allItems,
-        rates: rates,
+        level: 'beginner', currency: 'USD', selectedItems: [], totalMin: 0, totalMax: 0,
+        allItems: allItems, rates: rates,
+        // **FIX:** Helper function for AlpineJS to get translated text
+        getText(field) { return field?.[lang] || field?.['en'] || ''; },
         get currentItems() { return this.allItems[this.level] || []; },
         setLevel(newLevel) {
           this.level = newLevel;
