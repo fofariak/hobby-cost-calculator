@@ -21,29 +21,49 @@ export function getStaticPaths() {
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
-// **FIX:** Reading the level and currency from the URL correctly
 const level = Astro.url.searchParams.get('level') || 'beginner';
 const currency = Astro.url.searchParams.get('currency') || 'USD';
 const rate = currencyData.rates[currency] || 1;
 
-// Helper functions to safely get data
-const getText = (field, fallback = '') => field?.[lang] || field?.['en'] || fallback;
-const getArray = (field) => field?.[lang] || field?.['en'] || [];
-
-const formatCurrency = (value) => {
-    if (typeof value !== 'number') return '$?';
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(value * rate);
+// Helper functions
+const getText = (field, fallback = '') => {
+  if (!field) return fallback;
+  if (typeof field === 'string') return field;
+  if (field[lang]) return field[lang];
+  if (field['en']) return field['en'];
+  return fallback;
 };
 
-// Calculate totals based on the selected level
+const getArray = (field) => {
+  if (!field) return [];
+  if (Array.isArray(field)) return field;
+  if (field[lang]) return field[lang];
+  if (field['en']) return field['en'];
+  return [];
+};
+
+const formatCurrency = (value) => {
+  if (typeof value !== 'number') return '?';
+  try {
+    return new Intl.NumberFormat(lang === 'en' ? 'en-US' : undefined, {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 0
+    }).format(value * rate);
+  } catch {
+    return `${(value * rate).toFixed(0)} ${currency}`;
+  }
+};
+
+// Calculate totals
 const currentItems = hobby.breakdown?.[level]?.keyItems || [];
 let totalMin = 0;
 let totalMax = 0;
 currentItems.forEach(item => {
-    if (item.category === 'essential' || item.category === 'software') {
-        totalMin += item.cost[0];
-        totalMax += item.cost[1] || item.cost[0];
-    }
+  if (item.category === 'essential' || item.category === 'software') {
+    totalMin += item.cost[0];
+    totalMax += item.cost[1] || item.cost[0];
+  }
 });
 ---
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
@@ -70,7 +90,7 @@ currentItems.forEach(item => {
               </form>
             </div>
             <div class="divider my-6"></div>
-            
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
               <div>
                 <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
@@ -98,7 +118,7 @@ currentItems.forEach(item => {
               <h2 class="text-4xl font-bold">{formatCurrency(totalMin)} - {formatCurrency(totalMax)}</h2>
             </div>
           </div>
-          
+
           {getArray(hobby.tips).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
                <h2 class="text-2xl font-bold mb-4">Money-Saving Tips</h2>
@@ -112,7 +132,7 @@ currentItems.forEach(item => {
                </div>
             </div>
           }
-          
+
           {getArray(hobby.faq).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
               <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
@@ -151,7 +171,7 @@ currentItems.forEach(item => {
               </div>
             </div>
           }
-          
+
           {getArray(hobby.stats).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg">
               <div class="card-body">
