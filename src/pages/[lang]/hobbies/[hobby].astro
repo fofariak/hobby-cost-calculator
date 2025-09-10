@@ -21,14 +21,29 @@ export function getStaticPaths() {
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
+const level = Astro.url.searchParams.get('level') || 'beginner';
+const currency = Astro.url.searchParams.get('currency') || 'USD';
+const rate = currencyData.rates[currency] || 1;
+
+// Helper functions
 const getText = (field, fallback = '') => field?.[lang] || field?.['en'] || fallback;
 const getArray = (field) => field?.[lang] || field?.['en'] || [];
 
-const allItems = {
-    beginner: getArray(hobby.breakdown?.beginner?.keyItems),
-    intermediate: getArray(hobby.breakdown?.intermediate?.keyItems),
-    advanced: getArray(hobby.breakdown?.advanced?.keyItems)
+const formatCurrency = (value) => {
+  if (typeof value !== 'number') return '?';
+  return new Intl.NumberFormat(lang, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value * rate);
 };
+
+// Calculate totals
+const currentItems = hobby.breakdown?.[level]?.keyItems || [];
+let totalMin = 0;
+let totalMax = 0;
+currentItems.forEach(item => {
+    if (item.category === 'essential' || item.category === 'software') {
+        totalMin += item.cost[0];
+        totalMax += item.cost[1] || item.cost[0];
+    }
+});
 ---
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
   <div class="bg-white py-8">
@@ -37,58 +52,47 @@ const allItems = {
         <ul><li><a href={`/${lang}/`}>Home</a></li> <li><a>Hobbies</a></li> <li>{getText(hobby.name)}</li></ul>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4" x-data="calculatorData">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
         <div class="lg:col-span-2 space-y-8">
           <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
               <div role="tablist" class="tabs tabs-boxed bg-gray-200 p-1">
-                <button role="tab" @click="setLevel('beginner')" :class="level === 'beginner' ? 'bg-indigo-600 text-white' : 'text-gray-500'" class="tab sm:tab-lg rounded-lg">Beginner</button>
-                <button role="tab" @click="setLevel('intermediate')" :class="level === 'intermediate' ? 'bg-indigo-600 text-white' : 'text-gray-500'" class="tab sm:tab-lg rounded-lg">Intermediate</button>
-                <button role="tab" @click="setLevel('advanced')" :class="level === 'advanced' ? 'bg-indigo-600 text-white' : 'text-gray-500'" class="tab sm:tab-lg rounded-lg">Advanced</button>
+                <a role="tab" href={`?level=beginner&currency=${currency}`} class:list={["tab sm:tab-lg rounded-md", { "bg-indigo-600 text-white shadow-md": level === 'beginner', "text-gray-500": level !== 'beginner' }]}>Beginner</a>
+                <a role="tab" href={`?level=intermediate&currency=${currency}`} class:list={["tab sm:tab-lg rounded-md", { "bg-indigo-600 text-white shadow-md": level === 'intermediate', "text-gray-500": level !== 'intermediate' }]}>Intermediate</a>
+                <a role="tab" href={`?level=advanced&currency=${currency}`} class:list={["tab sm:tab-lg rounded-md", { "bg-indigo-600 text-white shadow-md": level === 'advanced', "text-gray-500": level !== 'advanced' }]}>Advanced</a>
               </div>
-              <div class="w-full sm:w-auto">
-                <select x-model="currency" class="select select-bordered">
-                  {Object.keys(currencyData.rates).map(c => <option value={c}>{c}</option>)}
+              <form class="w-full sm:w-auto">
+                <input type="hidden" name="level" value={level} />
+                <select name="currency" class="select select-bordered" onchange="this.form.submit()">
+                  {Object.keys(currencyData.rates).map(c => <option value={c} selected={c === currency}>{c}</option>)}
                 </select>
-              </div>
+              </form>
             </div>
             <div class="divider my-6"></div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
               <div>
                 <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
-                <template x-for="(item, index) in currentItems.filter(i => i.category === 'essential')">
-                  <div class="form-control my-2">
-                    <label class="label justify-start gap-4 p-2 cursor-pointer">
-                      <input type="checkbox" :value="index" x-model="selectedItems" class="checkbox checkbox-primary" />
-                      <div>
-                        <span class="label-text font-medium" x-text="getText(item.name)"></span>
-                        <div class="text-xs text-gray-500" x-text="getText(item.desc)"></div>
-                      </div>
-                      <span class="label-text ml-auto font-semibold text-gray-600" x-text="formatCost(item.cost)"></span>
-                    </label>
+                {currentItems.filter(i => i.category === 'essential').map(item => (
+                  <div class="flex justify-between items-center py-2 border-b border-gray-200/80">
+                    <div><p class="font-medium">{getText(item.name)}</p><p class="text-xs text-gray-500">{getText(item.desc)}</p></div>
+                    <p class="font-semibold text-gray-700 text-right shrink-0 ml-4">{formatCurrency(item.cost[0])} - {formatCurrency(item.cost[1] || item.cost[0])}</p>
                   </div>
-                </template>
+                ))}
               </div>
               <div>
                 <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
-                <template x-for="(item, index) in currentItems.filter(i => i.category === 'software')">
-                  <div class="form-control my-2">
-                    <label class="label justify-start gap-4 p-2 cursor-pointer">
-                      <input type="checkbox" :value="index" x-model="selectedItems" class="checkbox checkbox-primary" />
-                      <div>
-                        <span class="label-text font-medium" x-text="getText(item.name)"></span>
-                        <div class="text-xs text-gray-500" x-text="getText(item.desc)"></div>
-                      </div>
-                      <span class="label-text ml-auto font-semibold text-gray-600" x-text="formatCost(item.cost)"></span>
-                    </label>
+                {currentItems.filter(i => i.category === 'software').map(item => (
+                  <div class="flex justify-between items-center py-2 border-b border-gray-200/80">
+                    <div><p class="font-medium">{getText(item.name)}</p><p class="text-xs text-gray-500">{getText(item.desc)}</p></div>
+                    <p class="font-semibold text-gray-700 text-right shrink-0 ml-4">{formatCurrency(item.cost[0])}</p>
                   </div>
-                </template>
+                ))}
               </div>
             </div>
 
             <div class="bg-indigo-700 text-white rounded-lg p-6 mt-8 text-center">
-              <h2 class="text-4xl font-bold" x-text="formatTotal()"></h2>
+              <h2 class="text-4xl font-bold text-white">{formatCurrency(totalMin)} - {formatCurrency(totalMax)}</h2>
             </div>
           </div>
           
@@ -135,7 +139,6 @@ const allItems = {
                       </div>
                       <div>
                         <p class="font-bold leading-tight">{getText(gear.name)}</p>
-                        <p class="text-sm text-gray-600">${gear.price}</p>
                         <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p>
                       </div>
                     </div>
@@ -150,12 +153,16 @@ const allItems = {
               <div class="card-body">
                 <h3 class="card-title">{getText(hobby.name)} Stats</h3>
                 <ul class="space-y-2 mt-2">
-                  {getArray(hobby.stats).map(stat => (
+                  {getArray(hobby.stats).map(stat => {
+                    const value = getText(stat.value);
+                    const isPrice = value.includes('$'); // Simple check for a price
+                    return (
                      <li class="flex justify-between text-sm py-1 border-b border-gray-200/80">
                        <span class="text-gray-500">{getText(stat.label)}</span>
-                       <span class="font-semibold">{getText(stat.value)}</span>
+                       <span class="font-semibold">{isPrice ? formatCurrency(parseFloat(value.replace('$', ''))) : value}</span>
                      </li>
-                  ))}
+                    )
+                  })}
                 </ul>
               </div>
             </div>
@@ -164,67 +171,4 @@ const allItems = {
       </div>
     </div>
   </div>
-
-  <script is:inline src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <script define:vars={{ hobby, rates: currencyData.rates, lang }}>
-    document.addEventListener('alpine:init', () => {
-      Alpine.data('calculatorData', () => ({
-        // --- STATE ---
-        level: 'beginner',
-        currency: 'USD',
-        selectedItems: [],
-        
-        // --- DATA FROM ASTRO ---
-        hobbyData: hobby,
-        rates: rates,
-        
-        // --- INITIALIZATION ---
-        init() { this.setLevel('beginner'); },
-        
-        // --- HELPER FUNCTIONS ---
-        getText(field) { return field?.[lang] || field?.['en'] || ''; },
-        
-        // --- GETTERS ---
-        get currentItems() { return this.hobbyData.breakdown?.[this.level]?.keyItems || []; },
-        
-        // --- CORE LOGIC ---
-        setLevel(newLevel) {
-          this.level = newLevel;
-          this.selectedItems = (this.currentItems || [])
-            .map((item, index) => ({ item, index }))
-            .filter(p => p.item.category === 'essential')
-            .map(p => p.index.toString());
-        },
-        
-        // --- FORMATTING (CALCULATIONS ARE DONE HERE) ---
-        formatCost(cost) {
-            if (!cost) return '';
-            const rate = this.rates[this.currency] || 1;
-            const formatter = new Intl.NumberFormat(lang, { style: 'currency', currency: this.currency, maximumFractionDigits: 0 });
-            const cost1 = formatter.format(cost[0] * rate);
-            if (!cost[1] || cost[0] === cost[1]) return cost1;
-            const cost2 = formatter.format(cost[1] * rate);
-            return `${cost1} - ${cost2}`;
-        },
-        formatTotal() {
-            let min = 0, max = 0;
-            this.selectedItems.forEach(indexStr => {
-                const index = parseInt(indexStr);
-                const item = this.currentItems[index];
-                if(item && item.cost) {
-                    min += item.cost[0];
-                    max += item.cost[1] || item.cost[0];
-                }
-            });
-            const rate = this.rates[this.currency] || 1;
-            const formatter = new Intl.NumberFormat(lang, { style: 'currency', currency: this.currency, maximumFractionDigits: 0 });
-            if (this.selectedItems.length === 0) return formatter.format(0);
-            const finalMin = min * rate;
-            const finalMax = max * rate;
-            if (finalMin === finalMax) return formatter.format(finalMin);
-            return `${formatter.format(finalMin)} - ${formatter.format(finalMax)}`;
-        },
-      }));
-    });
-  </script>
 </Layout>
