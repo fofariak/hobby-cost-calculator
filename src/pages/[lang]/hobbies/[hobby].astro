@@ -3,7 +3,6 @@ import Layout from '../../../layouts/Layout.astro';
 import { hobbies } from '../../../data/hobbies.json';
 import currencyData from '../../../data/currencies.json';
 
-// --- Page Generation Logic ---
 export function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
   const paths = [];
@@ -17,7 +16,6 @@ export function getStaticPaths() {
   return paths;
 }
 
-// --- Data Preparation Logic ---
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
@@ -146,7 +144,7 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
                   {getArray(hobby.stats).map(stat => (
                      <li class="flex justify-between text-sm py-1 border-b border-gray-200/80">
                        <span class="text-gray-500">{getText(stat.label)}</span>
-                       <span class="font-semibold">{stat.value.includes('$') ? formatCurrency(parseFloat(stat.value.replace('$', ''))) : getText(stat.value)}</span>
+                       <span class="font-semibold">{getText(stat.value)}</span>
                      </li>
                   ))}
                 </ul>
@@ -161,19 +159,27 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
   <script is:inline src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script define:vars={{ hobby, rates: currencyData.rates, lang }}>
     document.addEventListener('alpine:init', () => {
-      Alpine.data('calculatorData', () => ({
+      Alpine.data('calculatorData', {
         level: 'beginner',
         currency: 'USD',
         selectedItems: [],
         hobbyData: hobby,
         rates: rates,
+        
         init() { this.setLevel('beginner'); },
+        
         getText(field) { return field?.[lang] || field?.['en'] || ''; },
+        
         get currentItems() { return this.hobbyData.breakdown?.[this.level]?.keyItems || []; },
+        
         setLevel(newLevel) {
           this.level = newLevel;
-          this.selectedItems = (this.currentItems || []).map((item, index) => index.toString());
+          this.selectedItems = (this.currentItems || [])
+            .map((item, index) => ({ item, index }))
+            .filter(p => p.item.category === 'essential')
+            .map(p => p.index.toString());
         },
+        
         formatCost(cost) {
             if (!cost) return '';
             const rate = this.rates[this.currency] || 1;
@@ -183,6 +189,7 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
             const cost2 = formatter.format(cost[1] * rate);
             return `${cost1} - ${cost2}`;
         },
+
         formatTotal() {
             let min = 0, max = 0;
             this.selectedItems.forEach(indexStr => {
@@ -201,7 +208,7 @@ const getArray = (field) => field?.[lang] || field?.['en'] || [];
             if (finalMin === finalMax) return formatter.format(finalMin);
             return `${formatter.format(finalMin)} - ${formatter.format(finalMax)}`;
         },
-      }));
+      });
     });
   </script>
 </Layout>
