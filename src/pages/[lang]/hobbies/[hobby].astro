@@ -21,51 +21,9 @@ export function getStaticPaths() {
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
-const level = Astro.url.searchParams.get('level') || 'beginner';
-const currency = Astro.url.searchParams.get('currency') || 'USD';
-const rate = currencyData.rates[currency] || 1;
-
-// Helper functions
-const getText = (field, fallback = '') => {
-  if (!field) return fallback;
-  if (typeof field === 'string') return field;
-  if (field[lang]) return field[lang];
-  if (field['en']) return field['en'];
-  return fallback;
-};
-
-const getArray = (field) => {
-  if (!field) return [];
-  if (Array.isArray(field)) return field;
-  if (field[lang]) return field[lang];
-  if (field['en']) return field['en'];
-  return [];
-};
-
-const formatCurrency = (value) => {
-  if (typeof value !== 'number') return '?';
-  try {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 0
-    }).format(value * rate);
-  } catch {
-    return `${(value * rate).toFixed(0)} ${currency}`;
-  }
-};
-
-// Calculate totals
-const currentItems = hobby.breakdown?.[level]?.keyItems || [];
-let totalMin = 0;
-let totalMax = 0;
-currentItems.forEach(item => {
-  if (item.category === 'essential' || item.category === 'software') {
-    totalMin += item.cost[0];
-    totalMax += item.cost[1] || item.cost[0];
-  }
-});
-
+// Helper functions to safely get data
+const getText = (field, fallback = '') => field?.[lang] || field?.['en'] || fallback;
+const getArray = (field) => field?.[lang] || field?.['en'] || [];
 ---
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
   <div class="bg-white py-8">
@@ -74,89 +32,93 @@ currentItems.forEach(item => {
         <ul><li><a href={`/${lang}/`}>Home</a></li> <li><a>Hobbies</a></li> <li>{getText(hobby.name)}</li></ul>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4" x-data="calculatorData">
         <div class="lg:col-span-2 space-y-8">
           <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
               <div role="tablist" class="tabs tabs-boxed bg-gray-200">
-                <button type="button" role="tab" class="tab sm:tab-lg" :class="{ 'tab-active': level === 'beginner' }" @click="setLevel('beginner')">Beginner</button>
-                <button type="button" role="tab" class="tab sm:tab-lg" :class="{ 'tab-active': level === 'intermediate' }" @click="setLevel('intermediate')">Intermediate</button>
-                <button type="button" role="tab" class="tab sm:tab-lg" :class="{ 'tab-active': level === 'advanced' }" @click="setLevel('advanced')">Advanced</button>
+                <button type="button" role="tab" @click="setLevel('beginner')" :class="level === 'beginner' && 'tab-active'" class="tab sm:tab-lg">Beginner</button>
+                <button type="button" role="tab" @click="setLevel('intermediate')" :class="level === 'intermediate' && 'tab-active'" class="tab sm:tab-lg">Intermediate</button>
+                <button type="button" role="tab" @click="setLevel('advanced')" :class="level === 'advanced' && 'tab-active'" class="tab sm:tab-lg">Advanced</button>
               </div>
               <div class="w-full sm:w-auto">
-                <select id="currency-select" class="select select-bordered" @change="recalc()">
-                  {Object.keys(currencyData.rates).map(c => <option value={c} selected={c === currency}>{c}</option>)}
+                <select x-model="currency" class="select select-bordered">
+                  {Object.keys(currencyData.rates).map(c => <option value={c}>{c}</option>)}
                 </select>
               </div>
             </div>
             <div class="divider my-6"></div>
-
+            
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
               <div>
                 <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
-                {currentItems.filter(i => i.category === 'essential').map((item, index) => (
-                  <div class="form-control my-2"><label class="label justify-start gap-4 p-2">
-                    <input type="checkbox" class="checkbox checkbox-primary equipment-checkbox" data-min={item.cost[0]} data-max={item.cost[1] || item.cost[0]} checked />
-                    <div><span class="label-text font-medium">{getText(item.name)}</span><div class="text-xs text-gray-500">{getText(item.desc)}</div></div>
-                    <span class="label-text ml-auto font-semibold text-gray-600 item-price">
-                      {formatCurrency(item.cost[0])} - {formatCurrency(item.cost[1] || item.cost[0])}
-                    </span>
-                  </label></div>
-                ))}
+                <template x-for="(item, index) in currentItems.filter(i => i.category === 'essential')">
+                  <div class="form-control my-2">
+                    <label class="label justify-start gap-4 p-2 cursor-pointer">
+                      <input type="checkbox" :value="index" x-model="selectedItems" class="checkbox checkbox-primary" />
+                      <div>
+                        <span class="label-text font-medium" x-text="getText(item.name)"></span>
+                        <div class="text-xs text-gray-500" x-text="getText(item.desc)"></div>
+                      </div>
+                      <span class="label-text ml-auto font-semibold text-gray-600" x-text="formatCost(item.cost)"></span>
+                    </label>
+                  </div>
+                </template>
               </div>
               <div>
                 <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
-                {currentItems.filter(i => i.category === 'software').map((item, index) => (
-                  <div class="form-control my-2"><label class="label justify-start gap-4 p-2">
-                    <input type="checkbox" class="checkbox checkbox-primary equipment-checkbox" data-min={item.cost[0]} data-max={item.cost[1] || item.cost[0]} checked />
-                    <div><span class="label-text font-medium">{getText(item.name)}</span><div class="text-xs text-gray-500">{getText(item.desc)}</div></div>
-                    <span class="label-text ml-auto font-semibold text-gray-600 item-price">{formatCurrency(item.cost[0])}</span>
-                  </label></div>
-                ))}
+                <template x-for="(item, index) in currentItems.filter(i => i.category === 'software')">
+                  <div class="form-control my-2">
+                    <label class="label justify-start gap-4 p-2 cursor-pointer">
+                      <input type="checkbox" :value="index" x-model="selectedItems" class="checkbox checkbox-primary" />
+                      <div>
+                        <span class="label-text font-medium" x-text="getText(item.name)"></span>
+                        <div class="text-xs text-gray-500" x-text="getText(item.desc)"></div>
+                      </div>
+                      <span class="label-text ml-auto font-semibold text-gray-600" x-text="formatCost(item.cost)"></span>
+                    </label>
+                  </div>
+                </template>
               </div>
             </div>
 
             <div class="bg-indigo-700 text-white rounded-lg p-6 mt-8 text-center">
-              <h2 id="total-cost" class="text-4xl font-bold">
-                {formatCurrency(totalMin)} - {formatCurrency(totalMax)}
-              </h2>
+              <h2 class="text-4xl font-bold" x-text="formatTotal()"></h2>
             </div>
           </div>
-
-          {getArray(hobby.tips).length > 0 && (
-            <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
-              <h2 class="text-2xl font-bold mb-4">Money-Saving Tips</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {getArray(hobby.tips).map(tip => (
-                  <div class="bg-green-100/50 border border-green-200 rounded-lg p-4">
-                    <h4 class="font-bold text-green-800">{getText(tip.title)}</h4>
-                    <p class="text-sm text-green-700">{getText(tip.desc)}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
           
-          {getArray(hobby.faq).length > 0 && (
+          {getArray(hobby.tips).length > 0 &&
+            <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
+               <h2 class="text-2xl font-bold mb-4">Money-Saving Tips</h2>
+               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 {getArray(hobby.tips).map(tip => (
+                   <div class="bg-green-100/50 border border-green-200 rounded-lg p-4">
+                     <h4 class="font-bold text-green-800">{getText(tip.title)}</h4>
+                     <p class="text-sm text-green-700">{getText(tip.desc)}</p>
+                   </div>
+                 ))}
+               </div>
+            </div>
+          }
+          
+          {getArray(hobby.faq).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
               <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
               <div class="space-y-2">
-                {getArray(hobby.faq).map((item, idx) => (
-                  <div class="border rounded-lg">
-                    <button type="button" class="w-full text-left p-3 font-medium flex justify-between items-center" onclick={`this.nextElementSibling.classList.toggle('hidden')`}>
-                      {getText(item.q)}
-                      <span>+</span>
-                    </button>
-                    <div class="hidden p-3 text-sm text-gray-700">{getText(item.a)}</div>
+                {getArray(hobby.faq).map((item, index) => (
+                  <div class="collapse collapse-plus bg-gray-100 rounded-lg">
+                    <input type="radio" name={`hobby-accordion-${index}`} /> 
+                    <div class="collapse-title text-lg font-medium">{getText(item.q)}</div>
+                    <div class="collapse-content"><p>{getText(item.a)}</p></div>
                   </div>
                 ))}
               </div>
             </div>
-          )}
+          }
         </div>
 
         <div class="lg:col-span-1 space-y-8">
-          {getArray(hobby.recommendedGear).length > 0 && (
+          {getArray(hobby.recommendedGear).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg">
               <div class="card-body">
                 <h3 class="card-title">Recommended Gear</h3>
@@ -164,10 +126,11 @@ currentItems.forEach(item => {
                   <a href={gear.link} target="_blank" class="block p-2 rounded-lg hover:bg-gray-100">
                     <div class="flex gap-4 items-center">
                       <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812-1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                       </div>
                       <div>
                         <p class="font-bold leading-tight">{getText(gear.name)}</p>
+                        <p class="text-sm text-gray-600">${gear.price}</p>
                         <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p>
                       </div>
                     </div>
@@ -175,34 +138,106 @@ currentItems.forEach(item => {
                 ))}
               </div>
             </div>
-          )}
-
-          {getArray(hobby.stats).length > 0 && (
+          }
+          
+          {getArray(hobby.stats).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg">
               <div class="card-body">
                 <h3 class="card-title">{getText(hobby.name)} Stats</h3>
                 <ul class="space-y-2 mt-2">
-                  {getArray(hobby.stats).map(stat => {
-                    const rawVal = getText(stat.value);
-                    const numeric = parseFloat(rawVal.replace(/[^0-9.]/g, ""));
-                    const isMoney = !isNaN(numeric) && rawVal.includes("$");
-                    return (
-                      <li class="flex justify-between text-sm py-1 border-b border-gray-200/80">
-                        <span class="text-gray-500">{getText(stat.label)}</span>
-                        {isMoney ? (
-                          <span class="font-semibold stat-price" data-value={numeric}>{rawVal}</span>
-                        ) : (
-                          <span class="font-semibold">{rawVal}</span>
-                        )}
-                      </li>
-                    );
-                  })}
+                  {getArray(hobby.stats).map(stat => (
+                     <li class="flex justify-between text-sm py-1 border-b border-gray-200/80">
+                       <span class="text-gray-500">{getText(stat.label)}</span>
+                       <span class="font-semibold">{getText(stat.value)}</span>
+                     </li>
+                  ))}
                 </ul>
               </div>
             </div>
-          )}
+          }
         </div>
       </div>
     </div>
   </div>
+
+  <script is:inline src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script define:vars={{ hobby, rates: currencyData.rates, lang }}>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('calculatorData', () => ({
+        // --- STATE ---
+        level: 'beginner',
+        currency: 'USD',
+        selectedItems: [],
+        totalMin: 0,
+        totalMax: 0,
+        
+        // --- DATA FROM ASTRO ---
+        hobbyData: hobby,
+        rates: rates,
+        
+        // --- INITIALIZATION ---
+        init() {
+          this.setLevel('beginner');
+        },
+        
+        // --- HELPER FUNCTIONS ---
+        getText(field) {
+          return field?.[lang] || field?.['en'] || '';
+        },
+        
+        // --- GETTERS ---
+        get currentItems() {
+          return this.hobbyData.breakdown?.[this.level]?.keyItems || [];
+        },
+        
+        // --- CORE LOGIC ---
+        setLevel(newLevel) {
+          this.level = newLevel;
+          // Pre-select only essential items when the level changes
+          this.selectedItems = (this.currentItems || [])
+            .map((item, index) => ({ item, index }))
+            .filter(p => p.item.category === 'essential')
+            .map(p => p.index.toString());
+          this.updateTotals();
+        },
+        
+        updateTotals() {
+          let min = 0;
+          let max = 0;
+          this.selectedItems.forEach(indexStr => {
+            const index = parseInt(indexStr);
+            const item = this.currentItems[index];
+            if (item && item.cost) {
+              min += item.cost[0];
+              max += item.cost[1] || item.cost[0];
+            }
+          });
+          this.totalMin = min;
+          this.totalMax = max;
+        },
+        
+        // --- FORMATTING ---
+        formatCost(cost) {
+            if (!cost) return '';
+            const rate = this.rates[this.currency] || 1;
+            const formatter = new Intl.NumberFormat(lang, { style: 'currency', currency: this.currency, maximumFractionDigits: 0 });
+            const cost1 = formatter.format(cost[0] * rate);
+            if (!cost[1] || cost[0] === cost[1]) return cost1;
+            const cost2 = formatter.format(cost[1] * rate);
+            return `${cost1} - ${cost2}`;
+        },
+
+        formatTotal() {
+            // No need to call updateTotals() here, it's called whenever a change happens
+            const rate = this.rates[this.currency] || 1;
+            const formatter = new Intl.NumberFormat(lang, { style: 'currency', currency: this.currency, maximumFractionDigits: 0 });
+            if (this.selectedItems.length === 0) return formatter.format(0);
+            const min = this.totalMin * rate;
+            const max = this.totalMax * rate;
+            if (min === max) return formatter.format(min);
+            return `${formatter.format(min)} - ${formatter.format(max)}`;
+        },
+      }));
+    });
+  </script>
 </Layout>
