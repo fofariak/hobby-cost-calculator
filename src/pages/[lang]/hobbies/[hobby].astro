@@ -21,7 +21,6 @@ export function getStaticPaths() {
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
-// Default to beginner if hobby or breakdown data is missing for a level
 const level = Astro.url.searchParams.get('level') || 'beginner';
 const currency = Astro.url.searchParams.get('currency') || 'USD';
 const rate = currencyData.rates[currency] || 1;
@@ -60,7 +59,6 @@ const formatCurrency = (value) => {
   }
 };
 
-// Calculate totals
 const currentItems = hobby.breakdown?.[level]?.keyItems || [];
 let totalMin = 0;
 let totalMax = 0;
@@ -88,12 +86,20 @@ currentItems.forEach(item => {
                 <a role="tab" href={`?level=advanced&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'advanced' }]}>Advanced</a>
               </div>
               
-              <form class="w-full sm:w-auto" method="get">
-                <input type="hidden" name="level" value={level} />
-                <select id="currency-select" name="currency" class="select select-bordered" onchange="this.form.submit()">
+              <div class="w-full sm:w-auto">
+                <select
+                  id="currency-select"
+                  name="currency"
+                  class="select select-bordered"
+                  onchange="
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('currency', this.value);
+                    window.location.href = url.toString();
+                  "
+                >
                   {Object.keys(currencyData.rates).map(c => <option value={c} selected={c === currency}>{c}</option>)}
                 </select>
-              </form>
+              </div>
 
             </div>
             <div class="divider my-6"></div>
@@ -160,7 +166,6 @@ currentItems.forEach(item => {
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
               <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
               <div class="space-y-2">
-                
                 {getArray(hobby.faq).map((item) => (
                   <details class="border rounded-lg group">
                     <summary class="list-none flex justify-between items-center w-full p-3 font-medium cursor-pointer">
@@ -276,11 +281,7 @@ currentItems.forEach(item => {
       });
     }
 
-    // CHANGE #3: Removed the event listener for the currency select.
-    // Page reloads now handle the currency change, so this is no longer needed.
     checkboxes.forEach(cb => cb.addEventListener("change", recalc));
-    
-    // Recalculate once on page load to ensure client-side prices are correct.
     recalc();
   </script>
 </Layout>
