@@ -2,6 +2,7 @@
 import Layout from '../../../layouts/Layout.astro';
 import { hobbies } from '../../../data/hobbies.json';
 import currencyData from '../../../data/currencies.json';
+import CurrencyConverter from '../../../components/CurrencyConverter.astro';
 
 // --- Page Generation Logic ---
 export function getStaticPaths() {
@@ -21,10 +22,6 @@ export function getStaticPaths() {
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
-const level = Astro.url.searchParams.get('level') || 'beginner';
-const currency = Astro.url.searchParams.get('currency') || 'USD';
-const rate = currencyData.rates[currency] || 1;
-
 // Helper functions
 const getText = (field, fallback = '') => {
   if (!field) return fallback;
@@ -42,24 +39,11 @@ const getArray = (field) => {
   return [];
 };
 
-const formatCurrency = (value) => {
-  if (typeof value !== 'number') return '?';
-  try {
-    return new Intl.NumberFormat(lang === 'en' ? 'en-US' : undefined, {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 0
-    }).format(value * rate);
-  } catch {
-    return `${(value * rate).toFixed(0)} ${currency}`;
-  }
-};
-
-// Calculate totals
-const currentItems = hobby.breakdown?.[level]?.keyItems || [];
+// Pre-calc totals for beginner level by default
+const beginnerItems = hobby.breakdown?.['beginner']?.keyItems || [];
 let totalMin = 0;
 let totalMax = 0;
-currentItems.forEach(item => {
+beginnerItems.forEach(item => {
   if (item.category === 'essential' || item.category === 'software') {
     totalMin += item.cost[0];
     totalMax += item.cost[1] || item.cost[0];
@@ -76,46 +60,34 @@ currentItems.forEach(item => {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
         <div class="lg:col-span-2 space-y-8">
           <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
+            <!-- Tabs for levels -->
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div role="tablist" class="tabs tabs-boxed bg-gray-200">
-                <a role="tab" href={`?level=beginner&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'beginner' }]}>Beginner</a>
-                <a role="tab" href={`?level=intermediate&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'intermediate' }]}>Intermediate</a>
-                <a role="tab" href={`?level=advanced&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'advanced' }]}>Advanced</a>
+              <div role="tablist" class="tabs tabs-boxed bg-gray-200" id="level-tabs">
+                <button class="tab sm:tab-lg tab-active" data-level="beginner">Beginner</button>
+                <button class="tab sm:tab-lg" data-level="intermediate">Intermediate</button>
+                <button class="tab sm:tab-lg" data-level="advanced">Advanced</button>
               </div>
-              <form class="w-full sm:w-auto">
-                <input type="hidden" name="level" value={level} />
-                <select name="currency" class="select select-bordered" onchange="this.form.submit()">
-                  {Object.keys(currencyData.rates).map(c => <option value={c} selected={c === currency}>{c}</option>)}
-                </select>
-              </form>
             </div>
             <div class="divider my-6"></div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
-              <div>
+            <!-- Dynamic content for levels -->
+            <div id="level-content">
+              <!-- Beginner level shown by default -->
+              <div class="level-section" data-level="beginner">
                 <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
-                {currentItems.filter(i => i.category === 'essential').map(item => (
+                {beginnerItems.filter(i => i.category === 'essential').map(item => (
                   <div class="form-control my-2"><label class="label justify-start gap-4 p-2">
                     <input type="checkbox" checked class="checkbox checkbox-primary" disabled />
                     <div><span class="label-text font-medium">{getText(item.name)}</span><div class="text-xs text-gray-500">{getText(item.desc)}</div></div>
-                    <span class="label-text ml-auto font-semibold text-gray-600">{formatCurrency(item.cost[0])} - {formatCurrency(item.cost[1] || item.cost[0])}</span>
-                  </label></div>
-                ))}
-              </div>
-              <div>
-                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
-                {currentItems.filter(i => i.category === 'software').map(item => (
-                  <div class="form-control my-2"><label class="label justify-start gap-4 p-2">
-                    <input type="checkbox" checked class="checkbox checkbox-primary" disabled />
-                    <div><span class="label-text font-medium">{getText(item.name)}</span><div class="text-xs text-gray-500">{getText(item.desc)}</div></div>
-                    <span class="label-text ml-auto font-semibold text-gray-600">{formatCurrency(item.cost[0])}</span>
+                    <span class="label-text ml-auto font-semibold text-gray-600">${item.cost[0]} - ${item.cost[1] || item.cost[0]} USD</span>
                   </label></div>
                 ))}
               </div>
             </div>
 
+            <!-- Currency converter total -->
             <div class="bg-indigo-700 text-white rounded-lg p-6 mt-8 text-center">
-              <h2 class="text-4xl font-bold">{formatCurrency(totalMin)} - {formatCurrency(totalMax)}</h2>
+              <CurrencyConverter baseCostRange={[totalMin, totalMax]} rates={currencyData.rates} />
             </div>
           </div>
 
@@ -139,7 +111,7 @@ currentItems.forEach(item => {
               <div class="space-y-2">
                 {getArray(hobby.faq).map(item => (
                   <div class="collapse collapse-plus bg-gray-100 rounded-lg">
-                    <input type="radio" name="hobby-accordion" /> 
+                    <input type="checkbox" /> 
                     <div class="collapse-title text-lg font-medium">{getText(item.q)}</div>
                     <div class="collapse-content"><p>{getText(item.a)}</p></div>
                   </div>
@@ -162,7 +134,7 @@ currentItems.forEach(item => {
                       </div>
                       <div>
                         <p class="font-bold leading-tight">{getText(gear.name)}</p>
-                        <p class="text-sm text-gray-600">{formatCurrency(gear.price)}</p>
+                        <p class="text-sm text-gray-600">${gear.price} USD</p>
                         <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p>
                       </div>
                     </div>
@@ -191,4 +163,15 @@ currentItems.forEach(item => {
       </div>
     </div>
   </div>
+
+  <script>
+    // Tabs interactivity (client-side)
+    document.querySelectorAll('#level-tabs [data-level]').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('#level-tabs [data-level]').forEach(t => t.classList.remove('tab-active'));
+        tab.classList.add('tab-active');
+        // TODO: Expand logic to dynamically swap level content based on hobby.breakdown
+      });
+    });
+  </script>
 </Layout>
