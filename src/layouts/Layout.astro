@@ -1,0 +1,44 @@
+---
+interface Props { title: string; lang: string; }
+const { title, lang = 'en' } = Astro.props;
+const languages = { en: 'EN', es: 'ES', de: 'DE' };
+---
+<!doctype html>
+<html lang={lang} data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    <style is:global>
+      /* You can add any global CSS overrides here if needed */
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <header class="bg-white shadow-sm">
+      <div class="navbar max-w-6xl mx-auto">
+        <div class="flex-1">
+          <a href={`/${lang}/`} class="btn btn-ghost text-xl font-bold">🎨 HobbyCalc</a>
+        </div>
+        <div class="flex-none">
+          <ul class="menu menu-horizontal px-1 hidden md:flex">
+            <li><a href={`/${lang}/`}>Home</a></li>
+            <li><a>All Hobbies</a></li>
+            <li><a>Blog</a></li>
+          </ul>
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost">
+              {languages[lang]} <svg width="12px" height="12px" class="h-2 w-2 fill-current opacity-60 inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"><path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path></svg>
+            </div>
+            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+              <li><a>English (EN)</a></li>
+              <li><a>Español (ES)</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
