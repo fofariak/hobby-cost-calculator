@@ -1,0 +1,85 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() {
+  const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
+  return languages.map(lang => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+
+const content = {
+  en: {
+    title: "Contact HobbyCalc - Get in Touch",
+    heading: "Contact Us",
+    intro: "Have questions, suggestions, or feedback about HobbyCalc? We'd love to hear from you!",
+    email: "Email Us",
+    email_text: "For general inquiries, feedback, or support:",
+    email_address: "hello@hobbycalc.com",
+    business: "Business Inquiries",
+    business_text: "For partnerships, advertising, or business-related questions:",
+    business_email: "business@hobbycalc.com",
+    response_time: "Response Time",
+    response_text: "We typically respond to all inquiries within 24-48 hours during business days.",
+    feedback: "Feedback & Suggestions",
+    feedback_text: "Your feedback helps us improve HobbyCalc. If you have ideas for new hobbies to add, cost corrections, or feature suggestions, please don't hesitate to reach out."
+  },
+  es: {
+    title: "Contactar HobbyCalc - Ponte en Contacto",
+    heading: "Contáctanos",
+    intro: "¿Tienes preguntas, sugerencias o comentarios sobre HobbyCalc? ¡Nos encantaría saber de ti!",
+    email: "Envíanos un Email",
+    email_text: "Para consultas generales, comentarios o soporte:",
+    email_address: "hello@hobbycalc.com",
+    business: "Consultas de Negocios",
+    business_text: "Para asociaciones, publicidad o preguntas relacionadas con negocios:",
+    business_email: "business@hobbycalc.com",
+    response_time: "Tiempo de Respuesta",
+    response_text: "Normalmente respondemos a todas las consultas dentro de 24-48 horas durante días laborables.",
+    feedback: "Comentarios y Sugerencias",
+    feedback_text: "Tus comentarios nos ayudan a mejorar HobbyCalc. Si tienes ideas para nuevos hobbies, correcciones de costos o sugerencias de características, no dudes en contactarnos."
+  }
+};
+
+const text = content[lang] || content.en;
+---
+
+<Layout title={text.title} lang={lang}>
+  <div class="container mx-auto px-6 py-12 max-w-4xl">
+    <h1 class="text-4xl font-bold mb-8 text-gray-800">{text.heading}</h1>
+    
+    <div class="mb-8">
+      <p class="text-lg text-gray-700 leading-relaxed">{text.intro}</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8 mb-12">
+      <div class="bg-white p-6 rounded-lg border border-gray-200">
+        <h2 class="text-xl font-semibold mb-3 text-indigo-600">{text.email}</h2>
+        <p class="text-gray-700 mb-2">{text.email_text}</p>
+        <a href="mailto:hello@hobbycalc.com" class="text-indigo-600 hover:text-indigo-800 font-medium">
+          {text.email_address}
+        </a>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg border border-gray-200">
+        <h2 class="text-xl font-semibold mb-3 text-indigo-600">{text.business}</h2>
+        <p class="text-gray-700 mb-2">{text.business_text}</p>
+        <a href="mailto:business@hobbycalc.com" class="text-indigo-600 hover:text-indigo-800 font-medium">
+          {text.business_email}
+        </a>
+      </div>
+    </div>
+
+    <div class="space-y-8">
+      <section>
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.response_time}</h2>
+        <p class="text-gray-700 leading-relaxed">{text.response_text}</p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.feedback}</h2>
+        <p class="text-gray-700 leading-relaxed">{text.feedback_text}</p>
+      </section>
+    </div>
+  </div>
+</Layout>
