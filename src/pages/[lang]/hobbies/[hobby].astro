@@ -3,7 +3,6 @@ import Layout from '../../../layouts/Layout.astro';
 import { hobbies } from '../../../data/hobbies.json';
 import currencyData from '../../../data/currencies.json';
 
-// --- Page Generation ---
 export function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
   const paths = [];
@@ -17,52 +16,44 @@ export function getStaticPaths() {
   return paths;
 }
 
-// --- Data Preparation ---
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
-// --- URL Parameter Handling ---
+// URL parameters to control the page
 const level = Astro.url.searchParams.get('level') || 'beginner';
 const currency = Astro.url.searchParams.get('currency') || 'USD';
 const rate = currencyData.rates[currency] || 1;
 
-// --- Helper Functions ---
+// Safe data-fetching functions
 const getText = (field, fallback = '') => field?.[lang] || field?.['en'] || fallback;
 const getArray = (field) => field?.[lang] || field?.['en'] || [];
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
-    maximumFractionDigits: 0
-  }).format(value * rate);
-};
 
-// --- Calculator Logic ---
+const formatCurrency = (value) => new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(value * rate);
+
+// Calculate totals based on selected level
 const currentItems = hobby.breakdown?.[level]?.keyItems || [];
 let totalMin = 0;
 let totalMax = 0;
 currentItems.forEach(item => {
-  if (item.category === 'essential') {
     totalMin += item.cost[0];
     totalMax += item.cost[1] || item.cost[0];
-  }
 });
 ---
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
   <div class="bg-white py-8">
     <div class="max-w-7xl mx-auto px-4">
       <div class="text-sm breadcrumbs">
-        <ul><li><a href={`/${lang}/`}>Home</a></li> <li><a href={`/${lang}/`}>Hobbies</a></li> <li>{getText(hobby.name)}</li></ul>
+        <ul><li><a href={`/${lang}/`}>Home</a></li> <li><a>Hobbies</a></li> <li>{getText(hobby.name)}</li></ul>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
         <div class="lg:col-span-2 space-y-8">
           <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div class="tabs tabs-boxed bg-gray-200">
-                <a href={`/${lang}/hobbies/${hobby.id}?level=beginner&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'beginner' }]}>Beginner</a>
-                <a href={`/${lang}/hobbies/${hobby.id}?level=intermediate&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'intermediate' }]}>Intermediate</a>
-                <a href={`/${lang}/hobbies/${hobby.id}?level=advanced&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'advanced' }]}>Advanced</a>
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div role="tablist" class="tabs tabs-boxed bg-gray-200">
+                <a role="tab" href={`?level=beginner&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'beginner' }]}>Beginner</a>
+                <a role="tab" href={`?level=intermediate&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'intermediate' }]}>Intermediate</a>
+                <a role="tab" href={`?level=advanced&currency=${currency}`} class:list={["tab sm:tab-lg", { "tab-active": level === 'advanced' }]}>Advanced</a>
               </div>
               <form class="w-full sm:w-auto">
                 <input type="hidden" name="level" value={level} />
@@ -71,37 +62,27 @@ currentItems.forEach(item => {
                 </select>
               </form>
             </div>
-            <div class="divider"></div>
+            <div class="divider my-6"></div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
               <div>
                 <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
                 {currentItems.filter(i => i.category === 'essential').map(item => (
-                  <div class="form-control my-1">
-                    <label class="label justify-start gap-4 p-2">
-                      <input type="checkbox" checked class="checkbox checkbox-primary" disabled />
-                      <div>
-                        <span class="label-text font-medium">{getText(item.name)}</span>
-                        <div class="text-xs text-gray-500">{getText(item.desc)}</div>
-                      </div>
-                      <span class="label-text ml-auto font-semibold text-gray-600">{formatCurrency(item.cost[0])} - {formatCurrency(item.cost[1] || item.cost[0])}</span>
-                    </label>
-                  </div>
+                  <div class="form-control my-2"><label class="label justify-start gap-4 p-2">
+                    <input type="checkbox" checked class="checkbox checkbox-primary" disabled />
+                    <div><span class="label-text font-medium">{getText(item.name)}</span><div class="text-xs text-gray-500">{getText(item.desc)}</div></div>
+                    <span class="label-text ml-auto font-semibold text-gray-600">{formatCurrency(item.cost[0])} - {formatCurrency(item.cost[1] || item.cost[0])}</span>
+                  </label></div>
                 ))}
               </div>
               <div>
                 <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
                 {currentItems.filter(i => i.category === 'software').map(item => (
-                  <div class="form-control my-1">
-                    <label class="label justify-start gap-4 p-2">
-                      <input type="checkbox" checked class="checkbox checkbox-primary" disabled />
-                      <div>
-                        <span class="label-text font-medium">{getText(item.name)}</span>
-                        <div class="text-xs text-gray-500">{getText(item.desc)}</div>
-                      </div>
-                      <span class="label-text ml-auto font-semibold text-gray-600">{formatCurrency(item.cost[0])}</span>
-                    </label>
-                  </div>
+                  <div class="form-control my-2"><label class="label justify-start gap-4 p-2">
+                    <input type="checkbox" checked class="checkbox checkbox-primary" disabled />
+                    <div><span class="label-text font-medium">{getText(item.name)}</span><div class="text-xs text-gray-500">{getText(item.desc)}</div></div>
+                    <span class="label-text ml-auto font-semibold text-gray-600">{formatCurrency(item.cost[0])}</span>
+                  </label></div>
                 ))}
               </div>
             </div>
@@ -110,7 +91,7 @@ currentItems.forEach(item => {
               <h2 class="text-4xl font-bold">{formatCurrency(totalMin)} - {formatCurrency(totalMax)}</h2>
             </div>
           </div>
-
+          
           {getArray(hobby.tips).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
                <h2 class="text-2xl font-bold mb-4">Money-Saving Tips</h2>
@@ -142,25 +123,27 @@ currentItems.forEach(item => {
         </div>
 
         <div class="lg:col-span-1 space-y-8">
-          <div class="card bg-gray-50/60 shadow-lg">
-            <div class="card-body">
-              <h3 class="card-title">Recommended Gear</h3>
-              {getArray(hobby.recommendedGear).map(gear => (
-                <a href={gear.link} target="_blank" class="block p-2 rounded-lg hover:bg-gray-100">
-                  <div class="flex gap-4 items-center">
-                    <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          {getArray(hobby.recommendedGear).length > 0 &&
+            <div class="card bg-gray-50/60 shadow-lg">
+              <div class="card-body">
+                <h3 class="card-title">Recommended Gear</h3>
+                {getArray(hobby.recommendedGear).map(gear => (
+                  <a href={gear.link} target="_blank" class="block p-2 rounded-lg hover:bg-gray-100">
+                    <div class="flex gap-4 items-center">
+                      <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                      </div>
+                      <div>
+                        <p class="font-bold leading-tight">{getText(gear.name)}</p>
+                        <p class="text-sm text-gray-600">{formatCurrency(gear.price)}</p>
+                        <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p>
+                      </div>
                     </div>
-                    <div>
-                      <p class="font-bold leading-tight">{getText(gear.name)}</p>
-                      <p class="text-sm text-gray-600">{formatCurrency(gear.price)}</p>
-                      <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon &rarr;</p>
-                    </div>
-                  </div>
-                </a>
-              ))}
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
+          }
           
           {getArray(hobby.stats).length > 0 &&
             <div class="card bg-gray-50/60 shadow-lg">
