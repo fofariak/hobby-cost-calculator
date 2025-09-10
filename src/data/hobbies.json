@@ -1,0 +1,67 @@
+{
+  "hobbies": [
+    {
+      "id": "photography",
+      "emoji": "📸",
+      "name": {
+        "en": "Photography", "es": "Fotografía", "de": "Fotografie"
+      },
+      "description": {
+        "en": "Cameras, lenses, editing software, and accessories.",
+        "es": "Cámaras, lentes, software de edición y accesorios.",
+        "de": "Kameras, Objektive, Bearbeitungssoftware und Zubehör."
+      },
+      "breakdown": {
+        "beginner": {
+          "costRangeUSD": [300, 700],
+          "keyItems": [
+            { "name": "Entry-Level DSLR/Mirrorless", "cost": [400, 600], "desc": "Canon T8i, Sony a6100, Nikon D3500", "category": "essential" },
+            { "name": "Kit Lens (18-55mm)", "cost": [0, 200], "desc": "Usually included with camera body.", "category": "essential" },
+            { "name": "Memory Card", "cost": [20, 40], "desc": "SanDisk or Lexar SD Card", "category": "essential" },
+            { "name": "Camera Bag", "cost": [20, 80], "desc": "Bulk protection and storage", "category": "essential" },
+            { "name": "Tripod", "cost": [30, 150], "desc": "Basic aluminum tripod", "category": "essential" },
+            { "name": "Adobe Lightroom", "cost": [120, 120], "desc": "Photo editing software (per year)", "category": "software" },
+            { "name": "Extra Batteries", "cost": [40, 100], "desc": "Spare camera batteries", "category": "software" },
+            { "name": "UV Filter", "cost": [15, 50], "desc": "Lens protection", "category": "software" }
+          ]
+        },
+        "intermediate": {
+          "costRangeUSD": [800, 2000],
+          "keyItems": [
+            { "name": "Mid-Range Camera Body", "cost": [800, 1200], "desc": "Canon R10, Sony a6600", "category": "essential" },
+            { "name": "Prime Lens (50mm f/1.8)", "cost": [150, 300], "desc": "Great for portraits", "category": "essential" },
+            { "name": "External Flash", "cost": [100, 300], "desc": "Godox V1, Profoto A10", "category": "essential" },
+            { "name": "Editing Software", "cost": [120, 120], "desc": "Adobe Lightroom/Photoshop (per year)", "category": "software" }
+          ]
+        },
+        "advanced": {
+          "costRangeUSD": [2500, 10000],
+          "keyItems": [
+            { "name": "Professional Full-Frame Camera", "cost": [2000, 4000], "desc": "Sony A7IV, Canon R6", "category": "essential" },
+            { "name": "Pro Zoom Lens (24-70mm f/2.8)", "cost": [1500, 2300], "desc": "Workhorse lens for events", "category": "essential" },
+            { "name": "Studio Lighting Kit", "cost": [500, 1500], "desc": "Strobes, softboxes, stands", "category": "essential" },
+            { "name": "Capture One Pro", "cost": [300, 300], "desc": "Professional editing suite (per year)", "category": "software" }
+          ]
+        }
+      },
+      "recommendedGear": [
+        { "name": "Canon EOS Rebel T8i", "price": 899, "desc": "Perfect beginner DSLR with great features.", "link": "#", "image": "https://via.placeholder.com/150" },
+        { "name": "Sony FE 50mm f/1.8 Lens", "price": 249, "desc": "Great portrait lens for Sony cameras.", "link": "#", "image": "https://via.placeholder.com/150" },
+        { "name": "Peak Design Everyday Sling", "price": 149, "desc": "A versatile and stylish camera bag.", "link": "#", "image": "https://via.placeholder.com/150" }
+      ],
+      "tips": {
+        "en": [
+          { "title": "Buy Used Equipment", "desc": "You can save 30-50% on quality gear." },
+          { "title": "Start with Kit Lens", "desc": "Learn its limits before buying expensive ones." },
+          { "title": "Free Editing Software", "desc": "Try GIMP (free) or purchase Luminar (one-time) to save money." }
+        ]
+      },
+      "faq": {
+        "en": [
+          { "q": "How much should a beginner spend on photography?", "a": "For beginners, $500-800 is sufficient for a good camera body, kit lens, and basic accessories." },
+          { "q": "What's the most important equipment to buy first?", "a": "Start with a decent camera body and lens. Everything else (tripod, extra lenses, filters) can be added gradually." }
+        ]
+      }
+    }
+  ]
+}
