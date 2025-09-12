@@ -1,8 +1,10 @@
 ---
+// Source files for data and layout [cite: 1]
 import Layout from '../../layouts/Layout.astro';
 import { hobbies } from '../../data/hobbies.json';
 import currencyData from '../../data/currencies.json';
 
+// Generates static paths for each supported language [cite: 2, 3]
 export function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
   return languages.map(lang => ({ params: { lang } }));
@@ -10,16 +12,18 @@ export function getStaticPaths() {
 
 const { lang } = Astro.params;
 
+// CHANGE: All text is now in this single translation object for full language support.
 const translations = {
-  title: { 
-    en: "Hobby Cost Calculator 2025 | Calculate Startup Costs for 50+ Hobbies", 
-    es: "Calculadora de Costos de Hobbies 2025 | Calcula Costos Iniciales para 50+ Hobbies", 
-    de: "Hobby-Kosten-Rechner 2025 | Berechne Startkosten für 50+ Hobbys", 
-    fr: "Calculateur de Coût de Loisirs 2025 | Calculez les Coûts de Démarrage pour 50+ Loisirs", 
-    pt: "Calculadora de Custos de Hobby 2025 | Calcule Custos Iniciais para 50+ Hobbies", 
-    ja: "趣味の費用計算機 2025 | 50以上の趣味の開始費用を計算", 
-    ar: "حاسبة تكلفة الهوايات 2025 | احسب تكاليف البدء لأكثر من 50 هواية", 
-    hi: "शौक लागत कैलकुलेटर 2025 | 50+ शौक के लिए स्टार्टअप लागत की गणना करें" 
+  // SEO Meta Tags [cite: 4, 5, 6, 7, 8, 9, 10]
+  title: {
+    en: "Hobby Cost Calculator 2025 | Calculate Startup Costs for 50+ Hobbies",
+    es: "Calculadora de Costos de Hobbies 2025 | Calcula Costos Iniciales para 50+ Hobbies",
+    de: "Hobby-Kosten-Rechner 2025 | Berechne Startkosten für 50+ Hobbys",
+    fr: "Calculateur de Coût de Loisirs 2025 | Calculez les Coûts de Démarrage pour 50+ Loisirs",
+    pt: "Calculadora de Custos de Hobby 2025 | Calcule Custos Iniciais para 50+ Hobbies",
+    ja: "趣味の費用計算機 2025 | 50以上の趣味の開始費用を計算",
+    ar: "حاسبة تكلفة الهوايات 2025 | احسب تكاليف البدء لأكثر من 50 هواية",
+    hi: "शौक लागत कैलकुलेटर 2025 | 50+ शौक के लिए स्टार्टअप लागत की गणना करें"
   },
   description: {
     en: "Free hobby cost calculator with currency conversion. Calculate startup costs for photography, gaming, cooking, crafts & 50+ hobbies. Get accurate budget estimates instantly.",
@@ -31,55 +35,26 @@ const translations = {
     ar: "حاسبة مجانية لتكلفة الهوايات مع تحويل العملات. احسب تكاليف البدء للتصوير والألعاب والطبخ والحرف اليدوية وأكثر من 50 هواية.",
     hi: "मुद्रा रूपांतरण के साथ मुफ्त शौक लागत कैलकुलेटर। फोटोग्राफी, गेमिंग, खाना पकाने, शिल्प और 50+ शौक के लिए स्टार्टअप लागत की गणना करें।"
   },
-  hero_title: { 
-    en: "Calculate Your Hobby Costs", 
-    es: "Calcula los Costos de tus Hobbies", 
-    de: "Berechne deine Hobby-Kosten", 
-    fr: "Calculez les Coûts de vos Loisirs", 
-    pt: "Calcule os Custos dos seus Hobbies", 
-    ja: "趣味のコストを計算", 
-    ar: "احسب تكاليف هواياتك", 
-    hi: "अपने शौक की लागत की गणना करें" 
+  // Hero Section [cite: 11, 12, 13, 14]
+  hero_title: {
+    en: "Calculate Your Hobby Costs",
+    es: "Calcula los Costos de tus Hobbies",
+    de: "Berechne deine Hobby-Kosten",
+    fr: "Calculez les Coûts de vos Loisirs",
+    pt: "Calcule os Custos dos seus Hobbies",
+    ja: "趣味のコストを計算",
+    ar: "احسب تكاليف هواياتك",
+    hi: "अपने शौक की लागत की गणना करें"
   },
-  hero_subtitle: { 
-    en: "Discover the real cost of starting your dream hobby with our comprehensive calculator", 
-    es: "Descubre el costo real de comenzar tu hobby soñado con nuestra calculadora integral", 
-    de: "Entdecke die wahren Kosten für den Start deines Traumhobbys mit unserem umfassenden Rechner", 
-    fr: "Découvrez le coût réel de commencer votre loisir de rêve avec notre calculateur complet", 
-    pt: "Descubra o custo real de começar seu hobby dos sonhos com nossa calculadora abrangente", 
-    ja: "包括的な計算機で夢の趣味を始める本当のコストを発見", 
-    ar: "اكتشف التكلفة الحقيقية لبدء هوايتك المفضلة بحاسبتنا الشاملة", 
-    hi: "हमारे व्यापक कैलकुलेटर के साथ अपने सपनों के शौक को शुरू करने की वास्तविक लागत की खोज करें" 
-  },
-  instant_free: {
-    en: "Instantly & Free",
-    es: "Instantáneo y Gratis",
-    de: "Sofort & Kostenlos",
-    fr: "Instantané et Gratuit",
-    pt: "Instantâneo e Grátis",
-    ja: "即座に無料で",
-    ar: "فوري ومجاني",
-    hi: "तुरंत और मुफ्त"
-  },
-  popular_hobbies: { 
-    en: "Popular Hobby Calculators", 
-    es: "Calculadoras de Hobbies Populares", 
-    de: "Beliebte Hobby-Rechner", 
-    fr: "Calculateurs de Loisirs Populaires", 
-    pt: "Calculadoras de Hobbies Populares", 
-    ja: "人気の趣味計算機", 
-    ar: "حاسبات الهوايات الشائعة", 
-    hi: "लोकप्रिय शौक कैलकुलेटर" 
-  },
-  browse_all: { 
-    en: "Browse All Hobbies", 
-    es: "Ver Todos los Hobbies", 
-    de: "Alle Hobbys durchsuchen", 
-    fr: "Parcourir Tous les Loisirs", 
-    pt: "Ver Todos os Hobbies", 
-    ja: "すべての趣味を見る", 
-    ar: "تصفح جميع الهوايات", 
-    hi: "सभी शौक देखें" 
+  hero_subtitle: {
+    en: "Discover the real cost of starting your dream hobby with our comprehensive calculator",
+    es: "Descubre el costo real de comenzar tu hobby soñado con nuestra calculadora integral",
+    de: "Entdecke die wahren Kosten für den Start deines Traumhobbys mit unserem umfassenden Rechner",
+    fr: "Découvrez le coût réel de commencer votre loisir de rêve avec notre calculateur complet",
+    pt: "Descubra o custo real de começar seu hobby dos sonhos com nossa calculadora abrangente",
+    ja: "包括的な計算機で夢の趣味を始める本当のコストを発見",
+    ar: "اكتشف التكلفة الحقيقية لبدء هوايتك المفضلة بحاسبتنا الشاملة",
+    hi: "हमारे व्यापक कैलकुलेटर के साथ अपने सपनों के शौक को शुरू करने की वास्तविक लागत की खोज करें"
   },
   start_calculating: {
     en: "Start Calculating",
@@ -91,323 +66,290 @@ const translations = {
     ar: "ابدأ الحساب",
     hi: "गणना शुरू करें"
   },
-  search_placeholder: {
-    en: "Search hobbies...",
-    es: "Buscar hobbies...",
-    de: "Hobbys suchen...",
-    fr: "Rechercher des loisirs...",
-    pt: "Procurar hobbies...",
-    ja: "趣味を検索...",
-    ar: "ابحث عن الهوايات...",
-    hi: "शौक खोजें..."
+  browse_all: {
+    en: "Browse All Hobbies",
+    es: "Ver Todos los Hobbies",
+    de: "Alle Hobbys durchsuchen",
+    fr: "Parcourir Tous les Loisirs",
+    pt: "Ver Todos os Hobbies",
+    ja: "すべての趣味を見る",
+    ar: "تصفح جميع الهوايات",
+    hi: "सभी शौक देखें"
   },
-  calculate_cost: {
-    en: "Calculate Cost",
-    es: "Calcular Costo",
-    de: "Kosten Berechnen",
-    fr: "Calculer le Coût",
-    pt: "Calcular Custo",
-    ja: "コストを計算",
-    ar: "احسب التكلفة",
-    hi: "लागत की गणना करें"
-  },
-  start_now: {
-    en: "Start Now",
-    es: "Empezar Ahora",
-    de: "Jetzt Starten",
-    fr: "Commencer Maintenant",
-    pt: "Começar Agora",
-    ja: "今すぐ開始",
-    ar: "ابدأ الآن",
-    hi: "अभी शुरू करें"
-  },
-  view_all_hobbies: {
-    en: "View All {count} Hobbies",
-    es: "Ver Todos los {count} Hobbies",
-    de: "Alle {count} Hobbys Ansehen",
-    fr: "Voir Tous les {count} Loisirs",
-    pt: "Ver Todos os {count} Hobbies",
-    ja: "すべての{count}趣味を見る",
-    ar: "عرض جميع الهوايات الـ {count}",
-    hi: "सभी {count} शौक देखें"
-  },
-  stats_hobbies: {
-    en: "Hobbies",
-    es: "Hobbies",
-    de: "Hobbys",
-    fr: "Loisirs",
-    pt: "Hobbies",
-    ja: "趣味",
-    ar: "هوايات",
-    hi: "शौक"
-  },
-  stats_languages: {
-    en: "Languages",
-    es: "Idiomas",
-    de: "Sprachen",
-    fr: "Langues",
-    pt: "Idiomas",
-    ja: "言語",
-    ar: "لغات",
-    hi: "भाषाएं"
-  },
-  stats_currencies: {
-    en: "Currencies",
-    es: "Monedas",
-    de: "Währungen",
-    fr: "Devises",
-    pt: "Moedas",
-    ja: "通貨",
-    ar: "عملات",
-    hi: "मुद्राएं"
-  },
-  stats_free: {
-    en: "Free",
-    es: "Gratis",
-    de: "Kostenlos",
-    fr: "Gratuit",
-    pt: "Grátis",
-    ja: "無料",
-    ar: "مجاني",
-    hi: "मुफ्त"
-  },
-  why_choose: {
-    en: "Why Choose HobbyCalc?",
-    es: "¿Por qué elegir HobbyCalc?",
-    de: "Warum HobbyCalc wählen?",
-    fr: "Pourquoi choisir HobbyCalc?",
-    pt: "Por que escolher HobbyCalc?",
-    ja: "なぜHobbyCalcを選ぶのか？",
-    ar: "لماذا تختار HobbyCalc؟",
-    hi: "HobbyCalc क्यों चुनें?"
-  },
-  why_choose_subtitle: {
-    en: "The most comprehensive and accurate hobby cost calculator on the web",
-    es: "La calculadora de costos de hobbies más completa y precisa en la web",
-    de: "Der umfassendste und genaueste Hobby-Kostenrechner im Web",
-    fr: "Le calculateur de coût de loisirs le plus complet et précis sur le web",
-    pt: "A calculadora de custos de hobby mais abrangente e precisa na web",
-    ja: "ウェブ上で最も包括的で正確な趣味コスト計算機",
-    ar: "أكثر حاسبة تكلفة الهوايات شمولاً ودقة على الويب",
-    hi: "वेब पर सबसे व्यापक और सटीक शौक लागत कैलकुलेटर"
-  },
-  accurate_estimates: {
-    en: "Accurate Cost Estimates",
-    es: "Estimaciones de Costo Precisas",
-    de: "Präzise Kostenschätzungen",
-    fr: "Estimations de Coûts Précises",
-    pt: "Estimativas de Custo Precisas",
-    ja: "正確なコスト見積もり",
-    ar: "تقديرات تكلفة دقيقة",
-    hi: "सटीक लागत अनुमान"
-  },
-  accurate_estimates_desc: {
-    en: "Get detailed cost breakdowns from beginner to expert levels with real market prices",
-    es: "Obtén desgloses detallados de costos desde principiante hasta experto con precios de mercado reales",
-    de: "Erhalte detaillierte Kostenaufschlüsselungen vom Anfänger bis zum Experten-Level mit echten Marktpreisen",
-    fr: "Obtenez des répartitions détaillées des coûts du niveau débutant à expert avec des prix de marché réels",
-    pt: "Obtenha discriminações detalhadas de custos do nível iniciante ao especialista com preços de mercado reais",
-    ja: "初心者から上級者レベルまでの詳細なコスト内訳を実際の市場価格で取得",
-    ar: "احصل على تفصيلات تكلفة مفصلة من المستوى المبتدئ إلى الخبير بأسعار السوق الحقيقية",
-    hi: "वास्तविक बाजार कीमतों के साथ शुरुआती से विशेषज्ञ स्तर तक विस्तृत लागत विवरण प्राप्त करें"
-  },
-  multi_currency: {
-    en: "Multi-Currency Support",
-    es: "Soporte Multi-Moneda",
-    de: "Multi-Währungsunterstützung",
-    fr: "Support Multi-Devises",
-    pt: "Suporte Multi-Moeda",
-    ja: "多通貨対応",
-    ar: "دعم العملات المتعددة",
-    hi: "मल्टी-करेंसी सपोर्ट"
-  },
-  multi_currency_desc: {
-    en: "Convert costs to any currency with live exchange rates for accurate local pricing",
-    es: "Convierte costos a cualquier moneda con tipos de cambio en vivo para precios locales precisos",
-    de: "Konvertiere Kosten in jede Währung mit Live-Wechselkursen für genaue lokale Preise",
-    fr: "Convertissez les coûts dans n'importe quelle devise avec des taux de change en direct pour une tarification locale précise",
-    pt: "Converta custos para qualquer moeda com taxas de câmbio ao vivo para preços locais precisos",
-    ja: "ライブ為替レートで正確な現地価格のために任意の通貨にコストを変換",
-    ar: "قم بتحويل التكاليف إلى أي عملة باستخدام أسعار الصرف المباشرة للحصول على تسعير محلي دقيق",
-    hi: "सटीक स्थानीय मूल्य निर्धारण के लिए लाइव एक्सचेंज रेट के साथ किसी भी मुद्रा में लागत परिवर्तित करें"
-  },
-  completely_free: {
-    en: "Completely Free",
-    es: "Completamente Gratis",
-    de: "Völlig Kostenlos",
-    fr: "Complètement Gratuit",
-    pt: "Completamente Grátis",
-    ja: "完全無料",
-    ar: "مجاني بالكامل",
-    hi: "पूरी तरह मुफ्त"
-  },
-  completely_free_desc: {
-    en: "No hidden fees, subscriptions, or limits. Use forever without any cost",
-    es: "Sin tarifas ocultas, suscripciones o límites. Usa para siempre sin ningún costo",
-    de: "Keine versteckten Gebühren, Abonnements oder Limits. Für immer kostenlos nutzen",
-    fr: "Pas de frais cachés, d'abonnements ou de limites. Utilisez pour toujours sans aucun coût",
-    pt: "Sem taxas ocultas, assinaturas ou limites. Use para sempre sem nenhum custo",
-    ja: "隠れた料金、サブスクリプション、制限なし。永続的に無料で使用",
-    ar: "لا توجد رسوم مخفية أو اشتراكات أو حدود. استخدم إلى الأبد دون أي تكلفة",
-    hi: "कोई छुपी हुई फीस, सब्सक्रिप्शन या सीमा नहीं। बिना किसी लागत के हमेशा के लिए उपयोग करें"
-  },
-  beginner_friendly: {
-    en: "Beginner Friendly",
-    es: "Amigable para Principiantes",
-    de: "Anfängerfreundlich",
-    fr: "Convivial pour les Débutants",
-    pt: "Amigável para Iniciantes",
-    ja: "初心者に優しい",
-    ar: "مناسب للمبتدئين",
-    hi: "शुरुआती के लिए अनुकूल"
-  },
-  beginner_friendly_desc: {
-    en: "Easy-to-use interface with helpful tips and guidance for every hobby",
-    es: "Interfaz fácil de usar con consejos útiles y orientación para cada hobby",
-    de: "Benutzerfreundliche Oberfläche mit hilfreichen Tipps und Anleitung für jedes Hobby",
-    fr: "Interface facile à utiliser avec des conseils utiles et des conseils pour chaque loisir",
-    pt: "Interface fácil de usar com dicas úteis e orientação para cada hobby",
-    ja: "すべての趣味に対する役立つヒントとガイダンス付きの使いやすいインターフェース",
-    ar: "واجهة سهلة الاستخدام مع نصائح مفيدة وإرشادات لكل هواية",
-    hi: "हर शौक के लिए उपयोगी टिप्स और मार्गदर्शन के साथ उपयोग में आसान इंटरफेस"
-  },
-  how_it_works: {
-    en: "How It Works",
-    es: "Cómo Funciona",
-    de: "Wie es Funktioniert",
-    fr: "Comment ça Marche",
-    pt: "Como Funciona",
-    ja: "仕組み",
-    ar: "كيف يعمل",
-    hi: "यह कैसे काम करता है"
-  },
-  how_it_works_subtitle: {
-    en: "Get accurate hobby costs in 3 simple steps",
-    es: "Obtén costos precisos de hobbies en 3 simples pasos",
-    de: "Erhalte präzise Hobby-Kosten in 3 einfachen Schritten",
-    fr: "Obtenez des coûts de loisirs précis en 3 étapes simples",
-    pt: "Obtenha custos precisos de hobby em 3 passos simples",
-    ja: "3つの簡単なステップで正確な趣味のコストを取得",
-    ar: "احصل على تكاليف هوايات دقيقة في 3 خطوات بسيطة",
-    hi: "3 आसान चरणों में सटीक शौक लागत प्राप्त करें"
-  },
-  choose_hobby: {
-    en: "Choose Your Hobby",
-    es: "Elige tu Hobby",
-    de: "Wähle dein Hobby",
-    fr: "Choisissez votre Loisir",
-    pt: "Escolha seu Hobby",
-    ja: "趣味を選ぶ",
-    ar: "اختر هوايتك",
-    hi: "अपना शौक चुनें"
-  },
-  choose_hobby_desc: {
-    en: "Select from 50+ hobbies including photography, gaming, cooking, crafts, and more",
-    es: "Selecciona entre 50+ hobbies incluyendo fotografía, gaming, cocina, manualidades y más",
-    de: "Wähle aus 50+ Hobbys einschließlich Fotografie, Gaming, Kochen, Basteln und mehr",
-    fr: "Sélectionnez parmi 50+ loisirs incluant la photographie, les jeux, la cuisine, l'artisanat et plus",
-    pt: "Selecione entre 50+ hobbies incluindo fotografia, gaming, culinária, artesanato e mais",
-    ja: "写真、ゲーム、料理、クラフトなど50以上の趣味から選択",
-    ar: "اختر من بين أكثر من 50 هواية بما في ذلك التصوير والألعاب والطبخ والحرف اليدوية والمزيد",
-    hi: "फोटोग्राफी, गेमिंग, खाना पकाना, शिल्प और अन्य सहित 50+ शौक में से चुनें"
-  },
-  select_level: {
-    en: "Select Your Level",
-    es: "Selecciona tu Nivel",
-    de: "Wähle dein Level",
-    fr: "Sélectionnez votre Niveau",
-    pt: "Selecione seu Nível",
-    ja: "レベルを選択",
-    ar: "اختر مستواك",
-    hi: "अपना स्तर चुनें"
-  },
-  select_level_desc: {
-    en: "Choose beginner, intermediate, or advanced to get costs tailored to your experience level",
-    es: "Elige principiante, intermedio o avanzado para obtener costos adaptados a tu nivel de experiencia",
-    de: "Wähle Anfänger, Fortgeschrittener oder Experte um Kosten passend zu deinem Erfahrungslevel zu erhalten",
-    fr: "Choisissez débutant, intermédiaire ou avancé pour obtenir des coûts adaptés à votre niveau d'expérience",
-    pt: "Escolha iniciante, intermediário ou avançado para obter custos adequados ao seu nível de experiência",
-    ja: "初心者、中級者、上級者から選択して、経験レベルに合わせたコストを取得",
-    ar: "اختر مبتدئ أو متوسط أو متقدم للحصول على تكاليف مصممة حسب مستوى خبرتك",
-    hi: "अपने अनुभव स्तर के अनुकूल लागत प्राप्त करने के लिए शुरुआती, मध्यवर्ती या उन्नत चुनें"
-  },
-  get_results: {
-    en: "Get Instant Results",
-    es: "Obtén Resultados Instantáneos",
-    de: "Sofortige Ergebnisse Erhalten",
-    fr: "Obtenez des Résultats Instantanés",
-    pt: "Obtenha Resultados Instantâneos",
-    ja: "即座に結果を取得",
-    ar: "احصل على النتائج الفورية",
-    hi: "तुरंत परिणाम प्राप्त करें"
-  },
-  get_results_desc: {
-    en: "See detailed cost breakdowns with currency conversion and start planning your hobby budget",
-    es: "Ve desgloses detallados de costos con conversión de moneda y comienza a planificar tu presupuesto de hobby",
-    de: "Sieh detaillierte Kostenaufschlüsselungen mit Währungsumrechnung und beginne dein Hobby-Budget zu planen",
-    fr: "Voyez des répartitions de coûts détaillées avec conversion de devises et commencez à planifier votre budget loisir",
-    pt: "Veja discriminações detalhadas de custos com conversão de moeda e comece a planejar seu orçamento de hobby",
-    ja: "通貨換算付きの詳細なコスト内訳を確認し、趣味の予算計画を開始",
-    ar: "انظر تفصيلات التكلفة المفصلة مع تحويل العملة وابدأ في تخطيط ميزانية هوايتك",
-    hi: "मुद्रा रूपांतरण के साथ विस्तृत लागत विवरण देखें और अपने शौक के बजट की योजना बनाना शुरू करें"
-  },
-  ready_start: {
-    en: "Ready to Start Your Hobby Journey?",
-    es: "¿Listo para Comenzar tu Aventura de Hobby?",
-    de: "Bereit, deine Hobby-Reise zu Beginnen?",
-    fr: "Prêt à Commencer votre Voyage de Loisir?",
-    pt: "Pronto para Começar sua Jornada de Hobby?",
-    ja: "趣味の旅を始める準備はできましたか？",
-    ar: "هل أنت مستعد لبدء رحلة هوايتك؟",
-    hi: "अपनी शौक यात्रा शुरू करने के लिए तैयार हैं?"
-  },
-  ready_start_desc: {
-    en: "Get accurate cost estimates and start planning your dream hobby today",
-    es: "Obtén estimaciones de costo precisas y comienza a planificar tu hobby soñado hoy",
-    de: "Erhalte genaue Kostenschätzungen und beginne heute dein Traumhobby zu planen",
-    fr: "Obtenez des estimations de coût précises et commencez à planifier votre loisir de rêve aujourd'hui",
-    pt: "Obtenha estimativas de custo precisas e comece a planejar seu hobby dos sonhos hoje",
-    ja: "正確なコスト見積もりを取得し、今日から夢の趣味の計画を始めましょう",
-    ar: "احصل على تقديرات تكلفة دقيقة وابدأ في تخطيط هوايتك المثلى اليوم",
-    hi: "सटीक लागत अनुमान प्राप्त करें और आज ही अपने सपनों के शौक की योजना बनाना शुरू करें"
-  },
-  footer_tagline: {
-    en: "The most comprehensive and accurate hobby cost calculator. Calculate startup costs for 50+ hobbies with real-time currency conversion.",
-    es: "La calculadora de costos de hobbies más completa y precisa. Calcula costos iniciales para 50+ hobbies con conversión de moneda en tiempo real.",
-    de: "Der umfassendste und genaueste Hobby-Kostenrechner. Berechne Startkosten für 50+ Hobbys mit Echtzeit-Währungsumrechnung.",
-    fr: "Le calculateur de coût de loisirs le plus complet et précis. Calculez les coûts de démarrage pour 50+ loisirs avec conversion de devises en temps réel.",
-    pt: "A calculadora de custos de hobby mais abrangente e precisa. Calcule custos iniciais para 50+ hobbies com conversão de moeda em tempo real.",
-    ja: "最も包括的で正確な趣味コスト計算機。リアルタイム通貨換算で50以上の趣味のスタートアップコストを計算。",
-    ar: "أكثر حاسبة تكلفة الهوايات شمولاً ودقة. احسب تكاليف البدء لأكثر من 50 هواية مع تحويل العملة في الوقت الفعلي.",
-    hi: "सबसे व्यापक और सटीक शौक लागत कैलकुलेटर। रियल-टाइम मुद्रा रूपांतरण के साथ 50+ शौक के लिए स्टार्टअप लागत की गणना करें।"
-  },
-  quick_links: {
-    en: "Quick Links",
-    es: "Enlaces Rápidos",
-    de: "Schnelllinks",
-    fr: "Liens Rapides",
-    pt: "Links Rápidos",
-    ja: "クイックリンク",
-    ar: "روابط سريعة",
-    hi: "त्वरित लिंक"
-  },
-  home: {
-    en: "Home",
-    es: "Inicio",
-    de: "Startseite",
-    fr: "Accueil",
-    pt: "Início",
-    ja: "ホーム",
-    ar: "الرئيسية",
-    hi: "होम"
-  },
-  all_hobbies: {
-    en: "All Hobbies",
-    es: "Todos los Hobbies",
-    de: "Alle Hobbys",
-    fr: "Tous les Loisirs",
-    pt: "Todos os Hobbies",
-    ja: "すべての趣味",
-    ar: "جميع الهوايات",
-    hi: "सभी शौक"
-  },
+  // Stats Section [cite: 27, 28, 29, 30]
+  stats_hobbies: { en: "Hobbies", es: "Hobbies", de: "Hobbys", fr: "Loisirs", pt: "Hobbies", ja: "趣味", ar: "هوايات", hi: "शौक" },
+  stats_languages: { en: "Languages", es: "Idiomas", de: "Sprachen", fr: "Langues", pt: "Idiomas", ja: "言語", ar: "لغات", hi: "भाषाएँ" },
+  stats_currencies: { en: "Currencies", es: "Monedas", de: "Währungen", fr: "Devises", pt: "Moedas", ja: "通貨", ar: "عملات", hi: "मुद्राएँ" },
+  stats_free: { en: "Free", es: "Gratis", de: "Kostenlos", fr: "Gratuit", pt: "Grátis", ja: "無料", ar: "مجاني", hi: "मुफ़्त" },
+  // Why Choose Us Section [cite: 15, 16, 17, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41]
+  why_choose: { en: "Why Choose HobbyCalc?", es: "¿Por qué elegir HobbyCalc?", de: "Warum HobbyCalc wählen?", fr: "Pourquoi choisir HobbyCalc?", pt: "Por que escolher HobbyCalc?", ja: "なぜHobbyCalcを選ぶのか？", ar: "لماذا تختار HobbyCalc؟", hi: "HobbyCalc क्यों चुनें?" },
+  why_choose_subtitle: { en: "The most comprehensive and accurate hobby cost calculator on the web", es: "La calculadora de costos de hobbies más completa y precisa en la web", de: "Der umfassendste und genaueste Hobby-Kosten-Rechner im Web", fr: "Le calculateur de coûts de loisirs le plus complet et le plus précis du web", pt: "A calculadora de custos de hobby mais abrangente e precisa da web", ja: "ウェブ上で最も包括的で正確な趣味の費用計算機", ar: "آلة حاسبة تكلفة الهوايات الأكثر شمولاً ودقة على الويب", hi: "वेब पर सबसे व्यापक और सटीक शौक लागत कैलकुलेटर" },
+  accurate_estimates: { en: "Accurate Cost Estimates", es: "Estimaciones de Costo Precisas", de: "Präzise Kostenschätzungen", fr: "Estimations de Coûts Précises", pt: "Estimativas de Custo Precisas", ja: "正確なコスト見積もり", ar: "تقديرات تكلفة دقيقة", hi: "सटीक लागत अनुमान" },
+  accurate_estimates_desc: { en: "Get detailed cost breakdowns from beginner to expert levels with real market prices", es: "Obtén desgloses detallados de costos desde principiante hasta experto con precios de mercado reales", de: "Erhalte detaillierte Kostenaufschlüsselungen von Anfänger- bis Expertenniveau zu realen Marktpreisen", fr: "Obtenez des ventilations de coûts détaillées du niveau débutant au niveau expert avec les prix réels du marché", pt: "Obtenha detalhamentos de custos detalhados dos níveis iniciante ao especialista com preços de mercado reais", ja: "初心者から専門家レベルまでの詳細なコスト内訳を実際の市場価格で入手", ar: "احصل على تفاصيل تكلفة مفصلة من المبتدئين إلى مستويات الخبراء بأسعار السوق الحقيقية", hi: "वास्तविक बाजार कीमतों के साथ शुरुआती से विशेषज्ञ स्तर तक विस्तृत लागत विवरण प्राप्त करें" },
+  multi_currency: { en: "Multi-Currency Support", es: "Soporte Multi-Moneda", de: "Multi-Währungsunterstützung", fr: "Support Multi-Devises", pt: "Suporte Multi-Moeda", ja: "多通貨対応", ar: "دعم العملات المتعددة", hi: "मल्टी-करेंसी सपोर्ट" },
+  multi_currency_desc: { en: "Convert costs to any currency with live exchange rates for accurate local pricing", es: "Convierte costos a cualquier moneda con tipos de cambio en vivo para precios locales precisos", de: "Wandle Kosten in jede Währung mit Live-Wechselkursen für genaue lokale Preise um", fr: "Convertissez les coûts dans n'importe quelle devise avec des taux de change en direct pour des prix locaux précis", pt: "Converta custos para qualquer moeda com taxas de câmbio ao vivo para preços locais precisos", ja: "ライブ為替レートでコストを任意の通貨に変換し、正確な現地価格設定を実現", ar: "حول التكاليف إلى أي عملة بأسعار صرف حية للحصول على أسعار محلية دقيقة", hi: "सटीक स्थानीय मूल्य निर्धारण के लिए लाइव विनिमय दरों के साथ लागत को किसी भी मुद्रा में परिवर्तित करें" },
+  completely_free: { en: "Completely Free", es: "Completamente Gratis", de: "Völlig Kostenlos", fr: "Complètement Gratuit", pt: "Completamente Grátis", ja: "完全無料", ar: "مجاني بالكامل", hi: "पूरी तरह मुफ्त" },
+  completely_free_desc: { en: "No hidden fees, subscriptions, or limits. Use forever without any cost", es: "Sin tarifas ocultas, suscripciones o límites. Usa para siempre sin ningún costo", de: "Keine versteckten Gebühren, Abonnements oder Limits. Für immer kostenlos nutzen", fr: "Pas de frais cachés, d'abonnements ou de limites. Utilisez pour toujours sans aucun coût", pt: "Sem taxas ocultas, assinaturas ou limites. Use para sempre sem nenhum custo", ja: "隠れた料金、サブスクリプション、制限はありません。永久に無料でご利用いただけます", ar: "لا توجد رسوم خفية أو اشتراكات أو حدود. استخدمه إلى الأبد دون أي تكلفة", hi: "कोई छिपी हुई फीस, सदस्यता या सीमा नहीं। बिना किसी लागत के हमेशा के लिए उपयोग करें" },
+  beginner_friendly: { en: "Beginner Friendly", es: "Amigable para Principiantes", de: "Anfängerfreundlich", fr: "Convivial pour les Débutants", pt: "Amigável para Iniciantes", ja: "初心者に優しい", ar: "مناسب للمبتدئين", hi: "शुरुआती के लिए अनुकूल" },
+  beginner_friendly_desc: { en: "Easy-to-use interface with helpful tips and guidance for every hobby", es: "Interfaz fácil de usar con consejos útiles y orientación para cada hobby", de: "Benutzerfreundliche Oberfläche mit hilfreichen Tipps und Anleitungen für jedes Hobby", fr: "Interface facile à utiliser avec des conseils utiles et des guides pour chaque loisir", pt: "Interface fácil de usar com dicas úteis e orientação para cada hobby", ja: "すべての趣味に役立つヒントとガイダンスを備えた使いやすいインターフェース", ar: "واجهة سهلة الاستخدام مع نصائح وإرشادات مفيدة لكل هواية", hi: "हर शौक के लिए उपयोगी टिप्स और मार्गदर्शन के साथ उपयोग में आसान इंटरफ़ेस" },
+  // Popular Hobbies Section [cite: 43, 44, 45, 46, 53, 57]
+  popular_hobbies: { en: "Popular Hobby Calculators", es: "Calculadoras de Hobbies Populares", de: "Beliebte Hobby-Rechner", fr: "Calculateurs de Loisirs Populaires", pt: "Calculadoras de Hobbies Populares", ja: "人気の趣味計算機", ar: "حاسبات الهوايات الشائعة", hi: "लोकप्रिय शौक कैलकुलेटर" },
+  popular_hobbies_subtitle: { en: "Start calculating costs for the most popular hobbies", es: "Comienza a calcular costos para los hobbies más populares", de: "Beginne mit der Kostenkalkulation für die beliebtesten Hobbys", fr: "Commencez à calculer les coûts pour les loisirs les plus populaires", pt: "Comece a calcular os custos dos hobbies mais populares", ja: "最も人気のある趣味のコスト計算を開始", ar: "ابدأ في حساب تكاليف الهوايات الأكثر شعبية", hi: "सबसे लोकप्रिय शौक के लिए लागत की गणना शुरू करें" },
+  search_hobbies: { en: "Search hobbies...", es: "Buscar hobbies...", de: "Hobbys suchen...", fr: "Rechercher des loisirs...", pt: "Pesquisar hobbies...", ja: "趣味を検索...", ar: "ابحث عن الهوايات...", hi: "शौक खोजें..." },
+  calculate_cost: { en: "Calculate Cost", es: "Calcular Costo", de: "Kosten berechnen", fr: "Calculer le Coût", pt: "Calcular Custo", ja: "コストを計算", ar: "احسب التكلفة", hi: "लागत की गणना करें" },
+  view_all_hobbies: { en: `View All ${hobbies.length} Hobbies`, es: `Ver Todos los ${hobbies.length} Hobbies`, de: `Alle ${hobbies.length} Hobbys anzeigen`, fr: `Voir les ${hobbies.length} Loisirs`, pt: `Ver Todos os ${hobbies.length} Hobbies`, ja: `全${hobbies.length}件の趣味を見る`, ar: `عرض كل الهوايات (${hobbies.length})`, hi: `सभी ${hobbies.length} शौक देखें` },
+  // How It Works Section [cite: 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69]
+  how_it_works: { en: "How It Works", es: "Cómo Funciona", de: "Wie es funktioniert", fr: "Comment Ça Marche", pt: "Como Funciona", ja: "仕組み", ar: "كيف يعمل", hi: "यह कैसे काम करता है" },
+  how_it_works_subtitle: { en: "Get accurate hobby costs in 3 simple steps", es: "Obtén costos precisos de hobbies en 3 simples pasos", de: "Erhalte genaue Hobby-Kosten in 3 einfachen Schritten", fr: "Obtenez des coûts de loisirs précis en 3 étapes simples", pt: "Obtenha custos de hobby precisos em 3 passos simples", ja: "3つの簡単なステップで正確な趣味のコストを取得", ar: "احصل على تكاليف هواية دقيقة في 3 خطوات بسيطة", hi: "3 सरल चरणों में सटीक शौक लागत प्राप्त करें" },
+  step1_title: { en: "Choose Your Hobby", es: "Elige tu Hobby", de: "Wähle dein Hobby", fr: "Choisissez Votre Loisir", pt: "Escolha Seu Hobby", ja: "趣味を選ぶ", ar: "اختر هوايتك", hi: "अपना शौक चुनें" },
+  step1_desc: { en: "Select from 50+ hobbies including photography, gaming, cooking, crafts, and more", es: "Selecciona entre 50+ hobbies incluyendo fotografía, gaming, cocina, manualidades y más", de: "Wähle aus über 50 Hobbys wie Fotografie, Gaming, Kochen, Basteln und mehr", fr: "Sélectionnez parmi plus de 50 loisirs, y compris la photographie, les jeux, la cuisine, l'artisanat, et plus encore", pt: "Selecione entre mais de 50 hobbies, incluindo fotografia, jogos, culinária, artesanato e muito mais", ja: "写真、ゲーム、料理、工芸など50以上の趣味から選択", ar: "اختر من بين أكثر من 50 هواية بما في ذلك التصوير الفوتوغرافي والألعاب والطبخ والحرف اليدوية والمزيد", hi: "फोटोग्राफी, गेमिंग, खाना पकाने, शिल्प, और अधिक सहित 50+ शौक में से चुनें" },
+  step2_title: { en: "Select Your Level", es: "Selecciona tu Nivel", de: "Wähle dein Level", fr: "Sélectionnez Votre Niveau", pt: "Selecione Seu Nível", ja: "レベルを選択", ar: "حدد مستواك", hi: "अपना स्तर चुनें" },
+  step2_desc: { en: "Choose beginner, intermediate, or advanced to get costs tailored to your experience level", es: "Elige principiante, intermedio o avanzado para obtener costos adaptados a tu nivel de experiencia", de: "Wähle Anfänger, Fortgeschrittener oder Experte, um Kosten zu erhalten, die auf dein Erfahrungsniveau zugeschnitten sind", fr: "Choisissez débutant, intermédiaire ou avancé pour obtenir des coûts adaptés à votre niveau d'expérience", pt: "Escolha iniciante, intermediário ou avançado para obter custos adaptados ao seu nível de experiência", ja: "あなたの経験レベルに合わせたコストを得るために、初心者、中級者、または上級者を選択してください", ar: "اختر مبتدئًا أو متوسطًا أو متقدمًا للحصول على تكاليف مصممة خصيصًا لمستوى خبرتك", hi: "अपने अनुभव स्तर के अनुरूप लागत प्राप्त करने के लिए शुरुआती, मध्यवर्ती या उन्नत चुनें" },
+  step3_title: { en: "Get Instant Results", es: "Obtén Resultados Instantáneos", de: "Erhalte sofortige Ergebnisse", fr: "Obtenez des Résultats Instantanés", pt: "Obtenha Resultados Instantâneos", ja: "すぐに結果を取得", ar: "احصل على نتائج فورية", hi: "तुरंत परिणाम प्राप्त करें" },
+  step3_desc: { en: "See detailed cost breakdowns with currency conversion and start planning your hobby budget", es: "Ve desgloses detallados de costos con conversión de moneda y comienza a planificar tu presupuesto de hobby", de: "Sieh dir detaillierte Kostenaufschlüsselungen mit Währungsumrechnung an und beginne mit der Planung deines Hobby-Budgets", fr: "Consultez les ventilations de coûts détaillées avec conversion de devises et commencez à planifier votre budget de loisir", pt: "Veja detalhamentos de custos detalhados com conversão de moeda e comece a planejar seu orçamento de hobby", ja: "通貨換算付きの詳細なコスト内訳を見て、趣味の予算計画を始めましょう", ar: "شاهد تفاصيل التكلفة المفصلة مع تحويل العملات وابدأ في التخطيط لميزانية هوايتك", hi: "मुद्रा रूपांतरण के साथ विस्तृत लागत विवरण देखें और अपने शौक के बजट की योजना बनाना शुरू करें" },
+  // Testimonials Section [cite: 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83]
+  testimonials_title: { en: "Trusted by Hobby Enthusiasts Worldwide", es: "Confiado por Entusiastas de Hobbies en Todo el Mundo", de: "Weltweit von Hobby-Enthusiasten geschätzt", fr: "Approuvé par les passionnés de loisirs du monde entier", pt: "Confiado por Entusiastas de Hobbies em Todo o Mundo", ja: "世界中の趣味愛好家から信頼されています", ar: "موثوق به من قبل عشاق الهوايات في جميع أنحاء العالم", hi: "दुनिया भर में शौक के प्रति उत्साही लोगों द्वारा विश्वसनीय" },
+  testimonial1_text: { en: "This calculator saved me hundreds of dollars! I thought photography would cost $2000+ but found great starter options for just $400.", es: "¡Este calculador me ahorró cientos de dólares! Pensé que la fotografía costaría $2000+ pero encontré excelentes opciones para principiantes por solo $400.", de: "Dieser Rechner hat mir Hunderte von Dollar gespart! Ich dachte, Fotografie würde über 2000 $ kosten, fand aber tolle Einsteigeroptionen für nur 400 $.", fr: "Ce calculateur m'a fait économiser des centaines de dollars ! Je pensais que la photographie coûterait plus de 2000 $, mais j'ai trouvé d'excellentes options de démarrage pour seulement 400 $.", pt: "Esta calculadora me economizou centenas de dólares! Eu pensei que a fotografia custaria mais de $2000, mas encontrei ótimas opções para iniciantes por apenas $400.", ja: "この計算機で数百ドル節約できました！写真撮影は2000ドル以上かかると思っていましたが、わずか400ドルで素晴らしいスターターオプションを見つけました。", ar: "هذه الآلة الحاسبة وفرت لي مئات الدولارات! اعتقدت أن التصوير سيكلف أكثر من 2000 دولار ولكني وجدت خيارات رائعة للمبتدئين مقابل 400 دولار فقط.", hi: "इस कैलकुलेटर ने मेरे सैकड़ों डॉलर बचाए! मुझे लगा था कि फोटोग्राफी में $2000+ का खर्च आएगा लेकिन मुझे सिर्फ $400 में बेहतरीन स्टार्टर विकल्प मिल गए।" },
+  testimonial1_author_job: { en: "Photography Enthusiast", es: "Entusiasta de Fotografía", de: "Fotografie-Enthusiastin", fr: "Passionnée de photographie", pt: "Entusiasta de Fotografia", ja: "写真愛好家", ar: "متحمس للتصوير الفوتوغرافي", hi: "फोटोग्राफी उत्साही" },
+  testimonial2_text: { en: "Perfect for budgeting! The currency conversion feature is amazing - I can see exact costs in my local currency.", es: "¡Perfecto para presupuestar! La función de conversión de moneda es increíble - puedo ver costos exactos en mi moneda local.", de: "Perfekt für die Budgetierung! Die Währungsumrechnungsfunktion ist erstaunlich - ich kann die genauen Kosten in meiner Landeswährung sehen.", fr: "Parfait pour la budgétisation ! La fonction de conversion de devises est incroyable - je peux voir les coûts exacts dans ma devise locale.", pt: "Perfeito para orçamentar! O recurso de conversão de moeda é incrível - posso ver os custos exatos na minha moeda local.", ja: "予算作成に最適！通貨換算機能は素晴らしく、現地通貨での正確なコストがわかります。", ar: "مثالي لوضع الميزانية! ميزة تحويل العملات رائعة - يمكنني رؤية التكاليف الدقيقة بعملتي المحلية.", hi: "बजट बनाने के लिए बिल्कुल सही! मुद्रा रूपांतरण सुविधा अद्भुत है - मैं अपनी स्थानीय मुद्रा में सटीक लागत देख सकता हूं।" },
+  testimonial2_author_job: { en: "Gaming Hobbyist", es: "Aficionado a los Juegos", de: "Gaming-Hobbyist", fr: "Passionné de jeux vidéo", pt: "Hobbista de Jogos", ja: "ゲーム愛好家", ar: "هاوي ألعاب", hi: "गेमिंग हॉबीस्ट" },
+  // Final CTA and Footer [cite: 118, 119, 120, 121, 122, 123, 124, 125]
+  final_cta_title: { en: "Ready to Start Your Hobby Journey?", es: "¿Listo para Comenzar tu Aventura de Hobby?", de: "Bereit, deine Hobby-Reise zu beginnen?", fr: "Prêt à commencer votre voyage de loisir ?", pt: "Pronto para Começar sua Jornada de Hobby?", ja: "趣味の旅を始める準備はできましたか？", ar: "هل أنت مستعد لبدء رحلة هوايتك؟", hi: "क्या आप अपने शौक की यात्रा शुरू करने के लिए तैयार हैं?" },
+  final_cta_subtitle: { en: "Get accurate cost estimates and start planning your dream hobby today", es: "Obtén estimaciones de costo precisas y comienza a planificar tu hobby soñado hoy", de: "Erhalte genaue Kostenschätzungen und beginne noch heute mit der Planung deines Traumhobbys", fr: "Obtenez des estimations de coûts précises et commencez à planifier votre loisir de rêve dès aujourd'hui", pt: "Obtenha estimativas de custos precisas e comece a planejar seu hobby dos sonhos hoje", ja: "正確なコスト見積もりを取得し、今日からあなたの夢の趣味の計画を始めましょう", ar: "احصل على تقديرات دقيقة للتكلفة وابدأ في التخطيط لهوايتك التي تحلم بها اليوم", hi: "सटीक लागत अनुमान प्राप्त करें और आज ही अपने सपनों के शौक की योजना बनाना शुरू करें" },
+};
+
+const getText = (key, currentLang) => translations[key]?.[currentLang] || translations[key]?.['en'];
+
+// Get featured hobbies (first 8 for better layout) - consider making this dynamic! 
+const featuredHobbies = hobbies.slice(0, 8);
+
+---
+<Layout 
+  title={getText('title', lang)} 
+  description={getText('description', lang)}
+  lang={lang}
+>
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    
+    <section class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-indigo-600/10 to-purple-600/10"></div>
+      <div class="relative max-w-7xl mx-auto px-4 py-16 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+          <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            {getText('hero_title', lang)}
+          </span>
+          <br />
+          <span class="text-3xl md:text-4xl text-gray-700">Instantly & Free</span> [cite: 23]
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8 leading-relaxed">
+          {getText('hero_subtitle', lang)}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <a 
+            href="#calculators" 
+            class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          >
+            🚀 {getText('start_calculating', lang)}
+          </a>
+          <a 
+            href={`/${lang}/hobbies`}
+            class="bg-white text-indigo-600 px-8 py-4 rounded-2xl text-lg font-semibold border-2 border-indigo-600 hover:bg-indigo-50 transition-all duration-300"
+          >
+            📋 {getText('browse_all', lang)}
+          </a>
+        </div>
+        <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-indigo-600">{hobbies.length}+</div>
+            <div class="text-sm text-gray-600">{getText('stats_hobbies', lang)}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-indigo-600">8</div>
+            <div class="text-sm text-gray-600">{getText('stats_languages', lang)}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-indigo-600">50+</div>
+            <div class="text-sm text-gray-600">{getText('stats_currencies', lang)}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-indigo-600">100%</div>
+            <div class="text-sm text-gray-600">{getText('stats_free', lang)}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="calculators" class="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            {getText('popular_hobbies', lang)}
+          </h2>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            {getText('popular_hobbies_subtitle', lang)}
+          </p>
+        </div>
+        <div class="max-w-md mx-auto mb-12">
+          <div class="relative">
+            <input 
+              type="text" 
+              id="hobby-search"
+              placeholder={getText('search_hobbies', lang)}
+              class="w-full px-4 py-3 pl-12 bg-white rounded-2xl shadow-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /> [cite: 47]
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div id="hobbies-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {featuredHobbies.map((hobby) => {
+            const name = hobby.name?.[lang] || hobby.name?.['en'];
+            const description = hobby.description?.[lang] || hobby.description?.['en'] || '';
+            const beginnerCost = hobby.breakdown?.beginner?.costRangeUSD?.[0];
+            if (!name) return null; [cite: 49]
+            
+            return (
+              <div class="hobby-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1" data-name={name.toLowerCase()}>
+                <a href={`/${lang}/hobbies/${hobby.id}`} class="block">
+                  <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                      <span class="text-4xl">{hobby.emoji || '🎨'}</span> [cite: 50]
+                      {beginnerCost && (
+                        <div class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-sm">
+                          ${beginnerCost}+ [cite: 51]
+                        </div>
+                      )}
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 leading-tight">{name}</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">{description}</p> [cite: 52]
+                    <div class="flex items-center justify-between">
+                      <span class="text-indigo-600 font-semibold text-sm">
+                        {getText('calculate_cost', lang)} →
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            );
+          })}
+        </div>
+        <div class="text-center mt-12">
+          <a 
+            href={`/${lang}/hobbies`}
+            class="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-2xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          >
+            📋 {getText('view_all_hobbies', lang)}
+          </a>
+        </div>
+      </div>
+    </section>
+    
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <div class="bg-gray-100 rounded-2xl p-8 text-center border-2 border-dashed border-gray-300">
+        <p class="text-gray-500 text-sm">Advertisement Space</p>
+        <p class="text-gray-400 text-xs mt-1">728x90 or 320x50 responsive ad unit</p> [cite: 58]
+      </div>
+    </div>
+    
+    <section class="py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{getText('how_it_works', lang)}</h2>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">{getText('how_it_works_subtitle', lang)}</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-2xl font-bold text-xl mb-6 shadow-lg">1</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-4">{getText('step1_title', lang)}</h3>
+            <p class="text-gray-600 leading-relaxed">{getText('step1_desc', lang)}</p>
+          </div>
+          <div class="text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-2xl font-bold text-xl mb-6 shadow-lg">2</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-4">{getText('step2_title', lang)}</h3>
+            <p class="text-gray-600 leading-relaxed">{getText('step2_desc', lang)}</p>
+          </div>
+          <div class="text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-2xl font-bold text-xl mb-6 shadow-lg">3</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-4">{getText('step3_title', lang)}</h3>
+            <p class="text-gray-600 leading-relaxed">{getText('step3_desc', lang)}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{getText('why_choose', lang)}</h2>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">{getText('why_choose_subtitle', lang)}</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-blue-100">
+            <div class="text-4xl mb-4">💰</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">{getText('accurate_estimates', lang)}</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">{getText('accurate_estimates_desc', lang)}</p>
+          </div>
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-green-100">
+            <div class="text-4xl mb-4">🌍</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">{getText('multi_currency', lang)}</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">{getText('multi_currency_desc', lang)}</p>
+          </div>
+          <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-purple-100">
+            <div class="text-4xl mb-4">✨</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">{getText('completely_free', lang)}</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">{getText('completely_free_desc', lang)}</p>
+          </div>
+          <div class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-orange-100">
+            <div class="text-4xl mb-4">🎓</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">{getText('beginner_friendly', lang)}</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">{getText('beginner_friendly_desc', lang)}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 bg-gradient-to-br from-indigo-50 to-purple-50">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{getText('testimonials_title', lang)}</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+            <p class="text-gray-700 mb-4 leading-relaxed">"{getText('testimonial1_text', lang)}"</p>
+            <div class="flex items-center">
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-white font-semibold">S</div>
+              <div class="ml-3">
+                <p class="font-semibold text-gray-900">Sarah M.</p>
+                <p class="text-sm text-gray-600">{getText('testimonial1_author_job', lang)}</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+            <p class="text-gray-700 mb-4 leading-relaxed">"{getText('testimonial2_text', lang)}"</p>
+            <div class="flex items-center">
+              <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-teal-400 rounded-full flex items-center justify-center text-white font-semibold">M</div>
+              <div class="ml-3">
+                <p class="font-semibold text-gray-900">Mike R.</p>
+                <p class="text-sm text-gray-600">{getText('testimonial2_author_job', lang)}</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+            <p class="text-gray-700 mb-4 leading-relaxed">"{getText('testimonial1_text', lang)}"</p>
+            <div class="flex items-center">
+              <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-400 rounded-full flex items-center justify-center text-white font-semibold">A</div>
+              <div class="ml-3">
+                <p class="font-semibold text-gray-900">Anna K.</p>
+                <p class="text-sm text-gray-600">{getText('testimonial1_author_job', lang)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    </div>
+</Layout>
