@@ -3,55 +3,87 @@
     {
       "id": "photography",
       "emoji": "📸",
-      "name": { "en": "Photography", "es": "Fotografía", "de": "Fotografie" },
-      "description": { "en": "Cameras, lenses, editing software, and accessories.", "es": "Cámaras, lentes, software de edición y accesorios." },
+      "name": {
+        "en": "Photography",
+        "es": "Fotografía",
+        "de": "Fotografie",
+        "fr": "Photographie",
+        "pt": "Fotografia",
+        "ja": "写真撮影",
+        "ar": "التصوير الفوتوغرافي",
+        "hi": "फ़ोटोग्राफ़ी"
+      },
+      "description": {
+        "en": "Cameras, lenses, editing software, and accessories.",
+        "es": "Cámaras, lentes, software de edición y accesorios.",
+        "de": "Kameras, Objektive, Bearbeitungssoftware und Zubehör.",
+        "fr": "Appareils photo, objectifs, logiciels de retouche et accessoires.",
+        "pt": "Câmeras, lentes, software de edição e acessórios.",
+        "ja": "カメラ、レンズ、編集ソフト、アクセサリー。",
+        "ar": "كاميرات وعدسات وبرامج تحرير وإكسسوارات.",
+        "hi": "कैमरे, लेंस, एडिटिंग सॉफ़्टवेयर और एक्सेसरीज़।"
+      },
       "breakdown": {
-        "beginner": {
-          "keyItems": [
-            { "name": { "en": "Entry-Level DSLR/Mirrorless" }, "cost": [400, 600], "desc": { "en": "Canon T8i, Sony a6100" }, "category": "essential" },
-            { "name": { "en": "Kit Lens (18-55mm)" }, "cost": [0, 200], "desc": { "en": "Usually included with camera." }, "category": "essential" },
-            { "name": { "en": "Memory Card (64GB)" }, "cost": [20, 40], "desc": { "en": "SanDisk or Lexar SD Card" }, "category": "essential" },
-            { "name": { "en": "Adobe Lightroom" }, "cost": [120, 120], "desc": { "en": "Photo editing software (per year)" }, "category": "software" }
-          ]
-        },
-        "intermediate": {
-          "keyItems": [
-            { "name": { "en": "Mid-Range Camera Body" }, "cost": [800, 1200], "desc": { "en": "Canon R10, Sony a6600" }, "category": "essential" },
-            { "name": { "en": "Prime Lens (50mm f/1.8)" }, "cost": [150, 300], "desc": { "en": "Great for portraits and low light" }, "category": "essential" },
-            { "name": { "en": "External Flash" }, "cost": [100, 300], "desc": { "en": "Godox V1, Profoto A10" }, "category": "essential" }
-          ]
-        },
-        "advanced": {
-          "keyItems": [
-            { "name": { "en": "Professional Full-Frame Camera" }, "cost": [2000, 4000], "desc": { "en": "Sony A7IV, Canon R5" }, "category": "essential" },
-            { "name": { "en": "Pro Zoom Lens (24-70mm f/2.8)" }, "cost": [1800, 2300], "desc": { "en": "The workhorse lens for pros" }, "category": "essential" }
-          ]
-        }
+        "beginner": { ... },
+        "intermediate": { ... },
+        "advanced": { ... }
       },
       "recommendedGear": {
         "en": [
-          { "name": { "en": "Canon EOS Rebel T8i" }, "price": 899, "link": "#" },
-          { "name": { "en": "Sony FE 50mm f/1.8 Lens" }, "price": 249, "link": "#" },
-          { "name": { "en": "Peak Design Everyday Sling" }, "price": 149, "link": "#" }
+          { "name": { "en": "Canon EOS Rebel T8i" }, "link": "#" },
+          { "name": { "en": "Sony FE 50mm f/1.8 Lens" }, "link": "#" },
+          { "name": { "en": "Peak Design Everyday Sling" }, "link": "#" }
         ]
       },
       "tips": {
         "en": [
-          { "title": "Buy Used Equipment", "desc": "You can save 30-50% on quality gear from reputable stores like KEH or MPB." },
-          { "title": "Start with a Kit Lens", "desc": "Learn its limits before buying expensive ones. Good lighting is more important than expensive glass." }
+          {
+            "title": "Buy Used Equipment",
+            "desc": "You can save 30-50% on quality gear from reputable stores like KEH or MPB."
+          },
+          {
+            "title": "Start with a Kit Lens",
+            "desc": "Learn its limits before buying expensive ones. Good lighting is more important than expensive glass."
+          }
+        ],
+        "es": [
+          { "title": "Compra equipo usado", "desc": "Puedes ahorrar 30-50% en equipos de calidad en tiendas confiables como KEH o MPB." },
+          { "title": "Empieza con un lente de kit", "desc": "Conoce sus límites antes de comprar otros. La iluminación importa más que el lente caro." }
+        ],
+        "de": [
+          { "title": "Gebrauchte Ausrüstung kaufen", "desc": "Sie können 30–50% bei Qualitätsgeräten sparen." },
+          { "title": "Beginnen Sie mit einem Kit-Objektiv", "desc": "Lernen Sie dessen Grenzen kennen, bevor Sie teure kaufen." }
         ]
       },
       "faq": {
         "en": [
-          { "q": "How much should a beginner spend?", "a": "For beginners, $500-800 is sufficient for a good camera body, kit lens, and basic accessories." },
-          { "q": "What's the most important equipment?", "a": "Start with a decent camera body and lens. Everything else can be added gradually as you develop your skills." }
+          { "q": "How much should a beginner spend?", "a": "For beginners, $500–800 is sufficient for a good camera body, kit lens, and basic accessories." },
+          { "q": "What's the most important equipment?", "a": "Start with a decent camera body and lens. Add more gear gradually as you grow." }
+        ],
+        "es": [
+          { "q": "¿Cuánto debe gastar un principiante?", "a": "Entre $500 y $800 son suficientes para empezar." },
+          { "q": "¿Cuál es el equipo más importante?", "a": "Comienza con una cámara decente y un lente." }
+        ],
+        "de": [
+          { "q": "Wieviel sollte ein Anfänger ausgeben?", "a": "500–800 $ sind ausreichend für den Einstieg." },
+          { "q": "Welches ist die wichtigste Ausrüstung?", "a": "Beginnen Sie mit Kamera und Objektiv." }
         ]
       },
       "stats": {
         "en": [
-          { "label": "Average startup cost", "value": "$650" },
-          { "label": "Time to learn basics", "value": "3-5 months" },
-          { "label": "Potential earnings", "value": "$25-200/hour" }
+          { "label": "Average startup cost", "value": "$650", "base": 650 },
+          { "label": "Time to learn basics", "value": "3–5 months" },
+          { "label": "Potential earnings", "value": "$25–200/hour", "baseMin": 25, "baseMax": 200 }
+        ],
+        "es": [
+          { "label": "Costo inicial promedio", "value": "$650", "base": 650 },
+          { "label": "Tiempo para aprender lo básico", "value": "3–5 meses" },
+          { "label": "Ganancias potenciales", "value": "$25–200/hora", "baseMin": 25, "baseMax": 200 }
+        ],
+        "de": [
+          { "label": "Durchschnittliche Anfangskosten", "value": "$650", "base": 650 },
+          { "label": "Zeit zum Erlernen der Grundlagen", "value": "3–5 Monate" },
+          { "label": "Potenzielle Einnahmen", "value": "$25–200/Stunde", "baseMin": 25, "baseMax": 200 }
         ]
       }
     }
