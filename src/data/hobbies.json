@@ -24,9 +24,27 @@
         "hi": "कैमरे, लेंस, एडिटिंग सॉफ़्टवेयर और एक्सेसरीज़।"
       },
       "breakdown": {
-        "beginner": { ... },
-        "intermediate": { ... },
-        "advanced": { ... }
+          "beginner": {
+          "keyItems": [
+            { "name": { "en": "Entry-Level DSLR/Mirrorless" }, "cost": [400, 600], "desc": { "en": "Canon T8i, Sony a6100" }, "category": "essential" },
+            { "name": { "en": "Kit Lens (18-55mm)" }, "cost": [0, 200], "desc": { "en": "Usually included with camera." }, "category": "essential" },
+            { "name": { "en": "Memory Card (64GB)" }, "cost": [20, 40], "desc": { "en": "SanDisk or Lexar SD Card" }, "category": "essential" },
+            { "name": { "en": "Adobe Lightroom" }, "cost": [120, 120], "desc": { "en": "Photo editing software (per year)" }, "category": "software" }
+          ]
+        },
+        "intermediate": {
+          "keyItems": [
+            { "name": { "en": "Mid-Range Camera Body" }, "cost": [800, 1200], "desc": { "en": "Canon R10, Sony a6600" }, "category": "essential" },
+            { "name": { "en": "Prime Lens (50mm f/1.8)" }, "cost": [150, 300], "desc": { "en": "Great for portraits and low light" }, "category": "essential" },
+            { "name": { "en": "External Flash" }, "cost": [100, 300], "desc": { "en": "Godox V1, Profoto A10" }, "category": "essential" }
+          ]
+        },
+        "advanced": {
+          "keyItems": [
+            { "name": { "en": "Professional Full-Frame Camera" }, "cost": [2000, 4000], "desc": { "en": "Sony A7IV, Canon R5" }, "category": "essential" },
+            { "name": { "en": "Pro Zoom Lens (24-70mm f/2.8)" }, "cost": [1800, 2300], "desc": { "en": "The workhorse lens for pros" }, "category": "essential" }
+          ]
+        }
       },
       "recommendedGear": {
         "en": [
