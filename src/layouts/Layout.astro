@@ -5,12 +5,59 @@ interface Props {
   description?: string;
   keywords?: string;
 }
+
 const { 
   title, 
   lang = 'en',
-  description = 'Calculate the true cost of your hobbies with our interactive cost calculator tools.',
-  keywords = 'hobby calculator, cost calculator, hobby expenses, budget planning'
+  description,
+  keywords
 } = Astro.props;
+
+// Multilingual meta content
+const metaContent = {
+  en: {
+    description: description || 'Calculate the true cost of your hobbies with our interactive cost calculator tools.',
+    keywords: keywords || 'hobby calculator, cost calculator, hobby expenses, budget planning, hobby costs',
+    siteName: 'HobbyCalc - Hobby Cost Calculator'
+  },
+  es: {
+    description: description || 'Calcula el costo real de tus pasatiempos con nuestras herramientas de calculadora de costos interactivas.',
+    keywords: keywords || 'calculadora de pasatiempos, calculadora de costos, gastos de pasatiempos, planificación de presupuesto',
+    siteName: 'HobbyCalc - Calculadora de Costos de Pasatiempos'
+  },
+  de: {
+    description: description || 'Berechnen Sie die wahren Kosten Ihrer Hobbys mit unseren interaktiven Kostenrechner-Tools.',
+    keywords: keywords || 'Hobby-Rechner, Kostenrechner, Hobby-Ausgaben, Budgetplanung',
+    siteName: 'HobbyCalc - Hobby-Kostenrechner'
+  },
+  fr: {
+    description: description || 'Calculez le coût réel de vos loisirs avec nos outils de calculatrice de coûts interactifs.',
+    keywords: keywords || 'calculatrice de loisirs, calculatrice de coûts, dépenses de loisirs, planification budgétaire',
+    siteName: 'HobbyCalc - Calculatrice de Coûts de Loisirs'
+  },
+  pt: {
+    description: description || 'Calcule o custo real dos seus hobbies com nossas ferramentas interativas de calculadora de custos.',
+    keywords: keywords || 'calculadora de hobbies, calculadora de custos, despesas de hobbies, planejamento orçamentário',
+    siteName: 'HobbyCalc - Calculadora de Custos de Hobbies'
+  },
+  ja: {
+    description: description || 'インタラクティブなコスト計算ツールで趣味の真のコストを計算しましょう。',
+    keywords: keywords || '趣味計算機, コスト計算機, 趣味の費用, 予算計画',
+    siteName: 'HobbyCalc - 趣味コスト計算機'
+  },
+  ar: {
+    description: description || 'احسب التكلفة الحقيقية لهواياتك باستخدام أدوات حاسبة التكلفة التفاعلية الخاصة بنا.',
+    keywords: keywords || 'حاسبة الهوايات, حاسبة التكلفة, مصاريف الهوايات, تخطيط الميزانية',
+    siteName: 'HobbyCalc - حاسبة تكلفة الهوايات'
+  },
+  hi: {
+    description: description || 'हमारे इंटरैक्टिव लागत कैलकुलेटर टूल्स के साथ अपने शौक की वास्तविक लागत की गणना करें।',
+    keywords: keywords || 'शौक कैलकुलेटर, लागत कैलकुलेटर, शौक खर्च, बजट योजना',
+    siteName: 'HobbyCalc - शौक लागत कैलकुलेटर'
+  }
+};
+
+const currentMeta = metaContent[lang] || metaContent.en;
 
 const languages = { 
   en: 'English', 
@@ -26,36 +73,10 @@ const languages = {
 // Create correct URL for other languages
 const currentPath = Astro.url.pathname;
 const pathWithoutLang = currentPath.startsWith(`/${lang}`) ? currentPath.substring(3) : currentPath;
-
-// Generate structured data for SEO
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": title,
-  "url": Astro.url.href,
-  "description": currentMeta.description,
-  "inLanguage": lang,
-  "applicationCategory": "FinanceApplication",
-  "operatingSystem": "Web Browser",
-  "author": {
-    "@type": "Organization",
-    "name": currentMeta.author,
-    "url": `${Astro.site}${lang}/`
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  },
-  "potentialAction": {
-    "@type": "UseAction",
-    "target": Astro.url.href
-  }
-};
 ---
 
 <!doctype html>
-<html lang={lang} data-theme="light" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+<html lang={lang} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -63,167 +84,101 @@ const structuredData = {
     
     <!-- Primary Meta Tags -->
     <title>{title}</title>
-    <meta name="title" content={title} />
-    <meta name="description" content={description} />
-    <meta name="keywords" content={keywords} />
-    <meta name="author" content="HobbyCalc" />
+    <meta name="description" content={currentMeta.description} />
+    <meta name="keywords" content={currentMeta.keywords} />
+    <meta name="language" content={lang} />
     
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={Astro.url} />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:site_name" content="HobbyCalc" />
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={Astro.url} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    
-    <!-- Favicon and Icons -->
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <meta property="og:description" content={currentMeta.description} />
+    <meta property="og:site_name" content={currentMeta.siteName} />
     
     <!-- Canonical URL -->
     <link rel="canonical" href={Astro.url} />
     
-    <!-- Alternate Language Links -->
-    {Object.keys(languages).map(code => (
-      <link rel="alternate" hreflang={code} href={`${Astro.site}${code}${pathWithoutLang}`} />
-    ))}
-    
-    <!-- Structured Data -->
-    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
-    
-    <!-- Styles -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    
-    <!-- Tailwind CSS via CDN for faster loading -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'system-ui', 'sans-serif'],
-            },
-            animation: {
-              'fade-in': 'fadeIn 0.5s ease-in-out',
-              'slide-up': 'slideUp 0.3s ease-out',
-              'bounce-in': 'bounceIn 0.6s ease-out',
-            },
-            keyframes: {
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
-              slideUp: {
-                '0%': { transform: 'translateY(10px)', opacity: '0' },
-                '100%': { transform: 'translateY(0)', opacity: '1' },
-              },
-              bounceIn: {
-                '0%': { transform: 'scale(0.3)', opacity: '0' },
-                '50%': { transform: 'scale(1.05)' },
-                '70%': { transform: 'scale(0.9)' },
-                '100%': { transform: 'scale(1)', opacity: '1' },
-              },
-            }
-          }
-        }
+    
+    <!-- Custom CSS -->
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
       }
-    </script>
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      }
+      .fade-in {
+        animation: fadeIn 0.5s ease-in;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
   </head>
-  <body class="font-sans antialiased bg-gray-50 min-h-screen">
-    <!-- Skip to main content for accessibility -->
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-indigo-600 text-white px-4 py-2 rounded-lg z-50">
-      Skip to main content
-    </a>
-
+  
+  <body class="bg-gray-50 min-h-screen">
     <!-- Navigation -->
-    <nav class="bg-white/95 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-200 shadow-sm">
+    <nav class="bg-white shadow-sm sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-4">
         <div class="flex justify-between items-center h-16">
           <!-- Logo -->
-          <div class="flex items-center">
-            <a href={`/${lang}/`} class="flex items-center space-x-2 text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hover:from-indigo-700 hover:to-purple-700 transition-all duration-300">
-              <span class="text-2xl">🎨</span>
-              <span>HobbyCalc</span>
-            </a>
-          </div>
+          <a href={`/${lang}/`} class="flex items-center space-x-2 text-xl font-bold text-indigo-600 hover:text-indigo-700">
+            <span class="text-2xl">🎨</span>
+            <span>HobbyCalc</span>
+          </a>
 
           <!-- Desktop Navigation -->
-          <div class="hidden md:flex items-center space-x-8">
-            <a href={`/${lang}/`} class="text-gray-700 hover:text-indigo-600 font-medium transition-colors duration-200">
-              Home
-            </a>
-            <a href={`/${lang}/hobbies`} class="text-gray-700 hover:text-indigo-600 font-medium transition-colors duration-200">
-              All Hobbies
-            </a>
-            <a href={`/${lang}/about`} class="text-gray-700 hover:text-indigo-600 font-medium transition-colors duration-200">
-              About
-            </a>
+          <div class="hidden md:flex items-center space-x-6">
+            <a href={`/${lang}/`} class="text-gray-700 hover:text-indigo-600 font-medium">Home</a>
+            <a href={`/${lang}/hobbies`} class="text-gray-700 hover:text-indigo-600 font-medium">All Hobbies</a>
             
             <!-- Language Selector -->
-            <div class="relative">
-              <details class="relative">
-                <summary class="flex items-center space-x-1 text-gray-700 hover:text-indigo-600 cursor-pointer font-medium transition-colors duration-200 list-none">
-                  <span class="text-sm">🌍</span>
-                  <span>{languages[lang]}</span>
-                  <svg class="w-4 h-4 ml-1 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  {Object.entries(languages).map(([code, name]) => (
-                    <a 
-                      href={`/${code}${pathWithoutLang}`} 
-                      class={`block px-4 py-2 text-sm hover:bg-indigo-50 hover:text-indigo-600 transition-colors duration-200 ${code === lang ? 'bg-indigo-50 text-indigo-600 font-semibold' : 'text-gray-700'}`}
-                    >
-                      {name}
-                    </a>
-                  ))}
-                </div>
-              </details>
-            </div>
+            <select 
+              id="lang-selector" 
+              class="bg-white border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              onchange="window.location.href = this.value"
+            >
+              {Object.entries(languages).map(([code, name]) => (
+                <option value={`/${code}${pathWithoutLang}`} selected={code === lang}>
+                  {name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <!-- Mobile Menu Button -->
-          <div class="md:hidden">
-            <button id="mobile-menu-btn" class="text-gray-700 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-lg p-2">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
+          <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="md:hidden hidden border-t border-gray-200 py-4">
+        <div id="mobile-menu" class="hidden md:hidden border-t py-4">
           <div class="space-y-2">
-            <a href={`/${lang}/`} class="block px-4 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors duration-200">
-              🏠 Home
-            </a>
-            <a href={`/${lang}/hobbies`} class="block px-4 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors duration-200">
-              🎯 All Hobbies
-            </a>
-            <a href={`/${lang}/about`} class="block px-4 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors duration-200">
-              ℹ️ About
-            </a>
-            <div class="border-t border-gray-200 pt-2 mt-2">
-              <p class="px-4 py-2 text-sm font-semibold text-gray-500">🌍 Language</p>
-              {Object.entries(languages).map(([code, name]) => (
-                <a 
-                  href={`/${code}${pathWithoutLang}`} 
-                  class={`block px-6 py-2 text-sm hover:bg-indigo-50 hover:text-indigo-600 transition-colors duration-200 ${code === lang ? 'bg-indigo-50 text-indigo-600 font-semibold' : 'text-gray-600'}`}
-                >
-                  {name}
-                </a>
-              ))}
+            <a href={`/${lang}/`} class="block px-4 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded">Home</a>
+            <a href={`/${lang}/hobbies`} class="block px-4 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded">All Hobbies</a>
+            <div class="px-4 py-2">
+              <select 
+                class="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                onchange="window.location.href = this.value"
+              >
+                {Object.entries(languages).map(([code, name]) => (
+                  <option value={`/${code}${pathWithoutLang}`} selected={code === lang}>
+                    {name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
@@ -231,27 +186,40 @@ const structuredData = {
     </nav>
 
     <!-- Main Content -->
-    <main id="main-content" class="animate-fade-in">
+    <main class="fade-in">
       <slot />
     </main>
 
-    <!-- Back to Top Button -->
+    <!-- Back to Top -->
     <button 
       id="back-to-top" 
-      class="fixed bottom-8 right-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-110 opacity-0 invisible z-30"
-      aria-label="Back to top"
+      class="fixed bottom-6 right-6 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 opacity-0 invisible transition-all duration-300 z-30"
     >
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
       </svg>
     </button>
 
-    <!-- Scripts -->
+    <!-- JavaScript -->
     <script>
       // Mobile menu toggle
       document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
         const menu = document.getElementById('mobile-menu');
-        menu.classList.toggle('hidden');
+        menu?.classList.toggle('hidden');
+      });
+
+      // Back to top button
+      const backToTop = document.getElementById('back-to-top');
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+          backToTop?.classList.remove('opacity-0', 'invisible');
+        } else {
+          backToTop?.classList.add('opacity-0', 'invisible');
+        }
+      });
+
+      backToTop?.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
 
       // Close mobile menu when clicking outside
@@ -262,120 +230,6 @@ const structuredData = {
           menu?.classList.add('hidden');
         }
       });
-
-      // Back to top functionality
-      const backToTopBtn = document.getElementById('back-to-top');
-      
-      window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) {
-          backToTopBtn.classList.remove('opacity-0', 'invisible');
-          backToTopBtn.classList.add('opacity-100', 'visible');
-        } else {
-          backToTopBtn.classList.add('opacity-0', 'invisible');
-          backToTopBtn.classList.remove('opacity-100', 'visible');
-        }
-      });
-
-      backToTopBtn?.addEventListener('click', () => {
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
-      });
-
-      // Smooth scroll for anchor links
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          e.preventDefault();
-          const target = document.querySelector(this.getAttribute('href'));
-          if (target) {
-            target.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-        });
-      });
-
-      // Add loading states for better UX
-      document.addEventListener('DOMContentLoaded', () => {
-        // Remove loading class if present
-        document.body.classList.remove('loading');
-        
-        // Add intersection observer for animations
-        const observerOptions = {
-          threshold: 0.1,
-          rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('animate-slide-up');
-              observer.unobserve(entry.target);
-            }
-          });
-        }, observerOptions);
-
-        // Observe elements that should animate
-        document.querySelectorAll('.animate-on-scroll').forEach(el => {
-          observer.observe(el);
-        });
-      });
-
-      // Performance optimization: Lazy load images
-      if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              const img = entry.target;
-              img.src = img.dataset.src;
-              img.classList.remove('lazy');
-              imageObserver.unobserve(img);
-            }
-          });
-        });
-
-        document.querySelectorAll('img[data-src]').forEach(img => {
-          imageObserver.observe(img);
-        });
-      }
     </script>
-
-    <!-- Performance optimizations -->
-    <script>
-      // Preload critical resources
-      const preloadLink = document.createElement('link');
-      preloadLink.rel = 'preload';
-      preloadLink.as = 'style';
-      preloadLink.href = 'https://cdn.tailwindcss.com';
-      document.head.appendChild(preloadLink);
-
-      // Service worker for caching (optional)
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('SW registered: ', registration);
-            })
-            .catch((registrationError) => {
-              console.log('SW registration failed: ', registrationError);
-            });
-        });
-      }
-    </script>
-
-    <!-- Analytics placeholder (replace with your analytics code) -->
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'GA_MEASUREMENT_ID');
-    </script>
-
-    <!-- Google AdSense (replace with your publisher ID) -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script>
   </body>
 </html>
