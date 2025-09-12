@@ -17,17 +17,14 @@ export function getStaticPaths() {
   return paths;
 }
 
-// --- Data Preparation Logic ---
+// --- Data Preparation ---
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
-if (!hobby) throw new Error(`Hobby not found: ${hobbyId}`);
 
-// prepare each level items
-const beginnerItems = hobby.breakdown?.beginner?.keyItems || [];
-const intermediateItems = hobby.breakdown?.intermediate?.keyItems || [];
-const advancedItems = hobby.breakdown?.advanced?.keyItems || [];
+// Default level
+const level = 'beginner';
 
-// server-side helper: pick text for current lang (fallback to en)
+// Helpers
 const getText = (field, fallback = '') => {
   if (!field) return fallback;
   if (typeof field === 'string') return field;
@@ -35,7 +32,6 @@ const getText = (field, fallback = '') => {
   if (field['en']) return field['en'];
   return fallback;
 };
-
 const getArray = (field) => {
   if (!field) return [];
   if (Array.isArray(field)) return field;
@@ -43,273 +39,89 @@ const getArray = (field) => {
   if (field['en']) return field['en'];
   return [];
 };
-
-// server-side formatting default: show USD on initial render
-const DEFAULT_CURRENCY = 'USD';
-const DEFAULT_RATE = currencyData.rates[DEFAULT_CURRENCY] || 1;
-const formatDefault = (value) => {
-  try {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: DEFAULT_CURRENCY, maximumFractionDigits: 0 }).format(value * DEFAULT_RATE);
-  } catch {
-    return `${Math.round(value * DEFAULT_RATE)} ${DEFAULT_CURRENCY}`;
-  }
-};
-
-// compute server-side totals for beginner (used as initial display)
-let srvTotalMin = 0;
-let srvTotalMax = 0;
-beginnerItems.forEach(item => {
-  if (item.category === 'essential' || item.category === 'software') {
-    srvTotalMin += item.cost[0];
-    srvTotalMax += item.cost[1] || item.cost[0];
-  }
-});
 ---
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
-  <div class="bg-gray-50 py-10">
+  <div class="bg-white py-8">
     <div class="max-w-7xl mx-auto px-4">
       <!-- Breadcrumb -->
-      <div class="text-sm text-gray-500 mb-4">
-        <a href={`/${lang}/`} class="hover:underline">Home</a> / 
-        <span>Hobbies</span> / 
-        <span class="font-medium text-gray-700">{getText(hobby.name)}</span>
+      <div class="text-sm breadcrumbs mb-4">
+        <ul>
+          <li><a href={`/${lang}/`}>Home</a></li>
+          <li><a href={`/${lang}/hobbies`}>Hobbies</a></li>
+          <li>{getText(hobby.name)}</li>
+        </ul>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Left Column -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
+        <!-- Main Content -->
         <div class="lg:col-span-2 space-y-8">
           <!-- Tabs + Currency -->
           <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div id="level-tabs" class="tabs tabs-boxed bg-gray-200 rounded-xl shadow-inner">
-              <button class="tab sm:tab-lg tab-active" data-level="beginner">Beginner</button>
-              <button class="tab sm:tab-lg" data-level="intermediate">Intermediate</button>
-              <button class="tab sm:tab-lg" data-level="advanced">Advanced</button>
+            <div class="flex gap-2 bg-gray-100 rounded-lg p-1">
+              <button class="tab-btn active px-4 py-2 rounded-md font-medium" data-level="beginner">Beginner</button>
+              <button class="tab-btn px-4 py-2 rounded-md font-medium" data-level="intermediate">Intermediate</button>
+              <button class="tab-btn px-4 py-2 rounded-md font-medium" data-level="advanced">Advanced</button>
             </div>
-
             <div>
-              <label class="block text-sm text-gray-600 mb-1">Convert Currency</label>
-              <select id="currency-select" class="select select-bordered w-40">
+              <label class="block text-sm font-semibold text-gray-600 mb-1">Convert Currency</label>
+              <select id="currency-select" class="select select-bordered w-32">
                 {Object.keys(currencyData.rates).map(c => (
-                  <option value={c} selected={c === DEFAULT_CURRENCY}>{c}</option>
+                  <option value={c}>{c}</option>
                 ))}
               </select>
             </div>
           </div>
 
-          <!-- BEGINNER section (visible by default) -->
-          <div class="level-section" data-level="beginner">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mt-6">
-              <div>
-                <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
-                {beginnerItems.filter(i => i.category === 'essential').map(item => (
-                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
-                        data-base-min={item.cost[0]} 
-                        data-base-max={item.cost[1] || item.cost[0]} 
-                        checked 
-                      />
-                      <div class="flex-1">
-                        <p class="font-medium">{getText(item.name)}</p>
-                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
-                      </div>
-                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
-                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
-                      </span>
-                    </label>
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
-                {beginnerItems.filter(i => i.category === 'software').map(item => (
-                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
-                        data-base-min={item.cost[0]} 
-                        data-base-max={item.cost[1] || item.cost[0]} 
-                        checked 
-                      />
-                      <div class="flex-1">
-                        <p class="font-medium">{getText(item.name)}</p>
-                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
-                      </div>
-                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
-                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
-                      </span>
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <!-- Items & Total -->
+          <div id="items-container" class="space-y-6"></div>
+          <div class="bg-indigo-700 text-white rounded-lg p-6 mt-8 text-center">
+            <h2 id="total-display" class="text-4xl font-bold">$0 - $0</h2>
           </div>
-
-          <!-- INTERMEDIATE section (hidden by default) -->
-          <div class="level-section hidden" data-level="intermediate">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mt-6">
-              <div>
-                <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
-                {intermediateItems.filter(i => i.category === 'essential').map(item => (
-                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
-                        data-base-min={item.cost[0]} 
-                        data-base-max={item.cost[1] || item.cost[0]} 
-                        checked 
-                      />
-                      <div class="flex-1">
-                        <p class="font-medium">{getText(item.name)}</p>
-                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
-                      </div>
-                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
-                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
-                      </span>
-                    </label>
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
-                {intermediateItems.filter(i => i.category === 'software').map(item => (
-                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
-                        data-base-min={item.cost[0]} 
-                        data-base-max={item.cost[1] || item.cost[0]} 
-                        checked 
-                      />
-                      <div class="flex-1">
-                        <p class="font-medium">{getText(item.name)}</p>
-                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
-                      </div>
-                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
-                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
-                      </span>
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <!-- ADVANCED section (hidden by default) -->
-          <div class="level-section hidden" data-level="advanced">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mt-6">
-              <div>
-                <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
-                {advancedItems.filter(i => i.category === 'essential').map(item => (
-                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
-                        data-base-min={item.cost[0]} 
-                        data-base-max={item.cost[1] || item.cost[0]} 
-                        checked 
-                      />
-                      <div class="flex-1">
-                        <p class="font-medium">{getText(item.name)}</p>
-                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
-                      </div>
-                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
-                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
-                      </span>
-                    </label>
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
-                {advancedItems.filter(i => i.category === 'software').map(item => (
-                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
-                    <label class="flex items-start gap-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
-                        data-base-min={item.cost[0]} 
-                        data-base-max={item.cost[1] || item.cost[0]} 
-                        checked 
-                      />
-                      <div class="flex-1">
-                        <p class="font-medium">{getText(item.name)}</p>
-                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
-                      </div>
-                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
-                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
-                      </span>
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <!-- Blue Total -->
-          <div class="bg-indigo-600 text-white rounded-xl shadow-lg p-6 text-center mt-6">
-            <h2 id="total-cost" class="text-4xl font-extrabold tracking-tight">
-              {formatDefault(srvTotalMin)} - {formatDefault(srvTotalMax)}
-            </h2>
-          </div>
-
-          <!-- Tips -->
-          {getArray(hobby.tips).length > 0 &&
-            <div class="bg-white rounded-xl shadow p-6">
-              <h2 class="text-2xl font-bold mb-4">💡 Money-Saving Tips</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {getArray(hobby.tips).map(tip => (
-                  <div class="bg-green-50 border border-green-200 rounded-lg p-4 hover:bg-green-100 transition">
-                    <h4 class="font-bold text-green-800">{getText(tip.title)}</h4>
-                    <p class="text-sm text-green-700">{getText(tip.desc)}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          }
 
           <!-- FAQ -->
           {getArray(hobby.faq).length > 0 &&
-            <div class="bg-white rounded-xl shadow p-6">
-              <h2 class="text-2xl font-bold mb-4">❓ Frequently Asked Questions</h2>
+            <div class="card bg-gray-50/60 shadow-lg p-4 sm:p-8 rounded-2xl">
+              <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
               <div class="space-y-2">
                 {getArray(hobby.faq).map((item, idx) => (
-                  <div class="border rounded-lg overflow-hidden">
-                    <button 
-                      type="button" 
-                      class="w-full text-left p-3 font-medium flex justify-between items-center bg-gray-50 hover:bg-gray-100"
-                      onclick={`this.nextElementSibling.classList.toggle('hidden')`}
-                    >
+                  <div class="border rounded-lg">
+                    <button class="w-full text-left px-4 py-2 font-medium bg-gray-100 hover:bg-gray-200 faq-toggle">
                       {getText(item.q)}
-                      <span class="text-gray-500">+</span>
                     </button>
-                    <div class="hidden p-3 text-sm text-gray-700 bg-white">{getText(item.a)}</div>
+                    <div class="hidden px-4 py-3 text-sm text-gray-700">{getText(item.a)}</div>
                   </div>
                 ))}
               </div>
             </div>
           }
+
+          <!-- Footer Links -->
+          <footer class="mt-10 text-sm text-gray-500 flex flex-wrap gap-4">
+            <a href={`/${lang}/about`}>About</a>
+            <a href={`/${lang}/privacy`}>Privacy Policy</a>
+            <a href={`/${lang}/terms`}>Terms of Service</a>
+            <a href={`/${lang}/disclaimer`}>Disclaimer</a>
+            <a href={`/${lang}/contact`}>Contact</a>
+          </footer>
         </div>
 
-        <!-- Right Column -->
+        <!-- Sidebar -->
         <div class="lg:col-span-1 space-y-8">
           {getArray(hobby.recommendedGear).length > 0 &&
-            <div class="bg-white rounded-xl shadow p-6">
-              <h3 class="text-lg font-bold mb-3">Recommended Gear</h3>
-              <div class="space-y-3">
+            <div class="card bg-gray-50/60 shadow-lg">
+              <div class="card-body">
+                <h3 class="card-title">Recommended Gear</h3>
                 {getArray(hobby.recommendedGear).map(gear => (
-                  <a href={gear.link} target="_blank" class="block rounded-lg p-3 hover:bg-gray-50 transition border">
-                    <p class="font-semibold text-gray-800">{getText(gear.name)}</p>
-                    <p class="text-xs text-indigo-600 mt-1">View on Amazon →</p>
+                  <a href={gear.link} target="_blank" class="block p-2 rounded-lg hover:bg-gray-100">
+                    <div class="flex gap-4 items-center">
+                      <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                      </div>
+                      <div>
+                        <p class="font-bold leading-tight">{getText(gear.name)}</p>
+                        <p class="text-xs text-indigo-600 font-semibold mt-1">View on Amazon →</p>
+                      </div>
+                    </div>
                   </a>
                 ))}
               </div>
@@ -317,25 +129,18 @@ beginnerItems.forEach(item => {
           }
 
           {getArray(hobby.stats).length > 0 &&
-            <div class="bg-white rounded-xl shadow p-6">
-              <h3 class="text-lg font-bold mb-3">{getText(hobby.name)} Stats</h3>
-              <ul class="space-y-2 mt-2">
-                {getArray(hobby.stats).map(stat => {
-                  const rawVal = getText(stat.value);
-                  const numeric = parseFloat(String(rawVal).replace(/[^0-9.]/g, ""));
-                  const isMoney = !isNaN(numeric) && String(rawVal).includes("$");
-                  return (
+            <div class="card bg-gray-50/60 shadow-lg">
+              <div class="card-body">
+                <h3 class="card-title">{getText(hobby.name)} Stats</h3>
+                <ul class="space-y-2 mt-2">
+                  {getArray(hobby.stats).map(stat => (
                     <li class="flex justify-between text-sm py-1 border-b border-gray-200/80">
                       <span class="text-gray-500">{getText(stat.label)}</span>
-                      {isMoney ? (
-                        <span class="font-semibold stat-price" data-base={numeric}>{rawVal}</span>
-                      ) : (
-                        <span class="font-semibold">{rawVal}</span>
-                      )}
+                      <span class="font-semibold">{getText(stat.value)}</span>
                     </li>
-                  );
-                })}
-              </ul>
+                  ))}
+                </ul>
+              </div>
             </div>
           }
         </div>
@@ -343,105 +148,82 @@ beginnerItems.forEach(item => {
     </div>
   </div>
 
-  <!-- Client script: tabs, currency, checkboxes, recalc -->
-  <script>
-    // embed rates and language
-    const RATES = ${JSON.stringify(currencyData.rates)};
-    const PAGE_LANG = ${JSON.stringify(lang)};
+  <!-- Scripts -->
+  <script define:vars={{ hobby, currencyData }}>
+    const rates = currencyData.rates;
+    let currentLevel = 'beginner';
+    let currentCurrency = 'USD';
 
-    // simple map from page lang -> Intl locale for formatting currency (good enough)
-    const LOCALE_MAP = {
-      en: 'en-US', es: 'es-ES', de: 'de-DE', fr: 'fr-FR',
-      pt: 'pt-BR', ja: 'ja-JP', ar: 'ar-SA', hi: 'hi-IN'
-    };
-    const locale = LOCALE_MAP[PAGE_LANG] || 'en-US';
-
+    const itemsContainer = document.getElementById('items-container');
+    const totalDisplay = document.getElementById('total-display');
     const currencySelect = document.getElementById('currency-select');
-    const tabs = document.querySelectorAll('#level-tabs button');
-    const levelSections = document.querySelectorAll('.level-section');
-    const totalEl = document.getElementById('total-cost');
 
-    // initialize currency selector from localStorage if present
-    const savedCurrency = localStorage.getItem('hc_currency') || '${DEFAULT_CURRENCY}';
-    if (currencySelect) {
-      currencySelect.value = savedCurrency;
-      currencySelect.addEventListener('change', () => {
-        localStorage.setItem('hc_currency', currencySelect.value);
-        recalc();
+    function renderItems(level) {
+      itemsContainer.innerHTML = '';
+      const data = hobby.breakdown?.[level]?.keyItems || [];
+      data.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between bg-white rounded-lg shadow p-3";
+        div.innerHTML = `
+          <label class="flex items-center gap-3 w-full">
+            <input type="checkbox" class="item-check" data-min="${item.cost[0]}" data-max="${item.cost[1] || item.cost[0]}" checked />
+            <div class="flex-1">
+              <p class="font-medium">${item.name.en}</p>
+              <p class="text-xs text-gray-500">${item.desc?.en || ''}</p>
+            </div>
+            <span class="item-price text-sm font-semibold text-gray-700">${formatPrice(item.cost[0], item.cost[1])}</span>
+          </label>
+        `;
+        itemsContainer.appendChild(div);
       });
+      updateTotal();
     }
 
-    // active level (persisted)
-    let activeLevel = localStorage.getItem('hc_level') || 'beginner';
-
-    function setActiveLevel(level) {
-      activeLevel = level;
-      localStorage.setItem('hc_level', level);
-      tabs.forEach(btn => {
-        if (btn.dataset.level === level) btn.classList.add('tab-active');
-        else btn.classList.remove('tab-active');
+    function formatPrice(min, max) {
+      const rate = rates[currentCurrency] || 1;
+      const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currentCurrency,
+        maximumFractionDigits: 0
       });
-      levelSections.forEach(sec => {
-        sec.classList.toggle('hidden', sec.dataset.level !== level);
-      });
-      recalc();
+      const minVal = formatter.format(min * rate);
+      const maxVal = formatter.format(max * rate);
+      return min === max ? minVal : `${minVal} - ${maxVal}`;
     }
 
-    // attach tab listeners
-    tabs.forEach(btn => {
-      btn.addEventListener('click', () => setActiveLevel(btn.dataset.level));
-    });
-
-    // format helper
-    function formatCurrency(value, currency) {
-      try {
-        return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value * (RATES[currency] || 1));
-      } catch {
-        return `${Math.round(value * (RATES[currency] || 1))} ${currency}`;
-      }
-    }
-
-    // recalc: only include checkboxes in active level
-    function recalc() {
-      const currency = currencySelect.value;
+    function updateTotal() {
       let min = 0, max = 0;
-
-      // iterate checkboxes only in active level
-      const selector = `.level-section[data-level="${activeLevel}"] .equipment-checkbox`;
-      document.querySelectorAll(selector).forEach(cb => {
-        const baseMin = parseFloat(cb.dataset.baseMin) || 0;
-        const baseMax = parseFloat(cb.dataset.baseMax) || baseMin;
-        if (cb.checked) {
-          min += baseMin;
-          max += baseMax;
-        }
-        // update item's shown price
-        const priceSpan = cb.closest('label').querySelector('.item-price');
-        if (priceSpan) {
-          priceSpan.textContent = baseMax > baseMin ? `${formatCurrency(baseMin, currency)} - ${formatCurrency(baseMax, currency)}` : formatCurrency(baseMin, currency);
-        }
+      document.querySelectorAll('.item-check:checked').forEach(chk => {
+        min += parseFloat(chk.dataset.min);
+        max += parseFloat(chk.dataset.max);
       });
-
-      // show totals
-      totalEl.textContent = `${formatCurrency(min, currency)} - ${formatCurrency(max, currency)}`;
-
-      // update stats that are money (elements with .stat-price and data-base)
-      document.querySelectorAll('.stat-price').forEach(el => {
-        const base = parseFloat(el.dataset.base);
-        if (!isNaN(base)) {
-          el.textContent = formatCurrency(base, currency);
-        }
-      });
+      totalDisplay.textContent = formatPrice(min, max);
     }
 
-    // attach checkbox listeners globally (works for all sections)
-    document.querySelectorAll('.equipment-checkbox').forEach(cb => {
-      cb.addEventListener('change', recalc);
+    // Events
+    document.addEventListener('change', e => {
+      if (e.target.classList.contains('item-check')) updateTotal();
+      if (e.target === currencySelect) {
+        currentCurrency = currencySelect.value;
+        renderItems(currentLevel);
+      }
+    });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'bg-indigo-600','text-white'));
+        btn.classList.add('active','bg-indigo-600','text-white');
+        currentLevel = btn.dataset.level;
+        renderItems(currentLevel);
+      });
+    });
+    document.querySelectorAll('.faq-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const content = btn.nextElementSibling;
+        content.classList.toggle('hidden');
+      });
     });
 
-    // initialize UI
-    setActiveLevel(activeLevel);
-    // ensure initial recalc uses saved currency
-    recalc();
+    // Init
+    renderItems(currentLevel);
   </script>
 </Layout>
