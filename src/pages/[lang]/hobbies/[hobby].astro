@@ -21,9 +21,8 @@ export function getStaticPaths() {
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
 
-const level = Astro.url.searchParams.get('level') || 'beginner';
-const currency = Astro.url.searchParams.get('currency') || 'USD';
-const rate = currencyData.rates[currency] || 1;
+const level = 'beginner'; // default view is beginner
+const currency = 'USD';
 
 // Helper functions
 const getText = (field, fallback = '') => {
@@ -41,225 +40,131 @@ const getArray = (field) => {
   if (field['en']) return field['en'];
   return [];
 };
-
-const formatCurrency = (value) => {
-  if (typeof value !== 'number') return '?';
-  try {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 0
-    }).format(value * rate);
-  } catch {
-    return `${(value * rate).toFixed(0)} ${currency}`;
-  }
-};
-
-// Calculate totals
-const currentItems = hobby.breakdown?.[level]?.keyItems || [];
-let totalMin = 0;
-let totalMax = 0;
-currentItems.forEach(item => {
-  if (item.category === 'essential' || item.category === 'software') {
-    totalMin += item.cost[0];
-    totalMax += item.cost[1] || item.cost[0];
-  }
-});
 ---
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
+  <div class="bg-gray-50 py-10">
     <div class="max-w-7xl mx-auto px-4">
-      <!-- Enhanced Breadcrumbs -->
-      <nav class="text-sm mb-6">
-        <ol class="flex items-center space-x-2 text-gray-500">
-          <li><a href={`/${lang}/`} class="hover:text-blue-600 transition-colors">🏠 Home</a></li>
-          <li class="text-gray-300">/</li>
-          <li><span class="hover:text-blue-600 transition-colors">🎯 Hobbies</span></li>
-          <li class="text-gray-300">/</li>
-          <li class="text-gray-900 font-medium">{getText(hobby.name)}</li>
-        </ol>
-      </nav>
-
-      <!-- Hero Section -->
-      <div class="text-center mb-8">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          💰 Cost of {getText(hobby.name)}
-        </h1>
-        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-          Calculate the exact cost to get started with your new hobby at different skill levels
-        </p>
+      <!-- Breadcrumb -->
+      <div class="text-sm text-gray-500 mb-4">
+        <a href={`/${lang}/`} class="hover:underline">Home</a> / 
+        <span>Hobbies</span> / 
+        <span class="font-medium text-gray-700">{getText(hobby.name)}</span>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column -->
         <div class="lg:col-span-2 space-y-8">
-          <!-- Enhanced Main Calculator -->
-          <div class="bg-white/80 backdrop-blur-sm shadow-2xl border border-white/20 p-6 sm:p-8 rounded-3xl">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-6 mb-8">
-              <!-- Enhanced Tabs -->
-              <div class="tabs-container">
-                <div class="flex bg-gray-100 rounded-2xl p-1.5">
-                  <button 
-                    class="tab-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 ease-out"
-                    data-level="beginner"
-                    data-active={level === 'beginner'}
-                  >
-                    🌱 Beginner
-                  </button>
-                  <button 
-                    class="tab-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 ease-out"
-                    data-level="intermediate"
-                    data-active={level === 'intermediate'}
-                  >
-                    ⚡ Intermediate
-                  </button>
-                  <button 
-                    class="tab-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 ease-out"
-                    data-level="advanced"
-                    data-active={level === 'advanced'}
-                  >
-                    🚀 Advanced
-                  </button>
-                </div>
-              </div>
-
-              <!-- Enhanced Currency Selector -->
-              <div class="currency-container">
-                <div class="relative">
-                  <select 
-                    id="currency-select" 
-                    class="appearance-none bg-white border-2 border-gray-200 rounded-xl px-4 py-3 pr-10 font-semibold text-gray-700 hover:border-blue-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all cursor-pointer"
-                  >
-                    {Object.keys(currencyData.rates).map(c => 
-                      <option value={c} selected={c === currency}>💱 {c}</option>
-                    )}
-                  </select>
-                  <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
+          <!-- Tabs + Currency -->
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div id="level-tabs" class="tabs tabs-boxed bg-gray-200 rounded-xl shadow-inner">
+              <button class="tab sm:tab-lg tab-active" data-level="beginner">Beginner</button>
+              <button class="tab sm:tab-lg" data-level="intermediate">Intermediate</button>
+              <button class="tab sm:tab-lg" data-level="advanced">Advanced</button>
             </div>
-
-            <div class="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-8"></div>
-
-            <!-- Equipment Lists -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div class="space-y-4">
-                <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                  🛠️ Essential Equipment
-                </h3>
-                <div class="space-y-3">
-                  {currentItems.filter(i => i.category === 'essential').map(item => (
-                    <div class="equipment-item bg-gray-50/80 rounded-xl p-4 border-2 border-transparent hover:border-blue-200 transition-all duration-200">
-                      <label class="flex items-start gap-4 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          class="checkbox-custom mt-1" 
-                          data-min={item.cost[0]} 
-                          data-max={item.cost[1] || item.cost[0]} 
-                          checked 
-                        />
-                        <div class="flex-1">
-                          <div class="font-semibold text-gray-900">{getText(item.name)}</div>
-                          <div class="text-sm text-gray-600 mt-1">{getText(item.desc)}</div>
-                        </div>
-                        <div class="text-right">
-                          <span class="font-bold text-blue-600 item-price">
-                            {formatCurrency(item.cost[0])} - {formatCurrency(item.cost[1] || item.cost[0])}
-                          </span>
-                        </div>
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div class="space-y-4">
-                <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                  💻 Software & Ongoing
-                </h3>
-                <div class="space-y-3">
-                  {currentItems.filter(i => i.category === 'software').map(item => (
-                    <div class="equipment-item bg-gray-50/80 rounded-xl p-4 border-2 border-transparent hover:border-blue-200 transition-all duration-200">
-                      <label class="flex items-start gap-4 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          class="checkbox-custom mt-1" 
-                          data-min={item.cost[0]} 
-                          data-max={item.cost[1] || item.cost[0]} 
-                          checked 
-                        />
-                        <div class="flex-1">
-                          <div class="font-semibold text-gray-900">{getText(item.name)}</div>
-                          <div class="text-sm text-gray-600 mt-1">{getText(item.desc)}</div>
-                        </div>
-                        <div class="text-right">
-                          <span class="font-bold text-green-600 item-price">
-                            {formatCurrency(item.cost[0])}
-                          </span>
-                        </div>
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <!-- Enhanced Total Cost Display -->
-            <div class="mt-12">
-              <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-8 text-center shadow-2xl">
-                <div class="mb-2 text-blue-100 font-medium">Total Investment</div>
-                <div id="total-cost" class="text-5xl font-bold mb-2">
-                  {formatCurrency(totalMin)} - {formatCurrency(totalMax)}
-                </div>
-                <div class="text-blue-100 text-sm">Click items above to customize your budget</div>
-              </div>
+            <div>
+              <label class="block text-sm text-gray-600 mb-1">Convert Currency</label>
+              <select id="currency-select" name="currency" class="select select-bordered w-40">
+                {Object.keys(currencyData.rates).map(c => <option value={c} selected={c === currency}>{c}</option>)}
+              </select>
             </div>
           </div>
 
-          <!-- Money-Saving Tips -->
+          <!-- Items Grid -->
+          {['beginner','intermediate','advanced'].map(lvl => {
+            const items = hobby.breakdown?.[lvl]?.keyItems || [];
+            return (
+              <div class="level-items" data-level={lvl} class:hidden={lvl !== level}>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mt-6">
+                  <div>
+                    <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
+                    {items.filter(i => i.category === 'essential').map(item => (
+                      <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            class="checkbox checkbox-primary equipment-checkbox mt-1" 
+                            data-min={item.cost[0]} 
+                            data-max={item.cost[1] || item.cost[0]} 
+                            checked 
+                          />
+                          <div class="flex-1">
+                            <p class="font-medium">{getText(item.name)}</p>
+                            <p class="text-xs text-gray-500">{getText(item.desc)}</p>
+                          </div>
+                          <span class="text-sm font-semibold text-gray-700 item-price">
+                            ${item.cost[0]} - ${item.cost[1] || item.cost[0]}
+                          </span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div>
+                    <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
+                    {items.filter(i => i.category === 'software').map(item => (
+                      <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            class="checkbox checkbox-primary equipment-checkbox mt-1" 
+                            data-min={item.cost[0]} 
+                            data-max={item.cost[1] || item.cost[0]} 
+                            checked 
+                          />
+                          <div class="flex-1">
+                            <p class="font-medium">{getText(item.name)}</p>
+                            <p class="text-xs text-gray-500">{getText(item.desc)}</p>
+                          </div>
+                          <span class="text-sm font-semibold text-gray-700 item-price">
+                            ${item.cost[0]}
+                          </span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          <!-- Blue Total -->
+          <div class="bg-indigo-600 text-white rounded-xl shadow-lg p-6 text-center mt-6">
+            <h2 id="total-cost" class="text-4xl font-extrabold tracking-tight">
+              $0 - $0
+            </h2>
+          </div>
+
+          <!-- Tips -->
           {getArray(hobby.tips).length > 0 &&
-            <div class="bg-white/80 backdrop-blur-sm shadow-xl border border-white/20 p-6 sm:p-8 rounded-3xl">
-               <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-                 💡 Money-Saving Tips
-               </h2>
-               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 {getArray(hobby.tips).map(tip => (
-                   <div class="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300">
-                     <h4 class="font-bold text-green-800 mb-3 flex items-center gap-2">
-                       💰 {getText(tip.title)}
-                     </h4>
-                     <p class="text-green-700">{getText(tip.desc)}</p>
-                   </div>
-                 ))}
-               </div>
+            <div class="bg-white rounded-xl shadow p-6">
+              <h2 class="text-2xl font-bold mb-4">💡 Money-Saving Tips</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {getArray(hobby.tips).map(tip => (
+                  <div class="bg-green-50 border border-green-200 rounded-lg p-4 hover:bg-green-100 transition">
+                    <h4 class="font-bold text-green-800">{getText(tip.title)}</h4>
+                    <p class="text-sm text-green-700">{getText(tip.desc)}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           }
 
-          <!-- FAQ Section -->
+          <!-- FAQ -->
           {getArray(hobby.faq).length > 0 &&
-            <div class="bg-white/80 backdrop-blur-sm shadow-xl border border-white/20 p-6 sm:p-8 rounded-3xl">
-              <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-                ❓ Frequently Asked Questions
-              </h2>
-              <div class="space-y-4">
+            <div class="bg-white rounded-xl shadow p-6">
+              <h2 class="text-2xl font-bold mb-4">❓ Frequently Asked Questions</h2>
+              <div class="space-y-2">
                 {getArray(hobby.faq).map((item, idx) => (
-                  <div class="faq-item border-2 border-gray-100 rounded-xl overflow-hidden hover:border-blue-200 transition-all duration-300">
+                  <div class="border rounded-lg overflow-hidden">
                     <button 
                       type="button" 
-                      class="faq-button w-full text-left p-6 font-semibold flex justify-between items-center hover:bg-gray-50 transition-colors"
-                      data-target={`faq-${idx}`}
+                      class="w-full text-left p-3 font-medium flex justify-between items-center bg-gray-50 hover:bg-gray-100"
+                      onclick={`this.nextElementSibling.classList.toggle('hidden')`}
                     >
-                      <span>{getText(item.q)}</span>
-                      <span class="faq-icon text-2xl text-blue-500 transition-transform duration-300">+</span>
+                      {getText(item.q)}
+                      <span class="text-gray-500">+</span>
                     </button>
-                    <div id={`faq-${idx}`} class="faq-content hidden">
-                      <div class="px-6 pb-6 text-gray-700 bg-gray-50/50">
-                        {getText(item.a)}
-                      </div>
-                    </div>
+                    <div class="hidden p-3 text-sm text-gray-700 bg-white">{getText(item.a)}</div>
                   </div>
                 ))}
               </div>
@@ -267,72 +172,42 @@ currentItems.forEach(item => {
           }
         </div>
 
-        <!-- Sidebar -->
+        <!-- Right Column -->
         <div class="lg:col-span-1 space-y-8">
-          <!-- Recommended Gear -->
           {getArray(hobby.recommendedGear).length > 0 &&
-            <div class="bg-white/80 backdrop-blur-sm shadow-xl border border-white/20 rounded-3xl overflow-hidden">
-              <div class="p-6">
-                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
-                  ⭐ Recommended Gear
-                </h3>
-                <div class="space-y-4">
-                  {getArray(hobby.recommendedGear).map(gear => (
-                    <a 
-                      href={gear.link} 
-                      target="_blank" 
-                      class="block p-4 rounded-xl hover:bg-blue-50 border-2 border-transparent hover:border-blue-200 transition-all duration-300 group"
-                    >
-                      <div class="flex gap-4 items-center">
-                        <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                          </svg>
-                        </div>
-                        <div class="flex-1">
-                          <p class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                            {getText(gear.name)}
-                          </p>
-                          <p class="text-sm text-blue-600 font-medium mt-1 flex items-center gap-1">
-                            🛒 View on Amazon
-                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                            </svg>
-                          </p>
-                        </div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
+            <div class="bg-white rounded-xl shadow p-6">
+              <h3 class="text-lg font-bold mb-3">Recommended Gear</h3>
+              <div class="space-y-3">
+                {getArray(hobby.recommendedGear).map(gear => (
+                  <a href={gear.link} target="_blank" class="block rounded-lg p-3 hover:bg-gray-50 transition border">
+                    <p class="font-semibold text-gray-800">{getText(gear.name)}</p>
+                    <p class="text-xs text-indigo-600 mt-1">View on Amazon →</p>
+                  </a>
+                ))}
               </div>
             </div>
           }
 
-          <!-- Stats -->
           {getArray(hobby.stats).length > 0 &&
-            <div class="bg-white/80 backdrop-blur-sm shadow-xl border border-white/20 rounded-3xl overflow-hidden">
-              <div class="p-6">
-                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
-                  📊 {getText(hobby.name)} Stats
-                </h3>
-                <div class="space-y-4">
-                  {getArray(hobby.stats).map(stat => {
-                    const rawVal = getText(stat.value);
-                    const numeric = parseFloat(rawVal.replace(/[^0-9.]/g, ""));
-                    const isMoney = !isNaN(numeric) && rawVal.includes("$");
-                    return (
-                      <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
-                        <span class="text-gray-600 font-medium">{getText(stat.label)}</span>
-                        {isMoney ? (
-                          <span class="font-bold text-blue-600 stat-price" data-value={numeric}>{rawVal}</span>
-                        ) : (
-                          <span class="font-bold text-gray-900">{rawVal}</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+            <div class="bg-white rounded-xl shadow p-6">
+              <h3 class="text-lg font-bold mb-3">{getText(hobby.name)} Stats</h3>
+              <ul class="space-y-2 mt-2">
+                {getArray(hobby.stats).map(stat => {
+                  const rawVal = getText(stat.value);
+                  const numeric = parseFloat(rawVal.replace(/[^0-9.]/g, ""));
+                  const isMoney = !isNaN(numeric) && rawVal.includes("$");
+                  return (
+                    <li class="flex justify-between text-sm py-1 border-b border-gray-200/80">
+                      <span class="text-gray-500">{getText(stat.label)}</span>
+                      {isMoney ? (
+                        <span class="font-semibold stat-price" data-value={numeric}>{rawVal}</span>
+                      ) : (
+                        <span class="font-semibold">{rawVal}</span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           }
         </div>
@@ -340,76 +215,13 @@ currentItems.forEach(item => {
     </div>
   </div>
 
-  <!-- Enhanced Styles -->
-  <style>
-    .tab-btn {
-      position: relative;
-      z-index: 1;
-    }
-    
-    .tab-btn[data-active="true"] {
-      background: linear-gradient(135deg, #3b82f6, #6366f1);
-      color: white;
-      box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3);
-      transform: translateY(-1px);
-    }
-    
-    .tab-btn[data-active="false"] {
-      color: #64748b;
-    }
-    
-    .tab-btn:hover:not([data-active="true"]) {
-      background: rgba(59, 130, 246, 0.1);
-      color: #3b82f6;
-    }
-    
-    .checkbox-custom {
-      width: 1.25rem;
-      height: 1.25rem;
-      border: 2px solid #d1d5db;
-      border-radius: 0.375rem;
-      background: white;
-      cursor: pointer;
-      position: relative;
-    }
-    
-    .checkbox-custom:checked {
-      background: linear-gradient(135deg, #3b82f6, #6366f1);
-      border-color: #3b82f6;
-    }
-    
-    .checkbox-custom:checked::after {
-      content: '✓';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      font-weight: bold;
-      font-size: 0.75rem;
-    }
-    
-    .faq-button[aria-expanded="true"] .faq-icon {
-      transform: rotate(45deg);
-    }
-    
-    .equipment-item:hover {
-      transform: translateY(-2px);
-    }
-  </style>
-
-  <!-- Enhanced JavaScript -->
-  <script define:vars={{ currencyData, lang }}>
+  <!-- Script -->
+  <script define:vars={{ currencyData }}>
     const currencySelect = document.getElementById("currency-select");
-    const checkboxes = document.querySelectorAll(".checkbox-custom");
+    const tabs = document.querySelectorAll("#level-tabs button");
+    const levelContainers = document.querySelectorAll(".level-items");
     const totalBox = document.getElementById("total-cost");
-    const tabButtons = document.querySelectorAll(".tab-btn");
-    const faqButtons = document.querySelectorAll(".faq-button");
-
-    // Get current URL parameters
-    const url = new URL(window.location);
-    const currentLevel = url.searchParams.get('level') || 'beginner';
-    const currentCurrency = url.searchParams.get('currency') || 'USD';
+    let activeLevel = "beginner";
 
     function format(value, currency) {
       try {
@@ -419,22 +231,15 @@ currentItems.forEach(item => {
           maximumFractionDigits: 0
         }).format(value * (currencyData.rates[currency] || 1));
       } catch {
-        return `${Math.round(value * (currencyData.rates[currency] || 1))} ${currency}`;
+        return `${value} ${currency}`;
       }
-    }
-
-    function updateURL(level, currency) {
-      const url = new URL(window.location);
-      url.searchParams.set('level', level);
-      url.searchParams.set('currency', currency);
-      window.location.href = url.toString();
     }
 
     function recalc() {
       const currency = currencySelect.value;
       let min = 0, max = 0;
 
-      checkboxes.forEach(cb => {
+      document.querySelectorAll(\`.level-items[data-level="\${activeLevel}"] .equipment-checkbox\`).forEach(cb => {
         const minVal = parseFloat(cb.dataset.min) || 0;
         const maxVal = parseFloat(cb.dataset.max) || minVal;
         if (cb.checked) {
@@ -442,131 +247,39 @@ currentItems.forEach(item => {
           max += maxVal;
         }
 
-        // Update per-item price with smooth animation
         const label = cb.closest("label").querySelector(".item-price");
         if (label) {
-          label.style.transition = 'all 0.3s ease';
           label.textContent = maxVal > minVal 
-            ? `${format(minVal, currency)} - ${format(maxVal, currency)}`
+            ? \`\${format(minVal, currency)} - \${format(maxVal, currency)}\`
             : format(minVal, currency);
         }
       });
 
-      // Update total with animation
-      totalBox.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-      totalBox.textContent = `${format(min, currency)} - ${format(max, currency)}`;
+      totalBox.textContent = \`\${format(min, currency)} - \${format(max, currency)}\`;
 
-      // Update stats prices
+      // stats update
       document.querySelectorAll(".stat-price").forEach(el => {
         const base = parseFloat(el.dataset.value);
         if (!isNaN(base)) {
-          el.style.transition = 'all 0.3s ease';
           el.textContent = format(base, currency);
         }
       });
     }
 
-    // Tab functionality
-    tabButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        const level = button.dataset.level;
-        const currency = currencySelect.value;
-        
-        // Add loading state
-        button.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-          updateURL(level, currency);
-        }, 150);
-      });
-    });
-
-    // Currency change with smooth transition
-    currencySelect.addEventListener("change", () => {
-      const level = currentLevel;
-      const currency = currencySelect.value;
-      
-      // Smooth transition effect
-      document.body.style.transition = 'opacity 0.3s ease';
-      document.body.style.opacity = '0.8';
-      
-      setTimeout(() => {
-        updateURL(level, currency);
-      }, 150);
-    });
-
-    // Checkbox changes with animations
-    checkboxes.forEach(cb => {
-      cb.addEventListener("change", () => {
-        const item = cb.closest('.equipment-item');
-        if (cb.checked) {
-          item.style.transform = 'scale(1.02)';
-          item.style.background = 'rgba(59, 130, 246, 0.05)';
-        } else {
-          item.style.transform = 'scale(1)';
-          item.style.background = '';
-        }
-        
-        setTimeout(() => {
-          item.style.transform = 'scale(1)';
-        }, 200);
-        
+    // Tab switching
+    tabs.forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeLevel = btn.dataset.level;
+        tabs.forEach(t => t.classList.remove("tab-active"));
+        btn.classList.add("tab-active");
+        levelContainers.forEach(c => c.classList.toggle("hidden", c.dataset.level !== activeLevel));
         recalc();
       });
     });
 
-    // FAQ functionality with smooth animations
-    faqButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        const targetId = button.dataset.target;
-        const content = document.getElementById(targetId);
-        const icon = button.querySelector('.faq-icon');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    currencySelect.addEventListener("change", recalc);
+    document.querySelectorAll(".equipment-checkbox").forEach(cb => cb.addEventListener("change", recalc));
 
-        if (isExpanded) {
-          // Collapse
-          content.style.maxHeight = content.scrollHeight + 'px';
-          content.offsetHeight; // Force reflow
-          content.style.maxHeight = '0px';
-          content.style.opacity = '0';
-          
-          setTimeout(() => {
-            content.classList.add('hidden');
-            content.style.maxHeight = '';
-            content.style.opacity = '';
-          }, 300);
-          
-          button.setAttribute('aria-expanded', 'false');
-          icon.style.transform = 'rotate(0deg)';
-        } else {
-          // Expand
-          content.classList.remove('hidden');
-          content.style.maxHeight = '0px';
-          content.style.opacity = '0';
-          content.style.transition = 'max-height 0.3s ease, opacity 0.3s ease';
-          
-          requestAnimationFrame(() => {
-            content.style.maxHeight = content.scrollHeight + 'px';
-            content.style.opacity = '1';
-          });
-          
-          setTimeout(() => {
-            content.style.maxHeight = '';
-          }, 300);
-          
-          button.setAttribute('aria-expanded', 'true');
-          icon.style.transform = 'rotate(45deg)';
-        }
-      });
-    });
-
-    // Initialize
     recalc();
-    
-    // Add smooth page load animation
-    document.body.style.opacity = '0';
-    document.addEventListener('DOMContentLoaded', () => {
-      document.body.style.transition = 'opacity 0.5s ease';
-      document.body.style.opacity = '1';
-    });
   </script>
 </Layout>
