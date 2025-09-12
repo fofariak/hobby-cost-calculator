@@ -20,11 +20,14 @@ export function getStaticPaths() {
 // --- Data Preparation Logic ---
 const { lang, hobby: hobbyId } = Astro.params;
 const hobby = hobbies.find(h => h.id === hobbyId);
+if (!hobby) throw new Error(`Hobby not found: ${hobbyId}`);
 
-const level = 'beginner'; // default view is beginner
-const currency = 'USD';
+// prepare each level items
+const beginnerItems = hobby.breakdown?.beginner?.keyItems || [];
+const intermediateItems = hobby.breakdown?.intermediate?.keyItems || [];
+const advancedItems = hobby.breakdown?.advanced?.keyItems || [];
 
-// Helper functions
+// server-side helper: pick text for current lang (fallback to en)
 const getText = (field, fallback = '') => {
   if (!field) return fallback;
   if (typeof field === 'string') return field;
@@ -40,6 +43,27 @@ const getArray = (field) => {
   if (field['en']) return field['en'];
   return [];
 };
+
+// server-side formatting default: show USD on initial render
+const DEFAULT_CURRENCY = 'USD';
+const DEFAULT_RATE = currencyData.rates[DEFAULT_CURRENCY] || 1;
+const formatDefault = (value) => {
+  try {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: DEFAULT_CURRENCY, maximumFractionDigits: 0 }).format(value * DEFAULT_RATE);
+  } catch {
+    return `${Math.round(value * DEFAULT_RATE)} ${DEFAULT_CURRENCY}`;
+  }
+};
+
+// compute server-side totals for beginner (used as initial display)
+let srvTotalMin = 0;
+let srvTotalMax = 0;
+beginnerItems.forEach(item => {
+  if (item.category === 'essential' || item.category === 'software') {
+    srvTotalMin += item.cost[0];
+    srvTotalMax += item.cost[1] || item.cost[0];
+  }
+});
 ---
 <Layout title={`Cost of ${getText(hobby.name)}`} lang={lang}>
   <div class="bg-gray-50 py-10">
@@ -61,76 +85,180 @@ const getArray = (field) => {
               <button class="tab sm:tab-lg" data-level="intermediate">Intermediate</button>
               <button class="tab sm:tab-lg" data-level="advanced">Advanced</button>
             </div>
+
             <div>
               <label class="block text-sm text-gray-600 mb-1">Convert Currency</label>
-              <select id="currency-select" name="currency" class="select select-bordered w-40">
-                {Object.keys(currencyData.rates).map(c => <option value={c} selected={c === currency}>{c}</option>)}
+              <select id="currency-select" class="select select-bordered w-40">
+                {Object.keys(currencyData.rates).map(c => (
+                  <option value={c} selected={c === DEFAULT_CURRENCY}>{c}</option>
+                ))}
               </select>
             </div>
           </div>
 
-          <!-- Items Grid -->
-          {['beginner','intermediate','advanced'].map(lvl => {
-            const items = hobby.breakdown?.[lvl]?.keyItems || [];
-            return (
-              <div class="level-items" data-level={lvl} class:hidden={lvl !== level}>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mt-6">
-                  <div>
-                    <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
-                    {items.filter(i => i.category === 'essential').map(item => (
-                      <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
-                        <label class="flex items-start gap-3 cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            class="checkbox checkbox-primary equipment-checkbox mt-1" 
-                            data-min={item.cost[0]} 
-                            data-max={item.cost[1] || item.cost[0]} 
-                            checked 
-                          />
-                          <div class="flex-1">
-                            <p class="font-medium">{getText(item.name)}</p>
-                            <p class="text-xs text-gray-500">{getText(item.desc)}</p>
-                          </div>
-                          <span class="text-sm font-semibold text-gray-700 item-price">
-                            ${item.cost[0]} - ${item.cost[1] || item.cost[0]}
-                          </span>
-                        </label>
+          <!-- BEGINNER section (visible by default) -->
+          <div class="level-section" data-level="beginner">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mt-6">
+              <div>
+                <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
+                {beginnerItems.filter(i => i.category === 'essential').map(item => (
+                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
+                        data-base-min={item.cost[0]} 
+                        data-base-max={item.cost[1] || item.cost[0]} 
+                        checked 
+                      />
+                      <div class="flex-1">
+                        <p class="font-medium">{getText(item.name)}</p>
+                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
                       </div>
-                    ))}
+                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
+                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
+                      </span>
+                    </label>
                   </div>
-
-                  <div>
-                    <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
-                    {items.filter(i => i.category === 'software').map(item => (
-                      <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
-                        <label class="flex items-start gap-3 cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            class="checkbox checkbox-primary equipment-checkbox mt-1" 
-                            data-min={item.cost[0]} 
-                            data-max={item.cost[1] || item.cost[0]} 
-                            checked 
-                          />
-                          <div class="flex-1">
-                            <p class="font-medium">{getText(item.name)}</p>
-                            <p class="text-xs text-gray-500">{getText(item.desc)}</p>
-                          </div>
-                          <span class="text-sm font-semibold text-gray-700 item-price">
-                            ${item.cost[0]}
-                          </span>
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
-            );
-          })}
+
+              <div>
+                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
+                {beginnerItems.filter(i => i.category === 'software').map(item => (
+                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
+                        data-base-min={item.cost[0]} 
+                        data-base-max={item.cost[1] || item.cost[0]} 
+                        checked 
+                      />
+                      <div class="flex-1">
+                        <p class="font-medium">{getText(item.name)}</p>
+                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
+                      </div>
+                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
+                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
+                      </span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <!-- INTERMEDIATE section (hidden by default) -->
+          <div class="level-section hidden" data-level="intermediate">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mt-6">
+              <div>
+                <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
+                {intermediateItems.filter(i => i.category === 'essential').map(item => (
+                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
+                        data-base-min={item.cost[0]} 
+                        data-base-max={item.cost[1] || item.cost[0]} 
+                        checked 
+                      />
+                      <div class="flex-1">
+                        <p class="font-medium">{getText(item.name)}</p>
+                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
+                      </div>
+                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
+                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
+                      </span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
+                {intermediateItems.filter(i => i.category === 'software').map(item => (
+                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
+                        data-base-min={item.cost[0]} 
+                        data-base-max={item.cost[1] || item.cost[0]} 
+                        checked 
+                      />
+                      <div class="flex-1">
+                        <p class="font-medium">{getText(item.name)}</p>
+                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
+                      </div>
+                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
+                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
+                      </span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <!-- ADVANCED section (hidden by default) -->
+          <div class="level-section hidden" data-level="advanced">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mt-6">
+              <div>
+                <h3 class="text-lg font-bold mb-2">Essential Equipment</h3>
+                {advancedItems.filter(i => i.category === 'essential').map(item => (
+                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
+                        data-base-min={item.cost[0]} 
+                        data-base-max={item.cost[1] || item.cost[0]} 
+                        checked 
+                      />
+                      <div class="flex-1">
+                        <p class="font-medium">{getText(item.name)}</p>
+                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
+                      </div>
+                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
+                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
+                      </span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <h3 class="text-lg font-bold mb-2">Software & Ongoing</h3>
+                {advancedItems.filter(i => i.category === 'software').map(item => (
+                  <div class="bg-white rounded-xl shadow p-3 mb-3 hover:shadow-md transition">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        class="checkbox checkbox-primary equipment-checkbox mt-1" 
+                        data-base-min={item.cost[0]} 
+                        data-base-max={item.cost[1] || item.cost[0]} 
+                        checked 
+                      />
+                      <div class="flex-1">
+                        <p class="font-medium">{getText(item.name)}</p>
+                        <p class="text-xs text-gray-500">{getText(item.desc)}</p>
+                      </div>
+                      <span class="text-sm font-semibold text-gray-700 item-price" data-base-min={item.cost[0]} data-base-max={item.cost[1] || item.cost[0]}>
+                        {formatDefault(item.cost[0])}{item.cost[1] ? ` - ${formatDefault(item.cost[1])}` : ''}
+                      </span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
           <!-- Blue Total -->
           <div class="bg-indigo-600 text-white rounded-xl shadow-lg p-6 text-center mt-6">
             <h2 id="total-cost" class="text-4xl font-extrabold tracking-tight">
-              $0 - $0
+              {formatDefault(srvTotalMin)} - {formatDefault(srvTotalMax)}
             </h2>
           </div>
 
@@ -194,13 +322,13 @@ const getArray = (field) => {
               <ul class="space-y-2 mt-2">
                 {getArray(hobby.stats).map(stat => {
                   const rawVal = getText(stat.value);
-                  const numeric = parseFloat(rawVal.replace(/[^0-9.]/g, ""));
-                  const isMoney = !isNaN(numeric) && rawVal.includes("$");
+                  const numeric = parseFloat(String(rawVal).replace(/[^0-9.]/g, ""));
+                  const isMoney = !isNaN(numeric) && String(rawVal).includes("$");
                   return (
                     <li class="flex justify-between text-sm py-1 border-b border-gray-200/80">
                       <span class="text-gray-500">{getText(stat.label)}</span>
                       {isMoney ? (
-                        <span class="font-semibold stat-price" data-value={numeric}>{rawVal}</span>
+                        <span class="font-semibold stat-price" data-base={numeric}>{rawVal}</span>
                       ) : (
                         <span class="font-semibold">{rawVal}</span>
                       )}
@@ -215,71 +343,105 @@ const getArray = (field) => {
     </div>
   </div>
 
-  <!-- Script -->
-  <script define:vars={{ currencyData }}>
-    const currencySelect = document.getElementById("currency-select");
-    const tabs = document.querySelectorAll("#level-tabs button");
-    const levelContainers = document.querySelectorAll(".level-items");
-    const totalBox = document.getElementById("total-cost");
-    let activeLevel = "beginner";
+  <!-- Client script: tabs, currency, checkboxes, recalc -->
+  <script>
+    // embed rates and language
+    const RATES = ${JSON.stringify(currencyData.rates)};
+    const PAGE_LANG = ${JSON.stringify(lang)};
 
-    function format(value, currency) {
+    // simple map from page lang -> Intl locale for formatting currency (good enough)
+    const LOCALE_MAP = {
+      en: 'en-US', es: 'es-ES', de: 'de-DE', fr: 'fr-FR',
+      pt: 'pt-BR', ja: 'ja-JP', ar: 'ar-SA', hi: 'hi-IN'
+    };
+    const locale = LOCALE_MAP[PAGE_LANG] || 'en-US';
+
+    const currencySelect = document.getElementById('currency-select');
+    const tabs = document.querySelectorAll('#level-tabs button');
+    const levelSections = document.querySelectorAll('.level-section');
+    const totalEl = document.getElementById('total-cost');
+
+    // initialize currency selector from localStorage if present
+    const savedCurrency = localStorage.getItem('hc_currency') || '${DEFAULT_CURRENCY}';
+    if (currencySelect) {
+      currencySelect.value = savedCurrency;
+      currencySelect.addEventListener('change', () => {
+        localStorage.setItem('hc_currency', currencySelect.value);
+        recalc();
+      });
+    }
+
+    // active level (persisted)
+    let activeLevel = localStorage.getItem('hc_level') || 'beginner';
+
+    function setActiveLevel(level) {
+      activeLevel = level;
+      localStorage.setItem('hc_level', level);
+      tabs.forEach(btn => {
+        if (btn.dataset.level === level) btn.classList.add('tab-active');
+        else btn.classList.remove('tab-active');
+      });
+      levelSections.forEach(sec => {
+        sec.classList.toggle('hidden', sec.dataset.level !== level);
+      });
+      recalc();
+    }
+
+    // attach tab listeners
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => setActiveLevel(btn.dataset.level));
+    });
+
+    // format helper
+    function formatCurrency(value, currency) {
       try {
-        return new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency,
-          maximumFractionDigits: 0
-        }).format(value * (currencyData.rates[currency] || 1));
+        return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value * (RATES[currency] || 1));
       } catch {
-        return `${value} ${currency}`;
+        return `${Math.round(value * (RATES[currency] || 1))} ${currency}`;
       }
     }
 
+    // recalc: only include checkboxes in active level
     function recalc() {
       const currency = currencySelect.value;
       let min = 0, max = 0;
 
-      document.querySelectorAll(\`.level-items[data-level="\${activeLevel}"] .equipment-checkbox\`).forEach(cb => {
-        const minVal = parseFloat(cb.dataset.min) || 0;
-        const maxVal = parseFloat(cb.dataset.max) || minVal;
+      // iterate checkboxes only in active level
+      const selector = `.level-section[data-level="${activeLevel}"] .equipment-checkbox`;
+      document.querySelectorAll(selector).forEach(cb => {
+        const baseMin = parseFloat(cb.dataset.baseMin) || 0;
+        const baseMax = parseFloat(cb.dataset.baseMax) || baseMin;
         if (cb.checked) {
-          min += minVal;
-          max += maxVal;
+          min += baseMin;
+          max += baseMax;
         }
-
-        const label = cb.closest("label").querySelector(".item-price");
-        if (label) {
-          label.textContent = maxVal > minVal 
-            ? \`\${format(minVal, currency)} - \${format(maxVal, currency)}\`
-            : format(minVal, currency);
+        // update item's shown price
+        const priceSpan = cb.closest('label').querySelector('.item-price');
+        if (priceSpan) {
+          priceSpan.textContent = baseMax > baseMin ? `${formatCurrency(baseMin, currency)} - ${formatCurrency(baseMax, currency)}` : formatCurrency(baseMin, currency);
         }
       });
 
-      totalBox.textContent = \`\${format(min, currency)} - \${format(max, currency)}\`;
+      // show totals
+      totalEl.textContent = `${formatCurrency(min, currency)} - ${formatCurrency(max, currency)}`;
 
-      // stats update
-      document.querySelectorAll(".stat-price").forEach(el => {
-        const base = parseFloat(el.dataset.value);
+      // update stats that are money (elements with .stat-price and data-base)
+      document.querySelectorAll('.stat-price').forEach(el => {
+        const base = parseFloat(el.dataset.base);
         if (!isNaN(base)) {
-          el.textContent = format(base, currency);
+          el.textContent = formatCurrency(base, currency);
         }
       });
     }
 
-    // Tab switching
-    tabs.forEach(btn => {
-      btn.addEventListener("click", () => {
-        activeLevel = btn.dataset.level;
-        tabs.forEach(t => t.classList.remove("tab-active"));
-        btn.classList.add("tab-active");
-        levelContainers.forEach(c => c.classList.toggle("hidden", c.dataset.level !== activeLevel));
-        recalc();
-      });
+    // attach checkbox listeners globally (works for all sections)
+    document.querySelectorAll('.equipment-checkbox').forEach(cb => {
+      cb.addEventListener('change', recalc);
     });
 
-    currencySelect.addEventListener("change", recalc);
-    document.querySelectorAll(".equipment-checkbox").forEach(cb => cb.addEventListener("change", recalc));
-
+    // initialize UI
+    setActiveLevel(activeLevel);
+    // ensure initial recalc uses saved currency
     recalc();
   </script>
 </Layout>
