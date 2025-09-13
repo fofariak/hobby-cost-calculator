@@ -365,6 +365,23 @@
     "calculateTrueCost": "हमारे इंटरैक्टिव टूल से अपने शौक की सच्ची लागत की गणना करें।",
     "allHobbies": "सभी शौक",
     "fixedPrice": "निर्धारित मूल्य",
-    "priceRange": "मूल्य सीमा"
+    "priceRange": "मूल्य सीमा",
+    "pageTitle": "अपना सही शौक खोजें",
+    "pageSubtitle": "लोकप्रिय शौक के लिए लागत कैलकुलेटर देखें और अपना अगला जुनून प्रोजेक्ट खोजें",
+    "searchPlaceholder": "शौक खोजें...",
+    "filterByCategory": "श्रेणी के अनुसार फ़िल्टर करें",
+    "filterByCost": "शुरुआती लागत के अनुसार फ़िल्टर करें",
+    "moneyMakingHobbies": "पैसा कमाने वाले शौक",
+    "allCategories": "सभी श्रेणियां",
+    "allCosts": "सभी लागतें",
+    "clearFilters": "फ़िल्टर साफ़ करें",
+    "hobbiesFound": "शौक मिले",
+    "calculateCost": "लागत की गणना करें",
+    "startingFrom": "शुरुआत से",
+    "canEarnMoney": "पैसा कमा सकता है",
+    "noHobbiesFound": "आपके मापदंडों से मेल खाने वाला कोई शौक नहीं मिला",
+    "tryDifferentFilters": "अपने फ़िल्टर या खोज शब्दों को समायोजित करने का प्रयास करें",
+    "popularHobbies": "लोकप्रिय शौक",
+    "trendingNow": "अब ट्रेंडिंग"
   }
 }
