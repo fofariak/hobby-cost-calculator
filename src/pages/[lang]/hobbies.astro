@@ -50,7 +50,7 @@ const categories = [
       de: 'Kreativ & Künstlerisch',
       fr: 'Créatif et Artistique',
       pt: 'Criativo e Artístico',
-      ja: 'クリエイティブ＆芸術',
+      ja: 'クリエイティブ&芸術',
       ar: 'إبداعي وفني',
       hi: 'रचनात्मक और कलात्मक'
     }
@@ -63,7 +63,7 @@ const categories = [
       de: 'Gesundheit & Wellness',
       fr: 'Santé et Bien-être',
       pt: 'Saúde e Bem-estar',
-      ja: '健康＆ウェルネス',
+      ja: '健康&ウェルネス',
       ar: 'الصحة والعافية',
       hi: 'स्वास्थ्य और कल्याण'
     }
@@ -76,7 +76,7 @@ const categories = [
       de: 'Outdoor & Abenteuer',
       fr: 'Plein Air et Aventure',
       pt: 'Ar Livre e Aventura',
-      ja: 'アウトドア＆アドベンチャー',
+      ja: 'アウトドア&アドベンチャー',
       ar: 'خارجي ومغامرات',
       hi: 'आउटडोर और एडवेंचर'
     }
@@ -89,7 +89,7 @@ const categories = [
       de: 'Technik & Digitales',
       fr: 'Technologie et Numérique',
       pt: 'Tecnologia e Digital',
-      ja: 'テクノロジー＆デジタル',
+      ja: 'テクノロジー&デジタル',
       ar: 'تقني ورقمي',
       hi: 'टेक और डिजिटल'
     }
@@ -102,7 +102,7 @@ const categories = [
       de: 'Heim & Heimwerken',
       fr: 'Maison et Bricolage',
       pt: 'Casa e Bricolage',
-      ja: 'ホーム＆DIY',
+      ja: 'ホーム&DIY',
       ar: 'المنزل والأعمال اليدوية',
       hi: 'घर और DIY'
     }
@@ -115,7 +115,7 @@ const categories = [
       de: 'Sammeln & Wissen',
       fr: 'Collection et Savoir',
       pt: 'Colecionismo e Conhecimento',
-      ja: '収集＆知識',
+      ja: '収集&知識',
       ar: 'الجمع والمعرفة',
       hi: 'संग्रह और ज्ञान'
     }
@@ -286,9 +286,40 @@ const hobbiesPageLabels = {
 };
 
 const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
+
+// SEO metadata
+const seoTitle = `${pageLabels.pageTitle} | Cost Calculator & Guides`;
+const seoDescription = `Discover startup costs for 100+ hobbies. Calculate expenses for photography, fitness, cooking, art, and more. Find your perfect hobby with our comprehensive cost guides.`;
+const seoKeywords = `hobby cost calculator, startup costs, hobby expenses, photography costs, fitness expenses, cooking budget, art supplies, hobby guide, beginner hobbies`;
 ---
 
-<Layout title={`${pageLabels.pageTitle} | HobbyCalc`} lang={lang}>
+<Layout title={seoTitle} description={seoDescription} lang={lang}>
+  <!-- SEO Meta Tags -->
+  <meta name="keywords" content={seoKeywords} />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content={seoTitle} />
+  <meta property="og:description" content={seoDescription} />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={seoTitle} />
+  <meta name="twitter:description" content={seoDescription} />
+  
+  <!-- Structured Data for SEO -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "HobbyCalc",
+      "description": "Calculate the true cost of starting any hobby with our comprehensive cost calculators and guides.",
+      "url": `https://hobbycalc.com/${lang}/hobbies`,
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": `https://hobbycalc.com/${lang}/hobbies?search={search_term_string}`,
+        "query-input": "required name=search_term_string"
+      }
+    }
+  </script>
+
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
     <!-- Hero Section -->
     <div class="relative overflow-hidden">
@@ -343,7 +374,7 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
             <select id="category-filter" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
               <option value="">{pageLabels.allCategories}</option>
               {categories.map(category => (
-                <option value={category}>{category}</option>
+                <option value={category.id}>{getText(category.label)}</option>
               ))}
             </select>
           </div>
@@ -409,20 +440,42 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
         <p class="text-gray-400 text-xs mt-1">{ui.adUnit728}</p>
       </div>
 
-      <!-- Popular Categories Section -->
-      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <!-- SEO Content Section -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8">
         <div class="p-6 bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
-          <h2 class="text-2xl font-bold text-gray-900">{pageLabels.popularHobbies}</h2>
-          <p class="text-gray-600 mt-2">{pageLabels.trendingNow}</p>
+          <h2 class="text-2xl font-bold text-gray-900">Why Calculate Hobby Costs?</h2>
+          <p class="text-gray-600 mt-2">Make informed decisions about your next passion project</p>
         </div>
         <div class="p-6">
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {categories.slice(0, 8).map(category => (
-              <button class="category-pill p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl hover:from-indigo-50 hover:to-purple-50 transition-all duration-300 text-left group border border-gray-200 hover:border-indigo-200">
-                <div class="text-2xl mb-2">🎨</div>
-                <div class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">{category}</div>
-              </button>
-            ))}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">Budget Planning</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                Understanding the true cost of a hobby helps you budget effectively and avoid unexpected expenses. 
+                Our calculators show both beginner and advanced costs so you can plan your hobby journey.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">Compare Options</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                Compare startup costs across different hobbies to find activities that fit your budget. 
+                Discover affordable alternatives to expensive hobbies without sacrificing enjoyment.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">Money-Making Potential</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                Some hobbies can become income sources. Our calculators highlight hobbies with earning potential 
+                and show you the investment needed to start monetizing your passion.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">Avoid Common Mistakes</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                Learn about essential vs. optional gear, quality considerations, and common beginner mistakes 
+                that can lead to overspending or frustration with your new hobby.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -467,15 +520,16 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
   </div>
 
   <!-- JavaScript -->
-  <script define:vars={{ hobbies, currencyData, costRanges, pageLabels, lang, ui }}>
+  <script define:vars={{ hobbies, currencyData, costRanges, pageLabels, lang, ui, categories }}>
     class HobbiesPage {
       constructor() {
-        this.hobbies = hobbies;
-        this.filteredHobbies = [...hobbies];
+        this.hobbies = hobbies.filter(hobby => hobby && hobby.id && hobby.name);
+        this.filteredHobbies = [...this.hobbies];
         this.pageLabels = pageLabels;
         this.lang = lang;
         this.ui = ui;
         this.costRanges = costRanges;
+        this.categories = categories;
         
         this.init();
       }
@@ -504,15 +558,6 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
         this.costFilter.addEventListener('change', () => this.applyFilters());
         this.moneyMakingFilter.addEventListener('change', () => this.applyFilters());
         this.clearFiltersBtn.addEventListener('click', () => this.clearAllFilters());
-        
-        // Category pill clicks
-        document.querySelectorAll('.category-pill').forEach((pill, index) => {
-          pill.addEventListener('click', () => {
-            const categories = [...new Set(this.hobbies.map(h => h.category).filter(Boolean))];
-            this.categoryFilter.value = categories[index];
-            this.applyFilters();
-          });
-        });
       }
 
       getText(field, fallback = '') {
@@ -523,17 +568,10 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
         return fallback;
       }
 
-      getMinCost(hobby) {
-        if (!hobby.breakdown) return 0;
-        const beginnerItems = hobby.breakdown.beginner?.keyItems || [];
-        if (beginnerItems.length === 0) return 0;
-        return Math.min(...beginnerItems.map(item => item.cost[0]));
-      }
-
       getTotalMinCost(hobby) {
-        if (!hobby.breakdown) return 0;
-        const beginnerItems = hobby.breakdown.beginner?.keyItems || [];
-        return beginnerItems.reduce((total, item) => total + item.cost[0], 0);
+        if (!hobby.breakdown || !hobby.breakdown.beginner) return 0;
+        const beginnerItems = hobby.breakdown.beginner.keyItems || [];
+        return beginnerItems.reduce((total, item) => total + (item.cost[0] || 0), 0);
       }
 
       formatPrice(amount) {
@@ -567,14 +605,16 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
             const costRange = this.costRanges.find(r => r.id === selectedCost);
             if (costRange) {
               const totalMinCost = this.getTotalMinCost(hobby);
-              if (totalMinCost < costRange.min || totalMinCost > costRange.max) {
+              if (selectedCost === 'free' && totalMinCost !== 0) {
+                return false;
+              } else if (selectedCost !== 'free' && (totalMinCost < costRange.min || totalMinCost > costRange.max)) {
                 return false;
               }
             }
           }
 
           // Money-making filter
-          if (moneyMakingOnly && !hobby.isMakingMoney) {
+          if (moneyMakingOnly && !hobby.canEarnMoney) {
             return false;
           }
 
@@ -605,6 +645,11 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
         }
       }
 
+      getCategoryLabel(categoryId) {
+        const category = this.categories.find(cat => cat.id === categoryId);
+        return category ? this.getText(category.label) : categoryId;
+      }
+
       renderHobbies() {
         this.hobbiesGrid.innerHTML = '';
         
@@ -618,10 +663,10 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
               <div class="h-48 bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
                 <div class="text-6xl">${hobby.icon || '🎨'}</div>
               </div>
-              ${hobby.isMakingMoney ? `
+              ${hobby.canEarnMoney ? `
                 <div class="absolute top-3 right-3">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    💰 ${this.pageLabels.isMakingMoney}
+                    💰 ${this.pageLabels.canEarnMoney}
                   </span>
                 </div>
               ` : ''}
@@ -640,7 +685,7 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
                 </div>
                 ${hobby.category ? `
                   <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                    ${hobby.category}
+                    ${this.getCategoryLabel(hobby.category)}
                   </span>
                 ` : ''}
               </div>
@@ -683,15 +728,6 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
     .hobby-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    }
-
-    .category-pill {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .category-pill:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     }
 
     /* Smooth scrolling */
@@ -778,12 +814,6 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
     /* Card content spacing */
     .hobby-card p {
       line-height: 1.6;
-    }
-
-    /* Badge styling */
-    .badge {
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.8);
     }
 
     /* Grid responsive behavior */
