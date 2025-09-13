@@ -148,8 +148,8 @@ const formatUIText = (text, hobby) => {
           {getArray(hobby.tips).length > 0 && (
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8">
               <div class="p-6 bg-gradient-to-r from-emerald-50 to-green-50 border-b">
-                <h2 class="text-2xl font-bold text-gray-900">{ui.tips || 'Tips & Tricks'}</h2>
-                <p class="text-gray-600 mt-2">{formatUIText(ui.tipsSubtitle || 'Helpful advice to get started with {hobby}', hobby)}</p>
+                <h2 class="text-2xl font-bold text-gray-900">{ui.tips}</h2>
+                <p class="text-gray-600 mt-2">{formatUIText(ui.tipsSubtitle, hobby)}</p>
               </div>
               <div class="divide-y divide-gray-100">
                 {getArray(hobby.tips).map((tip, idx) => (
