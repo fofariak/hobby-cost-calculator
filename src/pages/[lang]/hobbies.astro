@@ -41,7 +41,86 @@ const formatUIText = (text, hobby) => {
 };
 
 // Get unique categories and cost ranges for filters
-const categories = [...new Set(hobbies.map(h => h.category).filter(Boolean))];
+const categories = [
+  {
+    id: 'creative-artistic',
+    label: {
+      en: 'Creative & Artistic',
+      es: 'Creativo y Artístico',
+      de: 'Kreativ & Künstlerisch',
+      fr: 'Créatif et Artistique',
+      pt: 'Criativo e Artístico',
+      ja: 'クリエイティブ＆芸術',
+      ar: 'إبداعي وفني',
+      hi: 'रचनात्मक और कलात्मक'
+    }
+  },
+  {
+    id: 'health-wellness',
+    label: {
+      en: 'Health & Wellness',
+      es: 'Salud y Bienestar',
+      de: 'Gesundheit & Wellness',
+      fr: 'Santé et Bien-être',
+      pt: 'Saúde e Bem-estar',
+      ja: '健康＆ウェルネス',
+      ar: 'الصحة والعافية',
+      hi: 'स्वास्थ्य और कल्याण'
+    }
+  },
+  {
+    id: 'outdoor-adventure',
+    label: {
+      en: 'Outdoor & Adventure',
+      es: 'Aire Libre y Aventura',
+      de: 'Outdoor & Abenteuer',
+      fr: 'Plein Air et Aventure',
+      pt: 'Ar Livre e Aventura',
+      ja: 'アウトドア＆アドベンチャー',
+      ar: 'خارجي ومغامرات',
+      hi: 'आउटडोर और एडवेंचर'
+    }
+  },
+  {
+    id: 'tech-digital',
+    label: {
+      en: 'Tech & Digital',
+      es: 'Tecnología y Digital',
+      de: 'Technik & Digitales',
+      fr: 'Technologie et Numérique',
+      pt: 'Tecnologia e Digital',
+      ja: 'テクノロジー＆デジタル',
+      ar: 'تقني ورقمي',
+      hi: 'टेक और डिजिटल'
+    }
+  },
+  {
+    id: 'home-diy',
+    label: {
+      en: 'Home & DIY',
+      es: 'Hogar y Bricolaje',
+      de: 'Heim & Heimwerken',
+      fr: 'Maison et Bricolage',
+      pt: 'Casa e Bricolage',
+      ja: 'ホーム＆DIY',
+      ar: 'المنزل والأعمال اليدوية',
+      hi: 'घर और DIY'
+    }
+  },
+  {
+    id: 'collecting-knowledge',
+    label: {
+      en: 'Collecting & Knowledge',
+      es: 'Coleccionismo y Conocimiento',
+      de: 'Sammeln & Wissen',
+      fr: 'Collection et Savoir',
+      pt: 'Colecionismo e Conhecimento',
+      ja: '収集＆知識',
+      ar: 'الجمع والمعرفة',
+      hi: 'संग्रह और ज्ञान'
+    }
+  }
+];
 const costRanges = [
   { id: 'free', min: 0, max: 0, label: { en: 'Free', es: 'Gratis', de: 'Kostenlos', fr: 'Gratuit', pt: 'Grátis', ja: '無料', ar: 'مجاني', hi: 'मुफ्त' } },
   { id: 'budget', min: 1, max: 100, label: { en: 'Budget ($1-$100)', es: 'Económico ($1-$100)', de: 'Budget ($1-$100)', fr: 'Économique ($1-$100)', pt: 'Barato ($1-$100)', ja: '予算内 ($1-$100)', ar: 'اقتصادي ($1-$100)', hi: 'बजट ($1-$100)' } },
