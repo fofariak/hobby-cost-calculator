@@ -43,6 +43,8 @@
     "calculateTrueCost": "Calculate the true cost of your hobbies with our interactive tools.",
     "allHobbies": "All Hobbies",
     "fixedPrice": "Fixed price",
+    "tips": "Tips & Tricks",
+    "tipsSubtitle": "Helpful advice to get started with {hobby}",
     "priceRange": "Price range"
   },
   "es": {
@@ -89,7 +91,9 @@
     "calculateTrueCost": "Calcula el costo real de tus aficiones con nuestras herramientas interactivas.",
     "allHobbies": "Todas las Aficiones",
     "fixedPrice": "Precio fijo",
-    "priceRange": "Rango de precio"
+    "priceRange": "Rango de precio",
+    "tips": "Consejos y Trucos",
+    "tipsSubtitle": "Consejos útiles para empezar con {hobby}"
   },
   "de": {
     "costCalculator": "Kostenrechner",
@@ -135,7 +139,9 @@
     "calculateTrueCost": "Berechne die wahren Kosten deiner Hobbys mit unseren interaktiven Tools.",
     "allHobbies": "Alle Hobbys",
     "fixedPrice": "Festpreis",
-    "priceRange": "Preisspanne"
+    "priceRange": "Preisspanne",
+    "tips": "Tipps & Tricks",
+    "tipsSubtitle": "Hilfreiche Ratschläge für den Einstieg in {hobby}"
   },
   "fr": {
     "costCalculator": "Calculateur de Coûts",
@@ -182,6 +188,8 @@
     "allHobbies": "Tous les Loisirs",
     "fixedPrice": "Prix fixe",
     "priceRange": "Gamme de prix"
+    "tips": "Conseils et Astuces",
+    "tipsSubtitle": "Conseils utiles pour commencer avec {hobby}"
   },
   "pt": {
     "costCalculator": "Calculadora de Custos",
@@ -227,7 +235,9 @@
     "calculateTrueCost": "Calcule o custo real de seus hobbies com nossas ferramentas interativas.",
     "allHobbies": "Todos os Hobbies",
     "fixedPrice": "Preço fixo",
-    "priceRange": "Faixa de preço"
+    "priceRange": "Faixa de preço",
+    "tips": "Dicas e Truques",
+    "tipsSubtitle": "Conselhos úteis para começar com {hobby}"
   },
   "ja": {
     "costCalculator": "コスト計算ツール",
@@ -273,7 +283,9 @@
     "calculateTrueCost": "インタラクティブなツールで趣味の本当のコストを計算します。",
     "allHobbies": "すべての趣味",
     "fixedPrice": "固定価格",
-    "priceRange": "価格帯"
+    "priceRange": "価格帯",
+    "tips": "コツとヒント",
+    "tipsSubtitle": "{hobby}を始めるための役立つアドバイス"
   },
   "ar": {
     "costCalculator": "حاسبة التكاليف",
@@ -319,7 +331,9 @@
     "calculateTrueCost": "احسب التكلفة الحقيقية لهواياتك باستخدام أدواتنا التفاعلية.",
     "allHobbies": "جميع الهوايات",
     "fixedPrice": "سعر ثابت",
-    "priceRange": "نطاق السعر"
+    "priceRange": "نطاق السعر",
+    "tips": "نصائح وحيل",
+    "tipsSubtitle": "نصائح مفيدة للبدء في {hobby}"
   },
   "hi": {
     "costCalculator": "लागत कैलकुलेटर",
@@ -382,6 +396,8 @@
     "noHobbiesFound": "आपके मापदंडों से मेल खाने वाला कोई शौक नहीं मिला",
     "tryDifferentFilters": "अपने फ़िल्टर या खोज शब्दों को समायोजित करने का प्रयास करें",
     "popularHobbies": "लोकप्रिय शौक",
-    "trendingNow": "अब ट्रेंडिंग"
+    "trendingNow": "अब ट्रेंडिंग",
+    "tips": "टिप्स और ट्रिक्स",
+    "tipsSubtitle": "{hobby} के साथ शुरुआत करने के लिए उपयोगी सलाह"
   }
 }
