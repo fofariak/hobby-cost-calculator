@@ -143,6 +143,37 @@ const formatUIText = (text, hobby) => {
             <p class="text-gray-400 text-xs mt-1">{ui.adUnit728}</p>
           </div>
 
+          
+          <!-- Tips Section -->
+          {getArray(hobby.tips).length > 0 && (
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8">
+              <div class="p-6 bg-gradient-to-r from-emerald-50 to-green-50 border-b">
+                <h2 class="text-2xl font-bold text-gray-900">{ui.tips || 'Tips & Tricks'}</h2>
+                <p class="text-gray-600 mt-2">{formatUIText(ui.tipsSubtitle || 'Helpful advice to get started with {hobby}', hobby)}</p>
+              </div>
+              <div class="divide-y divide-gray-100">
+                {getArray(hobby.tips).map((tip, idx) => (
+                  <div class="p-6 hover:bg-gray-50 transition-colors">
+                    <div class="flex gap-4">
+                      <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center">
+                          <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                          </svg>
+                        </div>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <h3 class="font-bold text-gray-900 text-lg mb-2">{getText(tip.title)}</h3>
+                        <p class="text-gray-700 leading-relaxed">{getText(tip.desc)}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+
           <!-- FAQ Section -->
           {getArray(hobby.faq).length > 0 && (
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
