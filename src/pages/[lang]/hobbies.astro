@@ -495,7 +495,7 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
           }
 
           // Money-making filter
-          if (moneyMakingOnly && !hobby.canEarnMoney) {
+          if (moneyMakingOnly && !hobby.isMoneyMaking) {
             return false;
           }
 
@@ -539,10 +539,10 @@ const pageLabels = hobbiesPageLabels[lang] || hobbiesPageLabels['en'];
               <div class="h-48 bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
                 <div class="text-6xl">${hobby.icon || '🎨'}</div>
               </div>
-              ${hobby.canEarnMoney ? `
+              ${hobby.isMoneyMaking ? `
                 <div class="absolute top-3 right-3">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    💰 ${this.pageLabels.canEarnMoney}
+                    💰 ${this.pageLabels.isMoneyMaking}
                   </span>
                 </div>
               ` : ''}
