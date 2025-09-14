@@ -128,7 +128,7 @@
         "hi": "फिटनेस / जिम वर्कआउट"
       },
       "category": "health-wellnesss",
-      "isMakingMoney": "yes",
+      "canEarnMoney": "yes",
       "description": {
         "en": "Strength training, cardio, and classes using gym equipment and memberships.",
         "es": "Entrenamiento de fuerza, cardio y clases utilizando equipo y membresías de gimnasio.",
@@ -242,7 +242,7 @@
         "hi": "दौड़ना / जॉगिंग"
       },
       "category": "health-wellness",
-      "isMakingMoney": "yes",
+      "canEarnMoney": "yes",
       "description": {
         "en": "An accessible cardiovascular activity requiring minimal gear like shoes and apparel.",
         "es": "Una actividad cardiovascular accesible que requiere equipo mínimo como zapatillas y ropa.",
@@ -356,7 +356,7 @@
         "hi": "योग"
       },
       "category": "health-wellness",
-      "isMakingMoney": "yes",
+      "canEarnMoney": "yes",
       "description": {
         "en": "A practice of physical postures, breathing techniques, and meditation for flexibility and mindfulness.",
         "es": "Una práctica de posturas físicas, técnicas de respiración y meditación para la flexibilidad y la atención plena.",
@@ -470,7 +470,7 @@
         "hi": "ध्यान और सचेतनता"
       },
       "category": "health-wellness",
-      "isMakingMoney": "yes",
+      "canEarnMoney": "yes",
       "description": {
         "en": "Training the mind for focus, clarity, and emotional calm, often with apps or cushions.",
         "es": "Entrenar la mente para la concentración, la claridad y la calma emocional, a menudo con aplicaciones o cojines.",
