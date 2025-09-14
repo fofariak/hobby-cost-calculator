@@ -18,7 +18,6 @@ const formatUIText = (text, hobby) => {
   return text.replace('{hobby}', getText(hobby?.name || ''));
 };
 
-const { lang } = Astro.params;
 
 const translations = {
   title: { 
