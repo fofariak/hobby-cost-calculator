@@ -127,7 +127,7 @@
         "ar": "اللياقة البدنية / تمارين الجيم",
         "hi": "फिटनेस / जिम वर्कआउट"
       },
-      "category": "Health & Wellness",
+      "category": "health-wellnesss",
       "isMakingMoney": "yes",
       "description": {
         "en": "Strength training, cardio, and classes using gym equipment and memberships.",
@@ -241,7 +241,7 @@
         "ar": "الجري / الهرولة",
         "hi": "दौड़ना / जॉगिंग"
       },
-      "category": "Health & Wellness",
+      "category": "health-wellness",
       "isMakingMoney": "yes",
       "description": {
         "en": "An accessible cardiovascular activity requiring minimal gear like shoes and apparel.",
@@ -355,7 +355,7 @@
         "ar": "اليوغا",
         "hi": "योग"
       },
-      "category": "Health & Wellness",
+      "category": "health-wellness",
       "isMakingMoney": "yes",
       "description": {
         "en": "A practice of physical postures, breathing techniques, and meditation for flexibility and mindfulness.",
@@ -469,7 +469,7 @@
         "ar": "التأمل واليقظة الذهنية",
         "hi": "ध्यान और सचेतनता"
       },
-      "category": "Health & Wellness",
+      "category": "health-wellness",
       "isMakingMoney": "yes",
       "description": {
         "en": "Training the mind for focus, clarity, and emotional calm, often with apps or cushions.",
