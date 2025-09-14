@@ -9,6 +9,15 @@ export function getStaticPaths() {
   return languages.map(lang => ({ params: { lang } }));
 }
 
+// --- Data Preparation ---
+const { lang } = Astro.params;
+const ui = uiLabels[lang] || uiLabels['en'];
+
+// Helper to replace placeholders in UI text
+const formatUIText = (text, hobby) => {
+  return text.replace('{hobby}', getText(hobby?.name || ''));
+};
+
 const { lang } = Astro.params;
 
 const translations = {
