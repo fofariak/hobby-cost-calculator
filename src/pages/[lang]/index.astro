@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { hobbies } from '../../data/hobbies.json';
 import currencyData from '../../data/currencies.json';
+import uiLabels from '../../data/uiLabels.json';
 
 export function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
@@ -360,16 +361,6 @@ const translations = {
     ja: "正確なコスト見積もりを取得し、今日から夢の趣味の計画を始めましょう",
     ar: "احصل على تقديرات تكلفة دقيقة وابدأ في تخطيط هوايتك المثلى اليوم",
     hi: "सटीक लागत अनुमान प्राप्त करें और आज ही अपने सपनों के शौक की योजना बनाना शुरू करें"
-  },
-  footer_tagline: {
-    en: "The most comprehensive and accurate hobby cost calculator. Calculate startup costs for 50+ hobbies with real-time currency conversion.",
-    es: "La calculadora de costos de hobbies más completa y precisa. Calcula costos iniciales para 50+ hobbies con conversión de moneda en tiempo real.",
-    de: "Der umfassendste und genaueste Hobby-Kostenrechner. Berechne Startkosten für 50+ Hobbys mit Echtzeit-Währungsumrechnung.",
-    fr: "Le calculateur de coût de loisirs le plus complet et précis. Calculez les coûts de démarrage pour 50+ loisirs avec conversion de devises en temps réel.",
-    pt: "A calculadora de custos de hobby mais abrangente e precisa. Calcule custos iniciais para 50+ hobbies com conversão de moeda em tempo real.",
-    ja: "最も包括的で正確な趣味コスト計算機。リアルタイム通貨換算で50以上の趣味のスタートアップコストを計算。",
-    ar: "أكثر حاسبة تكلفة الهوايات شمولاً ودقة. احسب تكاليف البدء لأكثر من 50 هواية مع تحويل العملة في الوقت الفعلي.",
-    hi: "सबसे व्यापक और सटीक शौक लागत कैलकुलेटर। रियल-टाइम मुद्रा रूपांतरण के साथ 50+ शौक के लिए स्टार्टअप लागत की गणना करें।"
   },
   quick_links: {
     en: "Quick Links",
@@ -790,51 +781,38 @@ const featuredHobbies = allHobbies.slice(0, 12);
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-300 py-8 md:py-12">
+    <footer class="bg-gray-900 text-gray-300 py-12">
       <div class="max-w-7xl mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
-          <div class="lg:col-span-2">
-            <div class="flex items-center space-x-2 mb-4">
-              <span class="text-xl md:text-2xl">🎨</span>
-              <span class="text-lg md:text-xl font-bold text-white">HobbyCalc</span>
-            </div>
-            <p class="text-gray-400 mb-6 leading-relaxed text-sm md:text-base">
-              {getText('footer_tagline', lang)}
-            </p>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <div class="col-span-2">
+            <h3 class="text-xl font-bold text-white mb-4">🎨 HobbyCalc</h3>
+            <p class="text-gray-400 mb-4">{ui.calculateTrueCost}</p>
           </div>
           <div>
-            <h4 class="font-semibold text-white mb-3 text-sm md:text-base">{getText('quick_links', lang)}</h4>
+            <h4 class="font-semibold text-white mb-3">{ui.quickLinks}</h4>
             <div class="space-y-2 text-sm">
-              <a href={`/${lang}/`} class="block hover:text-white transition-colors">{getText('home', lang)}</a>
-              <a href={`/${lang}/hobbies`} class="block hover:text-white transition-colors">{getText('all_hobbies', lang)}</a>
-              <a href={`/${lang}/about`} class="block hover:text-white transition-colors">{getText('about_us', lang)}</a>
-              <a href={`/${lang}/contact`} class="block hover:text-white transition-colors">{getText('contact', lang)}</a>
+              <a href={`/${lang}/`} class="block hover:text-white transition-colors">{ui.home}</a>
+              <a href={`/${lang}/hobbies`} class="block hover:text-white transition-colors">{ui.allHobbies}</a>
             </div>
           </div>
           <div>
-            <h4 class="font-semibold text-white mb-3 text-sm md:text-base">{getText('legal', lang)}</h4>
+            <h4 class="font-semibold text-white mb-3">{ui.legal}</h4>
             <div class="space-y-2 text-sm">
-              <a href={`/${lang}/privacy`} class="block hover:text-white transition-colors">{getText('privacy_policy', lang)}</a>
-              <a href={`/${lang}/terms`} class="block hover:text-white transition-colors">{getText('terms_service', lang)}</a>
-              <a href={`/${lang}/disclaimer`} class="block hover:text-white transition-colors">{getText('disclaimer', lang)}</a>
+              <a href={`/${lang}/privacy`} class="block hover:text-white transition-colors">{ui.privacyPolicy}</a>
+              <a href={`/${lang}/terms`} class="block hover:text-white transition-colors">{ui.termsOfService}</a>
+              <a href={`/${lang}/disclaimer`} class="block hover:text-white transition-colors">{ui.disclaimer}</a>
             </div>
           </div>
           <div>
-            <h4 class="font-semibold text-white mb-3 text-sm md:text-base">{getText('languages_label', lang)}</h4>
-            <div class="grid grid-cols-1 gap-1 text-sm">
-              <a href="/en" class="text-gray-400 hover:text-white transition-colors">English</a>
-              <a href="/es" class="text-gray-400 hover:text-white transition-colors">Español</a>
-              <a href="/de" class="text-gray-400 hover:text-white transition-colors">Deutsch</a>
-              <a href="/fr" class="text-gray-400 hover:text-white transition-colors">Français</a>
-              <a href="/pt" class="text-gray-400 hover:text-white transition-colors">Português</a>
-              <a href="/ja" class="text-gray-400 hover:text-white transition-colors">日本語</a>
-              <a href="/ar" class="text-gray-400 hover:text-white transition-colors">العربية</a>
-              <a href="/hi" class="text-gray-400 hover:text-white transition-colors">हिन्दी</a>
+            <h4 class="font-semibold text-white mb-3">{ui.contact}</h4>
+            <div class="space-y-2 text-sm">
+              <a href={`/${lang}/contact`} class="block hover:text-white transition-colors">{ui.getInTouch}</a>
+              <a href={`/${lang}/about`} class="block hover:text-white transition-colors">{ui.aboutUs}</a>
             </div>
           </div>
         </div>
-        <div class="border-t border-gray-800 mt-6 md:mt-8 pt-6 md:pt-8 text-center text-xs md:text-sm text-gray-400">
-          © 2025 HobbyCalc. {getText('rights_reserved', lang)}
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+          © 2025 HobbyCalc. {ui.allRightsReserved}.
         </div>
       </div>
     </footer>
