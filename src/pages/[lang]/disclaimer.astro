@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import uiLabels from '../../data/uiLabels.json';
 
 export function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
@@ -7,62 +8,204 @@ export function getStaticPaths() {
 }
 
 const { lang } = Astro.params;
+const ui = uiLabels[lang] || uiLabels['en'];
+
+const pageContent = {
+  title: {
+    en: "Disclaimer - HobbyCalc",
+    es: "Descargo de Responsabilidad - HobbyCalc",
+    de: "Haftungsausschluss - HobbyCalc",
+    fr: "Avis de Non-responsabilité - HobbyCalc",
+    pt: "Aviso Legal - HobbyCalc",
+    ja: "免責事項 - HobbyCalc",
+    ar: "إخلاء المسؤولية - HobbyCalc",
+    hi: "अस्वीकरण - हॉबीकैल्क"
+  },
+  heading: {
+    en: "Disclaimer",
+    es: "Descargo de Responsabilidad",
+    de: "Haftungsausschluss",
+    fr: "Avis de Non-responsabilité",
+    pt: "Aviso Legal",
+    ja: "免責事項",
+    ar: "إخلاء المسؤولية",
+    hi: "अस्वीकरण"
+  },
+  last_updated: {
+    en: "Last updated: September 2025",
+    es: "Última actualización: Septiembre de 2025",
+    de: "Zuletzt aktualisiert: September 2025",
+    fr: "Dernière mise à jour : Septembre 2025",
+    pt: "Última atualização: Setembro de 2025",
+    ja: "最終更新日：2025年9月",
+    ar: "آخر تحديث: سبتمبر 2025",
+    hi: "अंतिम अपडेट: सितंबर 2025"
+  },
+  accuracy_heading: {
+    en: "Cost Information Accuracy",
+    es: "Precisión de la Información de Costos",
+    de: "Genauigkeit der Kosteninformationen",
+    fr: "Exactitude des Informations sur les Coûts",
+    pt: "Precisão das Informações de Custo",
+    ja: "費用情報の正確性",
+    ar: "دقة معلومات التكلفة",
+    hi: "लागत सूचना की सटीकता"
+  },
+  accuracy_text: {
+    en: "The cost estimates provided by HobbyCalc are for informational and educational purposes only. While we strive to provide accurate and up-to-date information, actual costs may vary significantly based on:",
+    es: "Las estimaciones de costos proporcionadas por HobbyCalc son solo para fines informativos y educativos. Aunque nos esforzamos por proporcionar información precisa y actualizada, los costos reales pueden variar significativamente según:",
+    de: "Die von HobbyCalc bereitgestellten Kostenschätzungen dienen nur zu Informations- und Bildungszwecken. Obwohl wir uns bemühen, genaue und aktuelle Informationen bereitzustellen, können die tatsächlichen Kosten erheblich abweichen, basierend auf:",
+    fr: "Les estimations de coûts fournies par HobbyCalc sont uniquement à des fins d'information et d'éducation. Bien que nous nous efforcions de fournir des informations exactes et à jour, les coûts réels могут varier considérablement en fonction de :",
+    pt: "As estimativas de custo fornecidas pelo HobbyCalc são apenas para fins informativos и educacionais. Embora nos esforcemos para fornecer informações precisas e atualizadas, os custos reais podem variar significativamente com base em:",
+    ja: "HobbyCalcが提供する費用見積もりは、情報提供および教育目的のみのものです。正確で最新の情報を提供するよう努めていますが、実際の費用は以下の要因により大幅に異なる場合があります：",
+    ar: "تقديرات التكلفة التي تقدمها HobbyCalc هي لأغراض إعلامية وتعليمية فقط. بينما نسعى جاهدين لتقديم معلومات دقيقة ومحدثة، قد تختلف التكاليف الفعلية بشكل كبير بناءً على:",
+    hi: "हॉबीकैल्क द्वारा प्रदान की गई लागत अनुमान केवल सूचनात्मक और शैक्षिक उद्देश्यों के लिए हैं। यद्यपि हम सटीक और अद्यतित जानकारी प्रदान करने का प्रयास करते हैं, वास्तविक लागतें निम्नलिखित के आधार पर काफी भिन्न हो सकती हैं:"
+  },
+  accuracy_item_1: { en: "Geographic location and local market conditions", es: "Ubicación geográfica y condiciones del mercado local", de: "Geografischer Standort und lokale Marktbedingungen", fr: "Lieu géographique et conditions du marché local", pt: "Localização geográfica e condições do mercado local", ja: "地理的な場所と地域の市場状況", ar: "الموقع الجغرافي وظروف السوق المحلية", hi: "भौगोलिक स्थिति और स्थानीय बाजार की स्थितियाँ" },
+  accuracy_item_2: { en: "Brand preferences and quality choices", es: "Preferencias de marca y elecciones de calidad", de: "Markenpräferenzen und Qualitätsentscheidungen", fr: "Préférences de marque et choix de qualité", pt: "Preferências de marca e escolhas de qualidade", ja: "ブランドの好みと品質の選択", ar: "تفضيلات العلامة التجارية وخيارات الجودة", hi: "ब्रांड वरीयताएँ और गुणवत्ता विकल्प" },
+  accuracy_item_3: { en: "Seasonal price fluctuations", es: "Fluctuaciones de precios estacionales", de: "Saisonale Preisschwankungen", fr: "Fluctuations de prix saisonnières", pt: "Flutuações sazonais de preços", ja: "季節的な価格変動", ar: "تقلبات الأسعار الموسمية", hi: "मौसमी मूल्य उतार-चढ़ाव" },
+  accuracy_item_4: { en: "Individual shopping habits and deals found", es: "Hábitos de compra individuales y ofertas encontradas", de: "Individuelle Einkaufsgewohnheiten und gefundene Angebote", fr: "Habitudes d'achat individuelles et offres trouvées", pt: "Hábitos de compra individuais e ofertas encontradas", ja: "個々の買い物習慣と見つかったお得な情報", ar: "عادات التسوق الفردية والصفقات التي يتم العثور عليها", hi: "व्यक्तिगत खरीदारी की आदतें और मिली छूटें" },
+  accuracy_item_5: { en: "Exchange rate fluctuations", es: "Fluctuaciones del tipo de cambio", de: "Wechselkursschwankungen", fr: "Fluctuations des taux de change", pt: "Flutuações da taxa de câmbio", ja: "為替レートの変動", ar: "تقلبات أسعار الصرف", hi: "विनिमय दर में उतार-चढ़ाव" },
+  no_advice_heading: { en: "No Financial Advice", es: "Sin Asesoramiento Financiero", de: "Keine Finanzberatung", fr: "Aucun Conseil Financier", pt: "Nenhum Aconselhamento Financeiro", ja: "金融アドバイスではありません", ar: "ليست نصيحة مالية", hi: "कोई वित्तीय सलाह नहीं" },
+  no_advice_text: {
+    en: "HobbyCalc does not provide financial, investment, or budgeting advice. Our cost estimates are general information only and should not be considered as professional financial guidance.",
+    es: "HobbyCalc no proporciona asesoramiento financiero, de inversión o de presupuesto. Nuestras estimaciones de costos son solo información general y no deben considerarse como una guía financiera profesional.",
+    de: "HobbyCalc bietet keine Finanz-, Anlage- oder Budgetberatung. Unsere Kostenschätzungen sind nur allgemeine Informationen und sollten nicht als professionelle Finanzberatung betrachtet werden.",
+    fr: "HobbyCalc ne fournit pas de conseils financiers, d'investissement ou de budgétisation. Nos estimations de coûts sont des informations générales uniquement et ne doivent pas être considérées comme des conseils financiers professionnels.",
+    pt: "O HobbyCalc não fornece aconselhamento financeiro, de investimento ou de orçamento. Nossas estimativas de custo são apenas informações gerais e não devem ser consideradas como orientação financeira profissional.",
+    ja: "HobbyCalcは、金融、投資、または予算に関するアドバイスを提供するものではありません。当社の費用見積もりは一般的な情報のみであり、専門的な金融ガイダンスと見なされるべきではありません。",
+    ar: "لا يقدم HobbyCalc نصائح مالية أو استثمارية أو تتعلق بالميزانية. تقديرات التكلفة لدينا هي معلومات عامة فقط ولا ينبغي اعتبارها توجيهًا ماليًا احترافيًا.",
+    hi: "हॉबीकैल्क वित्तीय, निवेश, या बजट संबंधी सलाह प्रदान नहीं करता है। हमारे लागत अनुमान केवल सामान्य जानकारी हैं और इन्हें पेशेवर वित्तीय मार्गदर्शन के रूप में नहीं माना जाना चाहिए।"
+  },
+  links_heading: { en: "Third-Party Links", es: "Enlaces de Terceros", de: "Links von Drittanbietern", fr: "Liens de Tiers", pt: "Links de Terceiros", ja: "第三者のリンク", ar: "روابط الطرف الثالث", hi: "तृतीय-पक्ष लिंक" },
+  links_text: {
+    en: "Our website may contain links to external websites. We are not responsible for the content, privacy policies, or practices of third-party sites.",
+    es: "Nuestro sitio web puede contener enlaces a sitios web externos. No somos responsables del contenido, las políticas de privacidad o las prácticas de los sitios de terceros.",
+    de: "Unsere Website kann Links zu externen Websites enthalten. Wir sind nicht verantwortlich für den Inhalt, die Datenschutzrichtlinien oder die Praktiken von Websites Dritter.",
+    fr: "Notre site Web peut contenir des liens vers des sites Web externes. Nous не sommes pas responsables du contenu, des politiques de confidentialité ou des pratiques des sites tiers.",
+    pt: "Nosso site pode conter links para sites externos. Não somos responsáveis pelo conteúdo, políticas de privacidade ou práticas de sites de terceiros.",
+    ja: "当社のウェブサイトには、外部リンクが含まれている場合があります。当社は、第三者のサイトのコンテンツ、プライバシーポリシー、または慣行について責任を負いません。",
+    ar: "قد يحتوي موقعنا على روابط لمواقع خارجية. نحن لسنا مسؤولين عن المحتوى أو سياسات الخصوصية أو الممارسات الخاصة بمواقع الطرف الثالث.",
+    hi: "हमारी वेबसाइट में बाहरी वेबसाइटों के लिंक हो सकते हैं। हम तृतीय-पक्ष साइटों की सामग्री, गोपनीयता नीतियों, या प्रथाओं के लिए जिम्मेदार नहीं हैं।"
+  },
+  currency_heading: { en: "Currency Conversion", es: "Conversión de Moneda", de: "Währungsumrechnung", fr: "Conversion de Devise", pt: "Conversão de Moeda", ja: "通貨換算", ar: "تحويل العملات", hi: "मुद्रा रूपांतरण" },
+  currency_text: {
+    en: "Currency conversion rates are provided by third-party services and may not reflect real-time market rates. Actual exchange rates may vary.",
+    es: "Las tasas de conversión de moneda son proporcionadas por servicios de terceros y pueden no reflejar las tasas del mercado en tiempo real. Los tipos de cambio reales pueden variar.",
+    de: "Währungsumrechnungskurse werden von Drittanbietern bereitgestellt und spiegeln möglicherweise nicht die Echtzeit-Marktkurse wider. Die tatsächlichen Wechselkurse können variieren.",
+    fr: "Les taux de conversion de devises sont fournis par des services tiers et peuvent ne pas refléter les taux du marché en temps réel. Les taux de change réels peuvent varier.",
+    pt: "As taxas de conversão de moeda são fornecidas por serviços de terceiros e podem não refletir as taxas de mercado em tempo real. As taxas de câmbio reais podem variar.",
+    ja: "通貨換算レートは第三者のサービスによって提供されており、リアルタイムの市場レートを反映していない場合があります。実際の為替レートは異なる場合があります。",
+    ar: "يتم توفير أسعار تحويل العملات من قبل خدمات طرف ثالث وقد لا تعكس أسعار السوق في الوقت الفعلي. قد تختلف أسعار الصرف الفعلية.",
+    hi: "मुद्रा रूपांतरण दरें तृतीय-पक्ष सेवाओं द्वारा प्रदान की जाती हैं और वास्तविक समय के बाजार दरों को प्रतिबिंबित नहीं कर सकती हैं। वास्तविक विनिमय दरें भिन्न हो सकती हैं।"
+  },
+  liability_heading: { en: "Limitation of Liability", es: "Limitación de Responsabilidad", de: "Haftungsbeschränkung", fr: "Limitation de Responsabilité", pt: "Limitação de Responsabilidade", ja: "責任の制限", ar: "تحديد المسؤولية", hi: "दायित्व की सीमा" },
+  liability_text: {
+    en: "HobbyCalc and its operators shall not be held liable for any decisions made based on the information provided on this website. Users are responsible for conducting their own research and making informed decisions.",
+    es: "HobbyCalc y sus operadores no serán responsables de ninguna decisión tomada en base a la información proporcionada en este sitio web. Los usuarios son responsables de realizar su propia investigación y tomar decisiones informadas.",
+    de: "HobbyCalc und seine Betreiber haften nicht für Entscheidungen, die auf der Grundlage der auf dieser Website bereitgestellten Informationen getroffen werden. Die Nutzer sind dafür verantwortlich, ihre eigenen Nachforschungen anzustellen und informierte Entscheidungen zu treffen.",
+    fr: "HobbyCalc et ses opérateurs ne pourront être tenus responsables des décisions prises sur la base des informations fournies sur ce site. Les utilisateurs sont responsables de mener leurs propres recherches et de prendre des décisions éclairées.",
+    pt: "O HobbyCalc e seus operadores não serão responsabilizados por quaisquer decisões tomadas com base nas informações fornecidas neste site. Os usuários são responsáveis por conduzir suas próprias pesquisas e tomar decisões informadas.",
+    ja: "HobbyCalcおよびその運営者は、このウェブサイトで提供された情報に基づいて行われたいかなる決定に対しても責任を負わないものとします。ユーザーは、自身で調査を行い、情報に基づいた決定を下す責任があります。",
+    ar: "لن يتحمل HobbyCalc ومشغلوه أي مسؤولية عن أي قرارات يتم اتخاذها بناءً على المعلومات المقدمة على هذا الموقع. المستخدمون مسؤولون عن إجراء أبحاثهم الخاصة واتخاذ قرارات مستنيرة.",
+    hi: "इस वेबसाइट पर दी गई जानकारी के आधार पर लिए गए किसी भी निर्णय के लिए हॉबीकैल्क और इसके संचालक उत्तरदायी नहीं होंगे। उपयोगकर्ता अपनी स्वयं की खोज करने और सूचित निर्णय लेने के लिए जिम्मेदार हैं।"
+  },
+  updates_heading: { en: "Updates and Changes", es: "Actualizaciones y Cambios", de: "Aktualisierungen und Änderungen", fr: "Mises à Jour et Changements", pt: "Atualizações e Alterações", ja: "更新と変更", ar: "التحديثات والتغييرات", hi: "अपडेट और परिवर्तन" },
+  updates_text: {
+    en: "Cost information and website content may be updated without notice. We recommend checking current market prices before making any purchases.",
+    es: "La información de costos y el contenido del sitio web pueden actualizarse sin previo aviso. Recomendamos verificar los precios actuales del mercado antes de realizar cualquier compra.",
+    de: "Kosteninformationen und Website-Inhalte können ohne vorherige Ankündigung aktualisiert werden. Wir empfehlen, die aktuellen Marktpreise zu überprüfen, bevor Sie Einkäufe tätigen.",
+    fr: "Les informations sur les coûts et le contenu du site Web peuvent être mis à jour sans préavis. Nous vous recommandons de vérifier les prix actuels du marché avant d'effectuer des achats.",
+    pt: "As informações de custo e o conteúdo do site podem ser atualizados sem aviso prévio. Recomendamos verificar os preços de mercado atuais antes de fazer qualquer compra.",
+    ja: "費用情報およびウェブサイトのコンテンツは、予告なく更新されることがあります。購入を行う前に、現在の市場価格を確認することをお勧めします。",
+    ar: "قد يتم تحديث معلومات التكلفة ومحتوى الموقع دون إشعار. نوصي بالتحقق من أسعار السوق الحالية قبل إجراء أي عمليات شراء.",
+    hi: "लागत जानकारी और वेबसाइट सामग्री बिना किसी सूचना के अपडेट की जा सकती है। हम कोई भी खरीद करने से पहले वर्तमान बाजार कीमतों की जांच करने की सलाह देते हैं।"
+  }
+};
+
+const getText = (key) => pageContent[key]?.[lang] || pageContent[key]?.['en'];
 ---
 
-<Layout title="Disclaimer - HobbyCalc" lang={lang}>
-  <div class="container mx-auto px-6 py-12 max-w-4xl">
-    <h1 class="text-4xl font-bold mb-8 text-gray-800">Disclaimer</h1>
-    <p class="text-gray-600 mb-8">Last updated: January 2025</p>
-    
-    <div class="prose prose-lg max-w-none space-y-6">
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Cost Information Accuracy</h2>
-        <p class="text-gray-700 leading-relaxed">
-          The cost estimates provided by HobbyCalc are for informational and educational purposes only. While we strive to provide accurate and up-to-date information, actual costs may vary significantly based on:
-        </p>
-        <ul class="list-disc pl-6 text-gray-700">
-          <li>Geographic location and local market conditions</li>
-          <li>Brand preferences and quality choices</li>
-          <li>Seasonal price fluctuations</li>
-          <li>Individual shopping habits and deals found</li>
-          <li>Exchange rate fluctuations</li>
-        </ul>
-      </section>
+<Layout title={getText('title')} lang={lang}>
+  <div class="bg-white">
+    <div class="container mx-auto px-6 py-12 max-w-4xl">
+      <h1 class="text-4xl font-bold mb-4 text-gray-800">{getText('heading')}</h1>
+      <p class="text-gray-500 mb-8 text-sm">{getText('last_updated')}</p>
+      
+      <div class="prose prose-lg max-w-none space-y-6">
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('accuracy_heading')}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('accuracy_text')}</p>
+          <ul class="list-disc pl-6 text-gray-700">
+            <li>{getText('accuracy_item_1')}</li>
+            <li>{getText('accuracy_item_2')}</li>
+            <li>{getText('accuracy_item_3')}</li>
+            <li>{getText('accuracy_item_4')}</li>
+            <li>{getText('accuracy_item_5')}</li>
+          </ul>
+        </section>
 
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">No Financial Advice</h2>
-        <p class="text-gray-700 leading-relaxed">
-          HobbyCalc does not provide financial, investment, or budgeting advice. Our cost estimates are general information only and should not be considered as professional financial guidance.
-        </p>
-      </section>
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('no_advice_heading')}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('no_advice_text')}</p>
+        </section>
 
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Third-Party Links</h2>
-        <p class="text-gray-700 leading-relaxed">
-          Our website may contain links to external websites. We are not responsible for the content, privacy policies, or practices of third-party sites.
-        </p>
-      </section>
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('links_heading')}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('links_text')}</p>
+        </section>
 
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Currency Conversion</h2>
-        <p class="text-gray-700 leading-relaxed">
-          Currency conversion rates are provided by third-party services and may not reflect real-time market rates. Actual exchange rates may vary.
-        </p>
-      </section>
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('currency_heading')}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('currency_text')}</p>
+        </section>
 
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Limitation of Liability</h2>
-        <p class="text-gray-700 leading-relaxed">
-          HobbyCalc and its operators shall not be held liable for any decisions made based on the information provided on this website. Users are responsible for conducting their own research and making informed decisions.
-        </p>
-      </section>
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('liability_heading')}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('liability_text')}</p>
+        </section>
 
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Updates and Changes</h2>
-        <p class="text-gray-700 leading-relaxed">
-          Cost information and website content may be updated without notice. We recommend checking current market prices before making any purchases.
-        </p>
-      </section>
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('updates_heading')}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('updates_text')}</p>
+        </section>
+      </div>
     </div>
+
+    <footer class="bg-gray-900 text-gray-300 py-12 mt-12">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <div class="col-span-2">
+            <h3 class="text-xl font-bold text-white mb-4">🎨 HobbyCalc</h3>
+            <p class="text-gray-400 mb-4">{ui.calculateTrueCost}</p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-white mb-3">{ui.quickLinks}</h4>
+            <div class="space-y-2 text-sm">
+              <a href={`/${lang}/`} class="block hover:text-white transition-colors">{ui.home}</a>
+              <a href={`/${lang}/hobbies`} class="block hover:text-white transition-colors">{ui.allHobbies}</a>
+            </div>
+          </div>
+          <div>
+            <h4 class="font-semibold text-white mb-3">{ui.legal}</h4>
+            <div class="space-y-2 text-sm">
+              <a href={`/${lang}/privacy`} class="block hover:text-white transition-colors">{ui.privacyPolicy}</a>
+              <a href={`/${lang}/terms`} class="block hover:text-white transition-colors">{ui.termsOfService}</a>
+              <a href={`/${lang}/disclaimer`} class="block hover:text-white transition-colors">{ui.disclaimer}</a>
+            </div>
+          </div>
+          <div>
+            <h4 class="font-semibold text-white mb-3">{ui.contact}</h4>
+            <div class="space-y-2 text-sm">
+              <a href={`/${lang}/contact`} class="block hover:text-white transition-colors">{ui.getInTouch}</a>
+              <a href={`/${lang}/about`} class="block hover:text-white transition-colors">{ui.aboutUs}</a>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+          © {new Date().getFullYear()} HobbyCalc. {ui.allRightsReserved}.
+        </div>
+      </div>
+    </footer>
   </div>
 </Layout>
