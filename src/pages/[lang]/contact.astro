@@ -1,184 +1,195 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import uiLabels from '../../data/uiLabels.json'; 
+import uiLabels from '../../data/uiLabels.json'; // Import shared UI labels
 
 // --- Page Generation Logic ---
 export function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
-  return languages.map(lang => ({ params: { lang } })); [cite_start]// [cite: 58]
+  return languages.map(lang => ({ params: { lang } }));
 }
 
 // --- Data Preparation & Translations ---
 const { lang } = Astro.params;
-const ui = uiLabels[lang] || uiLabels['en']; 
+const ui = uiLabels[lang] || uiLabels['en'];
 
 // Translations for THIS PAGE ONLY
-const content = {
-  en: {
-    [cite_start]title: "Contact HobbyCalc - Get in Touch", // [cite: 59]
-    [cite_start]heading: "Contact Us", // [cite: 59]
-    [cite_start]intro: "Have questions, suggestions, or feedback about HobbyCalc? We'd love to hear from you! Your input helps us provide the most accurate and helpful information for hobbyists everywhere.", // [cite: 59]
-    [cite_start]email: "General Inquiries", // [cite: 59]
-    [cite_start]email_text: "For general questions, feedback, or support, please email us. We do not store any personal information, so you can contact us with confidence.", // [cite: 59]
-    [cite_start]email_address: "hello@hobbycalc.com", // [cite: 59, 64]
-    [cite_start]business: "Business & Partnerships", // [cite: 59]
-    [cite_start]business_text: "For advertising opportunities, partnerships, or other business-related inquiries, please reach out to our business team.", // [cite: 59]
-    [cite_start]business_email: "business@hobbycalc.com", // [cite: 59]
-    [cite_start]response_time: "Our Commitment to You", // [cite: 59]
-    [cite_start]response_text: "We aim to respond to all inquiries within 24-48 business hours. We value your time and appreciate you reaching out.", // [cite: 60]
-    [cite_start]feedback: "Suggestions & Hobby Requests", // [cite: 60]
-    feedback_text: "Your feedback is crucial for improving HobbyCalc. If you have an idea for a new hobby to add to our calculator, notice a cost that needs updating, or have a suggestion for a new feature, we are eager to hear it." [cite_start]// [cite: 60]
+const pageContent = {
+  title: {
+    en: "Contact HobbyCalc - Get in Touch",
+    es: "Contactar HobbyCalc - Ponte en Contacto",
+    de: "Kontakt HobbyCalc - Melden Sie sich",
+    fr: "Contacter HobbyCalc - Prenez contact",
+    pt: "Contato HobbyCalc - Entre em Contato",
+    ja: "HobbyCalcへのお問い合わせ - ご連絡ください",
+    ar: "اتصل بـ HobbyCalc - تواصل معنا",
+    hi: "HobbyCalc से संपर्क करें - संपर्क में रहें"
   },
-  es: {
-    [cite_start]title: "Contactar HobbyCalc - Ponte en Contacto", // [cite: 61]
-    [cite_start]heading: "Contáctanos", // [cite: 61]
-    [cite_start]intro: "¿Tienes preguntas, sugerencias o comentarios sobre HobbyCalc? ¡Nos encantaría saber de ti! Tu opinión nos ayuda a proporcionar la información más precisa y útil para los aficionados de todo el mundo.", // [cite: 61]
-    [cite_start]email: "Consultas Generales", // [cite: 61]
-    [cite_start]email_text: "Para preguntas generales, comentarios o soporte, por favor envíanos un correo electrónico. No almacenamos ninguna información personal, por lo que puedes contactarnos con confianza.", // [cite: 61]
-    [cite_start]email_address: "hello@hobbycalc.com", // [cite: 61]
-    [cite_start]business: "Negocios y Asociaciones", // [cite: 61]
-    [cite_start]business_text: "Para oportunidades de publicidad, asociaciones u otras consultas comerciales, por favor contacta a nuestro equipo de negocios.", // [cite: 61]
-    [cite_start]business_email: "business@hobbycalc.com", // [cite: 61]
-    [cite_start]response_time: "Nuestro Compromiso Contigo", // [cite: 62]
-    [cite_start]response_text: "Nuestro objetivo es responder a todas las consultas dentro de 24-48 horas hábiles. Valoramos tu tiempo y agradecemos que te pongas en contacto.", // [cite: 62]
-    [cite_start]feedback: "Sugerencias y Solicitudes de Hobbies", // [cite: 63]
-    feedback_text: "Tus comentarios son cruciales para mejorar HobbyCalc. Si tienes una idea para un nuevo hobby para agregar a nuestra calculadora, notas un costo que necesita actualizarse o tienes una sugerencia para una nueva función, estamos ansiosos por escucharlo." [cite_start]// [cite: 63]
+  heading: {
+    en: "Contact Us",
+    es: "Contáctanos",
+    de: "Kontaktieren Sie uns",
+    fr: "Contactez-nous",
+    pt: "Fale Conosco",
+    ja: "お問い合わせ",
+    ar: "اتصل بنا",
+    hi: "हमसे संपर्क करें"
   },
-  de: {
-    title: "Kontakt HobbyCalc - Melden Sie sich",
-    heading: "Kontaktieren Sie uns",
-    intro: "Haben Sie Fragen, Anregungen oder Feedback zu HobbyCalc? Wir würden uns freuen, von Ihnen zu hören! Ihr Beitrag hilft uns, die genauesten und hilfreichsten Informationen für Hobbyisten überall bereitzustellen.",
-    email: "Allgemeine Anfragen",
-    email_text: "Für allgemeine Fragen, Feedback oder Unterstützung senden Sie uns bitte eine E-Mail. Wir speichern keine persönlichen Daten, sodass Sie uns vertrauensvoll kontaktieren können.",
-    email_address: "hello@hobbycalc.com",
-    business: "Geschäft & Partnerschaften",
-    business_text: "Für Werbemöglichkeiten, Partnerschaften oder andere geschäftliche Anfragen wenden Sie sich bitte an unser Geschäftsteam.",
-    business_email: "business@hobbycalc.com",
-    response_time: "Unser Engagement für Sie",
-    response_text: "Wir bemühen uns, alle Anfragen innerhalb von 24-48 Geschäftsstunden zu beantworten. Wir schätzen Ihre Zeit und danken Ihnen für Ihre Kontaktaufnahme.",
-    feedback: "Vorschläge & Hobby-Anfragen",
-    feedback_text: "Ihr Feedback ist entscheidend für die Verbesserung von HobbyCalc. Wenn Sie eine Idee für ein neues Hobby haben, das zu unserem Rechner hinzugefügt werden soll, Kosten bemerken, die aktualisiert werden müssen, oder einen Vorschlag für eine neue Funktion haben, sind wir gespannt darauf."
+  intro: {
+    en: "Have questions, suggestions, or feedback about HobbyCalc? We'd love to hear from you! Your input helps us provide the most accurate and helpful information for hobbyists everywhere.",
+    es: "Tienes preguntas, sugerencias o comentarios sobre HobbyCalc? ¡Nos encantaría saber de ti! Tu opinión nos ayuda a proporcionar la información más precisa y útil para los aficionados de todo el mundo.",
+    de: "Haben Sie Fragen, Anregungen oder Feedback zu HobbyCalc? Wir würden uns freuen, von Ihnen zu hören! Ihr Beitrag hilft uns, die genauesten und hilfreichsten Informationen für Hobbyisten überall bereitzustellen.",
+    fr: "Vous avez des questions, des suggestions ou des commentaires sur HobbyCalc ? Nous serions ravis de vous entendre ! Votre contribution nous aide à fournir les informations les plus précises et utiles pour les amateurs de loisirs du monde entier.",
+    pt: "Tem perguntas, sugestões ou feedback sobre o HobbyCalc? Adoraríamos ouvir de você! Sua contribuição nos ajuda a fornecer as informações mais precisas e úteis para entusiastas de hobbies em todos os lugares.",
+    ja: "HobbyCalcに関するご質問、ご提案、フィードバックはありますか？ぜひお聞かせください！皆様からのご意見は、世界中のホビイストに最も正確で役立つ情報を提供するために役立ちます。",
+    ar: "هل لديك أسئلة أو اقتراحات أو ملاحظات حول HobbyCalc؟ نود أن نسمع منك! تساعدنا مدخلاتك في تقديم المعلومات الأكثر دقة وفائدة للهواة في كل مكان.",
+    hi: "HobbyCalc के बारे में आपके कोई प्रश्न, सुझाव या प्रतिक्रिया है? हमें आपसे सुनना अच्छा लगेगा! आपकी राय हमें दुनिया भर के शौकीनों के लिए सबसे सटीक और सहायक जानकारी प्रदान करने में मदद करती है।"
   },
-  fr: {
-    title: "Contacter HobbyCalc - Prenez contact",
-    heading: "Contactez-nous",
-    intro: "Vous avez des questions, des suggestions ou des commentaires sur HobbyCalc ? Nous serions ravis de vous entendre ! Votre contribution nous aide à fournir les informations les plus précises et utiles pour les amateurs de loisirs du monde entier.",
-    email: "Demandes Générales",
-    email_text: "Pour des questions générales, des commentaires ou du soutien, veuillez nous envoyer un courriel. Nous ne stockons aucune information personnelle, vous pouvez donc nous contacter en toute confiance.",
-    email_address: "hello@hobbycalc.com",
-    business: "Affaires & Partenariats",
-    business_text: "Pour les opportunités de publicité, les partenariats ou autres demandes commerciales, veuillez contacter notre équipe commerciale.",
-    business_email: "business@hobbycalc.com",
-    response_time: "Notre Engagement Envers Vous",
-    response_text: "Nous nous efforçons de répondre à toutes les demandes dans un délai de 24 à 48 heures ouvrables. Nous apprécions votre temps et vous remercions de nous contacter.",
-    feedback: "Suggestions & Demandes de Loisirs",
-    feedback_text: "Vos commentaires sont essentiels pour améliorer HobbyCalc. Si vous avez une idée pour un nouveau loisir à ajouter à notre calculateur, remarquez un coût qui doit être mis à jour, ou avez une suggestion pour une nouvelle fonctionnalité, nous sommes impatients de l'entendre."
+  email: {
+    en: "General Inquiries",
+    es: "Consultas Generales",
+    de: "Allgemeine Anfragen",
+    fr: "Demandes Générales",
+    pt: "Consultas Gerais",
+    ja: "一般のお問い合わせ",
+    ar: "استفسارات عامة",
+    hi: "सामान्य पूछताछ"
   },
-  pt: {
-    title: "Contato HobbyCalc - Entre em Contato",
-    heading: "Fale Conosco",
-    intro: "Tem perguntas, sugestões ou feedback sobre o HobbyCalc? Adoraríamos ouvir de você! Sua contribuição nos ajuda a fornecer as informações mais precisas e úteis para entusiastas de hobbies em todos os lugares.",
-    email: "Consultas Gerais",
-    email_text: "Para perguntas gerais, feedback ou suporte, por favor, envie-nos um e-mail. Não armazenamos nenhuma informação pessoal, então você pode nos contatar com confiança.",
-    email_address: "hello@hobbycalc.com",
-    business: "Negócios & Parcerias",
-    business_text: "Para oportunidades de publicidade, parcerias ou outras questões relacionadas a negócios, entre em contato com nossa equipe de negócios.",
-    business_email: "business@hobbycalc.com",
-    response_time: "Nosso Compromisso com Você",
-    response_text: "Nosso objetivo é responder a todas as consultas dentro de 24 a 48 horas úteis. Valorizamos seu tempo e agradecemos seu contato.",
-    feedback: "Sugestões & Pedidos de Hobbies",
-    feedback_text: "Seu feedback é crucial para melhorar o HobbyCalc. Se você tem uma ideia para um novo hobby para adicionar à nossa calculadora, percebe um custo que precisa ser atualizado ou tem uma sugestão para um novo recurso, estamos ansiosos para ouvi-lo."
+  email_text: {
+    en: "For general inquiries, feedback, or support, please email us. We don't collect personal data, so you can contact us with confidence.",
+    es: "Para consultas generales, comentarios o soporte, por favor envíanos un correo electrónico. No almacenamos ninguna información personal, por lo que puedes contactarnos con confianza.",
+    de: "Für allgemeine Fragen, Feedback oder Unterstützung senden Sie uns bitte eine E-Mail. Wir speichern keine persönlichen Daten, sodass Sie uns vertrauensvoll kontaktieren können.",
+    fr: "Pour des questions générales, des commentaires ou du soutien, veuillez nous envoyer un courriel. Nous ne stockons aucune information personnelle, vous pouvez donc nous contacter en toute confiance.",
+    pt: "Para perguntas gerais, feedback ou suporte, por favor, envie-nos um e-mail. Não armazenamos nenhuma informação pessoal, então você pode nos contatar com confiança.",
+    ja: "一般的なご質問、フィードバック、サポートについては、メールでお問い合わせください。個人情報は一切保存しておりませんので、安心してご連絡いただけます。",
+    ar: "للاستفسارات العامة أو الملاحظات أو الدعم، يرجى مراسلتنا عبر البريد الإلكتروني. نحن لا نخزن أي معلومات شخصية، لذا يمكنك الاتصال بنا بثقة.",
+    hi: "सामान्य प्रश्नों, प्रतिक्रिया या समर्थन के लिए, कृपया हमें ईमेल करें। हम कोई भी व्यक्तिगत जानकारी संग्रहीत नहीं करते हैं, इसलिए आप विश्वास के साथ हमसे संपर्क कर सकते हैं।"
   },
-  ja: {
-    title: "HobbyCalcへのお問い合わせ - ご連絡ください",
-    heading: "お問い合わせ",
-    intro: "HobbyCalcに関するご質問、ご提案、フィードバックはありますか？ぜひお聞かせください！皆様からのご意見は、世界中のホビイストに最も正確で役立つ情報を提供するために役立ちます。",
-    email: "一般のお問い合わせ",
-    email_text: "一般的なご質問、フィードバック、サポートについては、メールでお問い合わせください。個人情報は一切保存しておりませんので、安心してご連絡いただけます。",
-    email_address: "hello@hobbycalc.com",
-    business: "ビジネス＆パートナーシップ",
-    business_text: "広告掲載、パートナーシップ、その他のビジネス関連のお問い合わせについては、当社のビジネスチームにご連絡ください。",
-    business_email: "business@hobbycalc.com",
-    response_time: "お客様へのお約束",
-    response_text: "すべてのお問い合わせには、24〜48営業時間以内に返信することを目指しています。お時間を割いていただき、ご連絡いただきありがとうございます。",
-    feedback: "提案と趣味のリクエスト",
-    feedback_text: "皆様のフィードバックはHobbyCalcを改善するために不可欠です。計算機に追加する新しい趣味のアイデア、更新が必要な費用の指摘、新機能の提案などがありましたら、ぜひお聞かせください。"
+  email_address: {
+    en: "hello@hobbycalc.com",
+    es: "hello@hobbycalc.com",
+    de: "hello@hobbycalc.com",
+    fr: "hello@hobbycalc.com",
+    pt: "hello@hobbycalc.com",
+    ja: "hello@hobbycalc.com",
+    ar: "hello@hobbycalc.com",
+    hi: "hello@hobbycalc.com"
   },
-  ar: {
-    title: "اتصل بـ HobbyCalc - تواصل معنا",
-    heading: "اتصل بنا",
-    intro: "هل لديك أسئلة أو اقتراحات أو ملاحظات حول HobbyCalc؟ نود أن نسمع منك! تساعدنا مدخلاتك في تقديم المعلومات الأكثر دقة وفائدة للهواة في كل مكان.",
-    email: "استفسارات عامة",
-    email_text: "للاستفسارات العامة أو الملاحظات أو الدعم، يرجى مراسلتنا عبر البريد الإلكتروني. نحن لا نخزن أي معلومات شخصية، لذا يمكنك الاتصال بنا بثقة.",
-    email_address: "hello@hobbycalc.com",
-    business: "الأعمال والشراكات",
-    business_text: "لفرص الإعلان أو الشراكات أو الاستفسارات الأخرى المتعلقة بالأعمال، يرجى التواصل مع فريق الأعمال لدينا.",
-    business_email: "business@hobbycalc.com",
-    response_time: "التزامنا تجاهك",
-    response_text: "نهدف إلى الرد على جميع الاستفسارات في غضون 24-48 ساعة عمل. نحن نقدر وقتك ونشكرك على تواصلك.",
-    feedback: "اقتراحات وطلبات الهوايات",
-    feedback_text: "ملاحظاتك حاسمة لتحسين HobbyCalc. إذا كان لديك فكرة لهواية جديدة لإضافتها إلى الآلة الحاسبة لدينا، أو لاحظت تكلفة تحتاج إلى تحديث، أو لديك اقتراح لميزة جديدة، فنحن حريصون على سماع ذلك."
+  business: {
+    en: "Business & Partnerships",
+    es: "Negocios y Asociaciones",
+    de: "Geschäft & Partnerschaften",
+    fr: "Affaires & Partenariats",
+    pt: "Negócios & Parcerias",
+    ja: "ビジネス＆パートナーシップ",
+    ar: "الأعمال والشراكات",
+    hi: "व्यापार और भागीदारी"
   },
-  hi: {
-    [cite_start]title: "HobbyCalc से संपर्क करें - संपर्क में रहें", // [cite: 4]
-    heading: "हमसे संपर्क करें",
-    intro: "HobbyCalc के बारे में आपके कोई प्रश्न, सुझाव या प्रतिक्रिया है? हमें आपसे सुनना अच्छा लगेगा! आपकी राय हमें दुनिया भर के शौकीनों के लिए सबसे सटीक और सहायक जानकारी प्रदान करने में मदद करती है।",
-    email: "सामान्य पूछताछ",
-    email_text: "सामान्य प्रश्नों, प्रतिक्रिया या समर्थन के लिए, कृपया हमें ईमेल करें। हम कोई भी व्यक्तिगत जानकारी संग्रहीत नहीं करते हैं, इसलिए आप विश्वास के साथ हमसे संपर्क कर सकते हैं।",
-    email_address: "hello@hobbycalc.com",
-    business: "व्यापार और भागीदारी",
-    business_text: "विज्ञापन के अवसरों, भागीदारी, या अन्य व्यापार-संबंधी पूछताछ के लिए, कृपया हमारी व्यापार टीम से संपर्क करें।",
-    business_email: "business@hobbycalc.com",
-    response_time: "आपके प्रति हमारी प्रतिबद्धता",
-    response_text: "हमारा लक्ष्य सभी पूछताछों का 24-48 व्यावसायिक घंटों के भीतर जवाब देना है। हम आपके समय को महत्व देते हैं और आपके संपर्क करने की सराहना करते हैं।",
-    feedback: "सुझाव और शौक अनुरोध",
-    feedback_text: "HobbyCalc को बेहतर बनाने के लिए आपकी प्रतिक्रिया महत्वपूर्ण है। यदि आपके पास हमारे कैलकुलेटर में जोड़ने के लिए किसी नए शौक का विचार है, किसी लागत को अद्यतन करने की आवश्यकता देखते हैं, या किसी नई सुविधा के लिए कोई सुझाव है, तो हम उसे सुनने के लिए उत्सुक हैं।"
+  business_text: {
+    en: "For partnerships, advertising, or business-related questions, please reach out to our business team.",
+    es: "Para asociaciones, publicidad o preguntas relacionadas con negocios, por favor contacta a nuestro equipo de negocios.",
+    de: "Für Partnerschaften, Werbung oder geschäftliche Fragen wenden Sie sich bitte an unser Geschäftsteam.",
+    fr: "Pour les partenariats, la publicité ou les questions commerciales, veuillez contacter notre équipe commerciale.",
+    pt: "Para parcerias, publicidade ou questões relacionadas a negócios, entre em contato com nossa equipe de negócios.",
+    ja: "パートナーシップ、広告、またはビジネス関連の質問については、当社のビジネスチームにお問い合わせください。",
+    ar: "للشراكات أو الإعلان أو الأسئلة المتعلقة بالأعمال، يرجى التواصل مع فريق الأعمال لدينا.",
+    hi: "साझेदारी, विज्ञापन, या व्यापार-संबंधी प्रश्नों के लिए, कृपया हमारी व्यापार टीम से संपर्क करें।"
+  },
+  business_email: {
+    en: "business@hobbycalc.com",
+    es: "business@hobbycalc.com",
+    de: "business@hobbycalc.com",
+    fr: "business@hobbycalc.com",
+    pt: "business@hobbycalc.com",
+    ja: "business@hobbycalc.com",
+    ar: "business@hobbycalc.com",
+    hi: "business@hobbycalc.com"
+  },
+  response_time: {
+    en: "Response Time",
+    es: "Tiempo de Respuesta",
+    de: "Antwortzeit",
+    fr: "Temps de Réponse",
+    pt: "Tempo de Resposta",
+    ja: "応答時間",
+    ar: "وقت الاستجابة",
+    hi: "प्रतिक्रिया समय"
+  },
+  response_text: {
+    en: "We typically respond to all inquiries within 24-48 hours during business days.",
+    es: "Normalmente respondemos a todas las consultas dentro de 24-48 horas durante días laborables.",
+    de: "Wir antworten in der Regel innerhalb von 24-48 Stunden an Werktagen auf alle Anfragen.",
+    fr: "Nous répondons généralement à toutes les demandes dans un délai de 24 à 48 heures pendant les jours ouvrables.",
+    pt: "Normalmente respondemos a todas as perguntas dentro de 24 a 48 horas durante os dias úteis.",
+    ja: "通常、営業日であれば24〜48時間以内にすべてのお問い合わせに対応いたします。",
+    ar: "عادة ما نرد على جميع الاستفسارات في غضون 24-48 ساعة خلال أيام العمل.",
+    hi: "हम आम तौर पर व्यावसायिक दिनों के दौरान 24-48 घंटों के भीतर सभी पूछताछों का जवाब देते हैं।"
+  },
+  feedback: {
+    en: "Feedback & Suggestions",
+    es: "Comentarios y Sugerencias",
+    de: "Feedback & Vorschläge",
+    fr: "Commentaires & Suggestions",
+    pt: "Feedback & Sugestões",
+    ja: "フィードバックと提案",
+    ar: "التعليقات والاقتراحات",
+    hi: "प्रतिक्रिया और सुझाव"
+  },
+  feedback_text: {
+    en: "Your feedback helps us improve HobbyCalc. If you have ideas for new hobbies to add, cost corrections, or feature suggestions, please don't hesitate to reach out.",
+    es: "Tus comentarios nos ayudan a mejorar HobbyCalc. Si tienes ideas para nuevos hobbies, correcciones de costos o sugerencias de características, no dudes en contactarnos.",
+    de: "Ihr Feedback hilft uns, HobbyCalc zu verbessern. Wenn Sie Ideen für neue Hobbys, Kostenkorrekturen oder Funktionsvorschläge haben, zögern Sie bitte nicht, uns zu kontaktieren.",
+    fr: "Vos commentaires nous aident à améliorer HobbyCalc. Si vous avez des idées pour de nouveaux loisirs à ajouter, des corrections de coûts ou des suggestions de fonctionnalités, n'hésitez pas à nous contacter.",
+    pt: "Seu feedback nos ajuda a melhorar o HobbyCalc. Se você tiver ideias para novos hobbies, correções de custos ou sugestões de recursos, não hesite em nos contatar.",
+    ja: "皆様のフィードバックはHobbyCalcの改善に役立ちます。追加する新しい趣味のアイデア、費用の修正、機能の提案などがありましたら、お気軽にご連絡ください。",
+    ar: "تساعدنا ملاحظاتك على تحسين HobbyCalc. إذا كانت لديك أفكار لهوايات جديدة لإضافتها، أو تصحيحات في التكلفة، أو اقتراحات للميزات، فلا تتردد في التواصل معنا.",
+    hi: "आपकी प्रतिक्रिया हमें HobbyCalc को बेहतर बनाने में मदद करती है। यदि आपके पास जोड़ने के लिए नए शौक, लागत सुधार, या सुविधा सुझावों के लिए विचार हैं, तो कृपया संपर्क करने में संकोच न करें।"
   }
 };
 
-const text = content[lang] || content.en;
+// Helper for getting page-specific text
+const getText = (key) => pageContent[key]?.[lang] || pageContent[key]?.['en'];
 ---
 
-<Layout title={text.title} lang={lang}>
+<Layout title={getText('title')} lang={lang}>
   <div class="bg-white">
     <div class="container mx-auto px-6 py-12 max-w-4xl">
-      <h1 class="text-4xl font-bold mb-8 text-gray-800">{text.heading}</h1>
+      <h1 class="text-4xl font-bold mb-8 text-gray-800">{getText('heading')}</h1>
       
       <div class="mb-8">
-        <p class="text-lg text-gray-700 leading-relaxed">{text.intro}</p>
+        <p class="text-lg text-gray-700 leading-relaxed">{getText('intro')}</p>
       </div>
 
       <div class="grid md:grid-cols-2 gap-8 mb-12">
         <div class="bg-gray-50/60 p-6 rounded-lg border border-gray-200">
-          <h2 class="text-xl font-semibold mb-3 text-indigo-600">{text.email}</h2>
-          <p class="text-gray-700 mb-2">{text.email_text}</p>
-          <a href={`mailto:${text.email_address}`} class="text-indigo-600 hover:text-indigo-800 font-medium break-all">
-            {text.email_address}
+          <h2 class="text-xl font-semibold mb-3 text-indigo-600">{getText('email')}</h2>
+          <p class="text-gray-700 mb-2">{getText('email_text')}</p>
+          <a href={`mailto:${getText('email_address')}`} class="text-indigo-600 hover:text-indigo-800 font-medium break-all">
+            {getText('email_address')}
           </a>
         </div>
 
         <div class="bg-gray-50/60 p-6 rounded-lg border border-gray-200">
-          <h2 class="text-xl font-semibold mb-3 text-indigo-600">{text.business}</h2>
-          <p class="text-gray-700 mb-2">{text.business_text}</p>
-          <a href={`mailto:${text.business_email}`} class="text-indigo-600 hover:text-indigo-800 font-medium break-all">
-            {text.business_email}
+          <h2 class="text-xl font-semibold mb-3 text-indigo-600">{getText('business')}</h2>
+          <p class="text-gray-700 mb-2">{getText('business_text')}</p>
+          <a href={`mailto:${getText('business_email')}`} class="text-indigo-600 hover:text-indigo-800 font-medium break-all">
+            {getText('business_email')}
           </a>
         </div>
       </div>
 
       <div class="space-y-8 prose prose-lg max-w-none">
         <section>
-          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.response_time}</h2>
-          <p class="text-gray-700 leading-relaxed">{text.response_text}</p>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('response_time')}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('response_text')}</p>
         </section>
 
         <section>
-          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.feedback}</h2>
-          <p class="text-gray-700 leading-relaxed">{text.feedback_text}</p>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('feedback')}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('feedback_text')}</p>
         </section>
       </div>
     </div>
-    
+
     <footer class="bg-gray-900 text-gray-300 py-12 mt-12">
       <div class="max-w-7xl mx-auto px-4">
         <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
