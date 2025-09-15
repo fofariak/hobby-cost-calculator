@@ -1,67 +1,196 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
+// --- Page Generation Logic ---
 export function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
   return languages.map(lang => ({ params: { lang } }));
 }
 
+// --- Data Preparation & Translations ---
 const { lang } = Astro.params;
 
-const content = {
-  en: {
-    title: "About HobbyCalc - Free Hobby Cost Calculator",
-    heading: "About HobbyCalc",
-    mission: "Our Mission",
-    mission_text: "HobbyCalc was created to help people discover and budget for new hobbies. We believe everyone deserves to pursue their passions without financial surprises. Our free calculator provides accurate cost estimates for over 50 different hobbies, from photography to cooking to gaming.",
-    how_it_works: "How It Works",
-    how_text: "Our team researches and analyzes the startup costs for various hobbies across different skill levels. We provide cost breakdowns from beginner to expert level, including equipment, materials, and ongoing expenses. All costs can be converted to your local currency using real-time exchange rates.",
-    why_free: "Why It's Free",
-    free_text: "We believe financial planning tools should be accessible to everyone. HobbyCalc is completely free to use with no hidden fees, subscriptions, or limits. We support the site through ethical advertising partnerships.",
-    team: "Our Team",
-    team_text: "HobbyCalc is maintained by a passionate team of hobby enthusiasts and financial researchers who understand the importance of budgeting for personal interests and creative pursuits."
+const translations = {
+  // Page Content
+  title: {
+    en: "About HobbyCalc - Free Hobby Cost Calculator",
+    es: "Acerca de HobbyCalc - Calculadora Gratuita de Costos de Hobbies",
+    de: "Über HobbyCalc - Kostenloser Hobby-Kosten-Rechner",
+    fr: "À propos de HobbyCalc - Calculateur Gratuit de Coût de Loisir",
+    pt: "Sobre o HobbyCalc - Calculadora Gratuita de Custos de Hobby",
+    ja: "HobbyCalcについて - 無料の趣味費用計算機",
+    ar: "حول HobbyCalc - حاسبة تكلفة الهوايات المجانية",
+    hi: "HobbyCalc के बारे में - मुफ्त हॉबी लागत कैलकुलेटर"
   },
-  es: {
-    title: "Acerca de HobbyCalc - Calculadora Gratuita de Costos de Hobbies",
-    heading: "Acerca de HobbyCalc",
-    mission: "Nuestra Misión",
-    mission_text: "HobbyCalc fue creado para ayudar a las personas a descubrir y presupuestar nuevos hobbies. Creemos que todos merecen perseguir sus pasiones sin sorpresas financieras. Nuestra calculadora gratuita proporciona estimaciones precisas de costos para más de 50 hobbies diferentes.",
-    how_it_works: "Cómo Funciona",
-    how_text: "Nuestro equipo investiga y analiza los costos de inicio para varios hobbies en diferentes niveles de habilidad. Proporcionamos desgloses de costos desde principiante hasta nivel experto.",
-    why_free: "Por Qué Es Gratis",
-    free_text: "Creemos que las herramientas de planificación financiera deben ser accesibles para todos. HobbyCalc es completamente gratuito sin tarifas ocultas.",
-    team: "Nuestro Equipo",
-    team_text: "HobbyCalc es mantenido por un equipo apasionado de entusiastas de hobbies e investigadores financieros."
-  }
+  heading: {
+    en: "About HobbyCalc",
+    es: "Acerca de HobbyCalc",
+    de: "Über HobbyCalc",
+    fr: "À propos de HobbyCalc",
+    pt: "Sobre o HobbyCalc",
+    ja: "HobbyCalcについて",
+    ar: "حول HobbyCalc",
+    hi: "HobbyCalc के बारे में"
+  },
+  mission: {
+    en: "Our Mission",
+    es: "Nuestra Misión",
+    de: "Unsere Mission",
+    fr: "Notre Mission",
+    pt: "Nossa Missão",
+    ja: "私たちの使命",
+    ar: "مهمتنا",
+    hi: "हमारा मिशन"
+  },
+  mission_text: {
+    en: "HobbyCalc was created to help people discover and budget for new hobbies. We believe everyone deserves to pursue their passions without financial surprises. Our free calculator provides accurate cost estimates for over 50 different hobbies, from photography to cooking to gaming.",
+    es: "HobbyCalc fue creado para ayudar a las personas a descubrir y presupuestar nuevos hobbies. Creemos que todos merecen perseguir sus pasiones sin sorpresas financieras. Nuestra calculadora gratuita proporciona estimaciones precisas de costos para más de 50 hobbies diferentes.",
+    de: "HobbyCalc wurde entwickelt, um Menschen dabei zu helfen, neue Hobbys zu entdecken und zu budgetieren. Wir glauben, dass jeder seine Leidenschaften ohne finanzielle Überraschungen verfolgen können sollte. Unser kostenloser Rechner liefert genaue Kostenschätzungen für über 50 verschiedene Hobbys, von Fotografie über Kochen bis hin zu Gaming.",
+    fr: "HobbyCalc a été créé pour aider les gens à découvrir et à budgétiser de nouveaux loisirs. Nous croyons que tout le monde mérite de poursuivre ses passions sans surprises financières. Notre calculateur gratuit fournit des estimations de coûts précises pour plus de 50 loisirs différents, de la photographie à la cuisine en passant par les jeux vidéo.",
+    pt: "O HobbyCalc foi criado para ajudar as pessoas a descobrir e orçar novos hobbies. Acreditamos que todos merecem perseguir suas paixões sem surpresas financeiras. Nossa calculadora gratuita fornece estimativas de custo precisas para mais de 50 hobbies diferentes, da fotografia à culinária e aos jogos.",
+    ja: "HobbyCalcは、人々が新しい趣味を見つけて予算を立てるのを助けるために作られました。私たちは、誰もが金銭的な驚きなく情熱を追求する権利があると信じています。私たちの無料計算機は、写真から料理、ゲームまで、50以上の異なる趣味の正確な費用見積もりを提供します。",
+    ar: "تم إنشاء HobbyCalc لمساعدة الناس على اكتشاف هوايات جديدة ووضع ميزانية لها. نحن نؤمن بأن الجميع يستحق متابعة شغفه دون مفاجآت مالية. توفر حاسبتنا المجانية تقديرات دقيقة للتكاليف لأكثر من 50 هواية مختلفة، من التصوير الفوتوغرافي إلى الطهي والألعاب.",
+    hi: "HobbyCalc लोगों को नए शौक खोजने और उनके लिए बजट बनाने में मदद करने के लिए बनाया गया था। हमारा मानना ​​है कि हर कोई वित्तीय आश्चर्य के बिना अपने जुनून को आगे बढ़ाने का हकदार है। हमारा मुफ्त कैलकुलेटर 50 से अधिक विभिन्न शौक, फोटोग्राफी से लेकर खाना पकाने से लेकर गेमिंग तक के लिए सटीक लागत अनुमान प्रदान करता है।"
+  },
+  how_it_works: {
+    en: "How It Works",
+    es: "Cómo Funciona",
+    de: "So funktioniert's",
+    fr: "Comment ça fonctionne",
+    pt: "Como Funciona",
+    ja: "仕組み",
+    ar: "كيف يعمل",
+    hi: "यह कैसे काम करता है"
+  },
+  how_text: {
+    en: "Our team researches and analyzes the startup costs for various hobbies across different skill levels. We provide cost breakdowns from beginner to expert level, including equipment, materials, and ongoing expenses. All costs can be converted to your local currency using real-time exchange rates.",
+    es: "Nuestro equipo investiga y analiza los costos de inicio para varios hobbies en diferentes niveles de habilidad. Proporcionamos desgloses de costos desde principiante hasta nivel experto.",
+    de: "Unser Team recherchiert und analysiert die Anschaffungskosten für verschiedene Hobbys auf unterschiedlichen Fähigkeitsstufen. Wir bieten Kostenaufschlüsselungen vom Anfänger- bis zum Expertenlevel, einschließlich Ausrüstung, Materialien und laufenden Ausgaben. Alle Kosten können mit Echtzeit-Wechselkursen in Ihre lokale Währung umgerechnet werden.",
+    fr: "Notre équipe recherche et analyse les coûts de démarrage pour divers loisirs à différents niveaux de compétence. Nous fournissons des ventilations de coûts du niveau débutant au niveau expert, y compris l'équipement, les matériaux et les dépenses courantes. Tous les coûts peuvent être convertis dans votre devise locale en utilisant les taux de change en temps réel.",
+    pt: "Nossa equipe pesquisa e analisa os custos iniciais para vários hobbies em diferentes níveis de habilidade. Fornecemos detalhamentos de custos do nível iniciante ao especialista, incluindo equipamentos, materiais e despesas contínuas. Todos os custos podem ser convertidos para sua moeda local usando taxas de câmbio em tempo real.",
+    ja: "私たちのチームは、さまざまなスキルレベルで様々な趣味の開始コストを調査・分析しています。初心者から専門家レベルまでのコスト内訳（機材、材料、継続的な費用を含む）を提供します。すべてのコストは、リアルタイムの為替レートを使用して現地の通貨に変換できます。",
+    ar: "يقوم فريقنا بالبحث وتحليل تكاليف بدء الهوايات المختلفة عبر مستويات المهارة المختلفة. نحن نقدم تفصيلاً للتكاليف من مستوى المبتدئين إلى الخبراء، بما في ذلك المعدات والمواد والنفقات المستمرة. يمكن تحويل جميع التكاليف إلى عملتك المحلية باستخدام أسعار الصرف في الوقت الفعلي.",
+    hi: "हमारी टीम विभिन्न कौशल स्तरों पर विभिन्न शौक के लिए स्टार्टअप लागतों पर शोध और विश्लेषण करती है। हम शुरुआती से विशेषज्ञ स्तर तक लागत का विवरण प्रदान करते हैं, जिसमें उपकरण, सामग्री और चल रहे खर्च शामिल हैं। सभी लागतों को वास्तविक समय विनिमय दरों का उपयोग करके आपकी स्थानीय मुद्रा में परिवर्तित किया जा सकता है।"
+  },
+  why_free: {
+    en: "Why It's Free",
+    es: "Por Qué Es Gratis",
+    de: "Warum es kostenlos ist",
+    fr: "Pourquoi c'est gratuit",
+    pt: "Por que é grátis",
+    ja: "なぜ無料なのか",
+    ar: "لماذا هو مجاني",
+    hi: "यह मुफ़्त क्यों है"
+  },
+  free_text: {
+    en: "We believe financial planning tools should be accessible to everyone. HobbyCalc is completely free to use with no hidden fees, subscriptions, or limits. We support the site through ethical advertising partnerships.",
+    es: "Creemos que las herramientas de planificación financiera deben ser accesibles para todos. HobbyCalc es completamente gratuito sin tarifas ocultas.",
+    de: "Wir glauben, dass Finanzplanungstools für jeden zugänglich sein sollten. HobbyCalc ist völlig kostenlos, ohne versteckte Gebühren, Abonnements oder Einschränkungen. Wir unterstützen die Website durch ethische Werbepartnerschaften.",
+    fr: "Nous pensons que les outils de planification financière devraient être accessibles à tous. HobbyCalc est entièrement gratuit, sans frais cachés, abonnements ou limites. Nous soutenons le site grâce à des partenariats publicitaires éthiques.",
+    pt: "Acreditamos que as ferramentas de planejamento financeiro devem ser acessíveis a todos. O HobbyCalc é totalmente gratuito, sem taxas ocultas, assinaturas ou limites. Apoiamos o site por meio de parcerias de publicidade éticas.",
+    ja: "私たちは、財務計画ツールは誰もが利用できるべきだと信じています。HobbyCalcは、隠れた料金、サブスクリプション、制限なしで完全に無料で使用できます。私たちは倫理的な広告パートナーシップを通じてサイトをサポートしています。",
+    ar: "نحن نؤمن بأن أدوات التخطيط المالي يجب أن تكون متاحة للجميع. HobbyCalc مجاني تمامًا للاستخدام بدون رسوم خفية أو اشتراكات أو حدود. نحن ندعم الموقع من خلال شراكات إعلانية أخلاقية.",
+    hi: "हमारा मानना ​​है कि वित्तीय नियोजन उपकरण सभी के लिए सुलभ होने चाहिए। HobbyCalc बिना किसी छिपी हुई फीस, सदस्यता या सीमा के उपयोग करने के लिए पूरी तरह से मुफ्त है। हम नैतिक विज्ञापन भागीदारी के माध्यम से साइट का समर्थन करते हैं।"
+  },
+  team: {
+    en: "Our Team",
+    es: "Nuestro Equipo",
+    de: "Unser Team",
+    fr: "Notre Équipe",
+    pt: "Nossa Equipe",
+    ja: "私たちのチーム",
+    ar: "فريقنا",
+    hi: "हमारी टीम"
+  },
+  team_text: {
+    en: "HobbyCalc is maintained by a passionate team of hobby enthusiasts and financial researchers who understand the importance of budgeting for personal interests and creative pursuits.",
+    es: "HobbyCalc es mantenido por un equipo apasionado de entusiastas de hobbies e investigadores financieros.",
+    de: "HobbyCalc wird von einem leidenschaftlichen Team von Hobby-Enthusiasten und Finanzforschern gepflegt, die die Bedeutung der Budgetierung für persönliche Interessen und kreative Bestrebungen verstehen.",
+    fr: "HobbyCalc est maintenu par une équipe passionnée d'amateurs de loisirs et de chercheurs financiers qui comprennent l'importance de la budgétisation pour les intérêts personnels et les activités créatives.",
+    pt: "O HobbyCalc é mantido por uma equipe apaixonada de entusiastas de hobbies e pesquisadores financeiros que entendem a importância de orçar para interesses pessoais e atividades criativas.",
+    ja: "HobbyCalcは、個人の興味や創造的な追求のための予算編成の重要性を理解している、情熱的な趣味の愛好家と金融研究者のチームによって維持されています。",
+    ar: "يتم الحفاظ على HobbyCalc من قبل فريق شغوف من عشاق الهوايات والباحثين الماليين الذين يفهمون أهمية وضع الميزانية للاهتمامات الشخصية والمساعي الإبداعية.",
+    hi: "HobbyCalc को शौक के प्रति उत्साही और वित्तीय शोधकर्ताओं की एक भावुक टीम द्वारा बनाए रखा जाता है जो व्यक्तिगत हितों और रचनात्मक गतिविधियों के लिए बजट के महत्व को समझते हैं।"
+  },
+  
+  // Footer UI Labels (from index.astro for consistency)
+  quick_links: { en: "Quick Links", es: "Enlaces Rápidos", de: "Schnelllinks", fr: "Liens Rapides", pt: "Links Rápidos", ja: "クイックリンク", ar: "روابط سريعة", hi: "त्वरित लिंक" },
+  home: { en: "Home", es: "Inicio", de: "Startseite", fr: "Accueil", pt: "Início", ja: "ホーム", ar: "الرئيسية", hi: "होम" },
+  all_hobbies: { en: "All Hobbies", es: "Todos los Hobbies", de: "Alle Hobbys", fr: "Tous les Loisirs", pt: "Todos os Hobbies", ja: "すべての趣味", ar: "جميع الهوايات", hi: "सभी शौक" },
+  about_us: { en: "About Us", es: "Acerca de Nosotros", de: "Über Uns", fr: "À Propos de Nous", pt: "Sobre Nós", ja: "私たちについて", ar: "معلومات عنا", hi: "हमारे बारे में" },
+  contact: { en: "Contact", es: "Contacto", de: "Kontakt", fr: "Contact", pt: "Contato", ja: "お問い合わせ", ar: "اتصل بنا", hi: "संपर्क" },
+  legal: { en: "Legal", es: "Legal", de: "Rechtliches", fr: "Légal", pt: "Legal", ja: "法的事項", ar: "قانوني", hi: "कानूनी" },
+  privacy_policy: { en: "Privacy Policy", es: "Política de Privacidad", de: "Datenschutzrichtlinie", fr: "Politique de Confidentialité", pt: "Política de Privacidade", ja: "プライバシーポリシー", ar: "سياسة الخصوصية", hi: "गोपनीयता नीति" },
+  terms_service: { en: "Terms of Service", es: "Términos de Servicio", de: "Nutzungsbedingungen", fr: "Conditions de Service", pt: "Termos de Serviço", ja: "利用規約", ar: "شروط الخدمة", hi: "सेवा की शर्तें" },
+  disclaimer: { en: "Disclaimer", es: "Descargo", de: "Haftungsausschluss", fr: "Avis de Non-Responsabilité", pt: "Isenção de Responsabilidade", ja: "免責事項", ar: "إخلاء مسؤولية", hi: "अस्वीकरण" },
+  rights_reserved: { en: "All rights reserved.", es: "Todos los derechos reservados.", de: "Alle Rechte vorbehalten.", fr: "Tous droits réservés.", pt: "Todos os direitos reservados.", ja: "すべての権利を保有。", ar: "جميع الحقوق محفوظة.", hi: "सभी अधिकार सुरक्षित।" }
 };
 
-const text = content[lang] || content.en;
+const getText = (key, currentLang) => translations[key]?.[currentLang] || translations[key]?.['en'];
 ---
 
-<Layout title={text.title} lang={lang}>
-  <div class="container mx-auto px-6 py-12 max-w-4xl">
-    <h1 class="text-4xl font-bold mb-8 text-gray-800">{text.heading}</h1>
-    
-    <div class="prose prose-lg max-w-none">
-      <section class="mb-8">
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.mission}</h2>
-        <p class="text-gray-700 leading-relaxed">{text.mission_text}</p>
-      </section>
+<Layout title={getText('title', lang)} lang={lang}>
+  <div class="bg-white">
+    <div class="container mx-auto px-6 py-12 max-w-4xl">
+      <h1 class="text-4xl font-bold mb-8 text-gray-800">{getText('heading', lang)}</h1>
+      
+      <div class="prose prose-lg max-w-none">
+        <section class="mb-8">
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('mission', lang)}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('mission_text', lang)}</p>
+        </section>
 
-      <section class="mb-8">
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.how_it_works}</h2>
-        <p class="text-gray-700 leading-relaxed">{text.how_text}</p>
-      </section>
+        <section class="mb-8">
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('how_it_works', lang)}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('how_text', lang)}</p>
+        </section>
 
-      <section class="mb-8">
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.why_free}</h2>
-        <p class="text-gray-700 leading-relaxed">{text.free_text}</p>
-      </section>
+        <section class="mb-8">
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('why_free', lang)}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('free_text', lang)}</p>
+        </section>
 
-      <section class="mb-8">
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{text.team}</h2>
-        <p class="text-gray-700 leading-relaxed">{text.team_text}</p>
-      </section>
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('team', lang)}</h2>
+          <p class="text-gray-700 leading-relaxed">{getText('team_text', lang)}</p>
+        </section>
+      </div>
     </div>
   </div>
+
+  <footer class="bg-gray-900 text-gray-300 py-12">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+        <div class="col-span-2">
+          <h3 class="text-xl font-bold text-white mb-4">🎨 HobbyCalc</h3>
+          <p class="text-gray-400 mb-4 text-sm">Calculate the true cost of your next passion.</p>
+        </div>
+        <div>
+          <h4 class="font-semibold text-white mb-3">{getText('quick_links', lang)}</h4>
+          <div class="space-y-2 text-sm">
+            <a href={`/${lang}/`} class="block hover:text-white transition-colors">{getText('home', lang)}</a>
+            <a href={`/${lang}/hobbies`} class="block hover:text-white transition-colors">{getText('all_hobbies', lang)}</a>
+            <a href={`/${lang}/about`} class="block hover:text-white transition-colors">{getText('about_us', lang)}</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-semibold text-white mb-3">{getText('legal', lang)}</h4>
+          <div class="space-y-2 text-sm">
+            <a href={`/${lang}/privacy`} class="block hover:text-white transition-colors">{getText('privacy_policy', lang)}</a>
+            <a href={`/${lang}/terms`} class="block hover:text-white transition-colors">{getText('terms_service', lang)}</a>
+            <a href={`/${lang}/disclaimer`} class="block hover:text-white transition-colors">{getText('disclaimer', lang)}</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-semibold text-white mb-3">{getText('contact', lang)}</h4>
+          <div class="space-y-2 text-sm">
+            <a href={`/${lang}/contact`} class="block hover:text-white transition-colors">Get in Touch</a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+        © 2025 HobbyCalc. {getText('rights_reserved', lang)}
+      </div>
+    </div>
+  </footer>
 </Layout>
