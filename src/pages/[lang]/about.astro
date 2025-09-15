@@ -10,6 +10,7 @@ export function getStaticPaths() {
 
 // --- Data Preparation & Translations ---
 const { lang } = Astro.params;
+const ui = uiLabels[lang] || uiLabels['en'];
 
 // Translations for THIS PAGE ONLY
 const pageContent = {
@@ -118,11 +119,7 @@ const pageContent = {
 // Helper for getting page-specific text
 const getText = (key) => pageContent[key]?.[lang] || pageContent[key]?.['en'];
 
-// Process the imported uiLabels to get strings for the current language
-const ui = {};
-for (const key in uiLabels) {
-  ui[key] = uiLabels[key]?.[lang] || uiLabels[key]?.['en'];
-}
+
 ---
 
 <Layout title={getText('title')} lang={lang}>
@@ -154,39 +151,41 @@ for (const key in uiLabels) {
     </div>
   </div>
 
-  <footer class="bg-gray-900 text-gray-300 py-12">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
-        <div class="col-span-2">
-          <h3 class="text-xl font-bold text-white mb-4">🎨 HobbyCalc</h3>
-          <p class="text-gray-400 mb-4 text-sm">{ui.footerSlogan}</p>
-        </div>
-        <div>
-          <h4 class="font-semibold text-white mb-3">{ui.quickLinks}</h4>
-          <div class="space-y-2 text-sm">
-            <a href={`/${lang}/`} class="block hover:text-white transition-colors">{ui.home}</a>
-            <a href={`/${lang}/hobbies`} class="block hover:text-white transition-colors">{ui.allHobbies}</a>
-            <a href={`/${lang}/about`} class="block hover:text-white transition-colors">{ui.aboutUs}</a>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <div class="col-span-2">
+            <h3 class="text-xl font-bold text-white mb-4">🎨 HobbyCalc</h3>
+            <p class="text-gray-400 mb-4">{ui.calculateTrueCost}</p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-white mb-3">{ui.quickLinks}</h4>
+            <div class="space-y-2 text-sm">
+              <a href={`/${lang}/`} class="block hover:text-white transition-colors">{ui.home}</a>
+              <a href={`/${lang}/hobbies`} class="block hover:text-white transition-colors">{ui.allHobbies}</a>
+            </div>
+          </div>
+          <div>
+            <h4 class="font-semibold text-white mb-3">{ui.legal}</h4>
+            <div class="space-y-2 text-sm">
+              <a href={`/${lang}/privacy`} class="block hover:text-white transition-colors">{ui.privacyPolicy}</a>
+              <a href={`/${lang}/terms`} class="block hover:text-white transition-colors">{ui.termsOfService}</a>
+              <a href={`/${lang}/disclaimer`} class="block hover:text-white transition-colors">{ui.disclaimer}</a>
+            </div>
+          </div>
+          <div>
+            <h4 class="font-semibold text-white mb-3">{ui.contact}</h4>
+            <div class="space-y-2 text-sm">
+              <a href={`/${lang}/contact`} class="block hover:text-white transition-colors">{ui.getInTouch}</a>
+              <a href={`/${lang}/about`} class="block hover:text-white transition-colors">{ui.aboutUs}</a>
+            </div>
           </div>
         </div>
-        <div>
-          <h4 class="font-semibold text-white mb-3">{ui.legal}</h4>
-          <div class="space-y-2 text-sm">
-            <a href={`/${lang}/privacy`} class="block hover:text-white transition-colors">{ui.privacyPolicy}</a>
-            <a href={`/${lang}/terms`} class="block hover:text-white transition-colors">{ui.termsOfService}</a>
-            <a href={`/${lang}/disclaimer`} class="block hover:text-white transition-colors">{ui.disclaimer}</a>
-          </div>
-        </div>
-        <div>
-          <h4 class="font-semibold text-white mb-3">{ui.contact}</h4>
-          <div class="space-y-2 text-sm">
-            <a href={`/${lang}/contact`} class="block hover:text-white transition-colors">{ui.getInTouch}</a>
-          </div>
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+          © 2025 HobbyCalc. {ui.allRightsReserved}.
         </div>
       </div>
-      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-        © 2025 HobbyCalc. {ui.allRightsReserved}
-      </div>
-    </div>
-  </footer>
+    </footer>
+  </div>
 </Layout>
