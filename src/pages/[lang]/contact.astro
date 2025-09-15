@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import uiLabels from '../../data/uiLabels.json'; // Import shared UI labels for the footer
+import uiLabels from '../../data/uiLabels.json'; 
 
 // --- Page Generation Logic ---
 export function getStaticPaths() {
@@ -10,7 +10,7 @@ export function getStaticPaths() {
 
 // --- Data Preparation & Translations ---
 const { lang } = Astro.params;
-const ui = uiLabels[lang] || uiLabels['en']; [cite_start]// [cite: 3] Get shared UI text for footer
+const ui = uiLabels[lang] || uiLabels['en']; 
 
 // Translations for THIS PAGE ONLY
 const content = {
