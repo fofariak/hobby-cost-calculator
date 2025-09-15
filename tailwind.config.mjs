@@ -1,12 +1,15 @@
-import { defineConfig } from 'astro/config';
-import tailwind from "@astrojs/tailwind";
-import netlify from "@astrojs/netlify"; // This will be added
+// tailwind.config.mjs
+import daisyui from "daisyui";
 
-// https://astro.build/config
-export default defineConfig({
-  // This property is added to enable server-side rendering
-  output: 'server',
-  
-  // Your integrations array is updated to include netlify()
-  integrations: [tailwind(), netlify()]
-});
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  theme: {
+    extend: {},
+  },
+
+  plugins: [daisyui],
+  daisyui: {
+    themes: ["light"],
+  },
+}
