@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import uiLabels from '../../data/uiLabels.json';
 
 export function getStaticPaths() {
   const languages = ['en', 'es', 'de', 'fr', 'pt', 'ja', 'ar', 'hi'];
@@ -7,74 +8,148 @@ export function getStaticPaths() {
 }
 
 const { lang } = Astro.params;
+const ui = uiLabels[lang] || uiLabels['en'];
+
+const pageContent = {
+  title: { en: "Terms of Service - HobbyCalc", es: "Términos de Servicio - HobbyCalc", de: "Nutzungsbedingungen - HobbyCalc", fr: "Conditions d'Utilisation - HobbyCalc", pt: "Termos de Serviço - HobbyCalc", ja: "利用規約 - HobbyCalc", ar: "شروط الخدمة - HobbyCalc", hi: "सेवा की शर्तें - हॉबीकैल्क" },
+  heading: { en: "Terms of Service", es: "Términos de Servicio", de: "Nutzungsbedingungen", fr: "Conditions d'Utilisation", pt: "Termos de Serviço", ja: "利用規約", ar: "شروط الخدمة", hi: "सेवा की शर्तें" },
+  last_updated: { en: "Last updated: September 2025", es: "Última actualización: Septiembre de 2025", de: "Zuletzt aktualisiert: September 2025", fr: "Dernière mise à jour : Septembre 2025", pt: "Última atualização: Setembro de 2025", ja: "最終更新日：2025年9月", ar: "آخر تحديث: سبتمبر 2025", hi: "अंतिम अपडेट: सितंबर 2025" },
+  
+  acceptance_heading: { en: "1. Acceptance of Terms", es: "1. Aceptación de los Términos", de: "1. Annahme der Bedingungen", fr: "1. Acceptation des Conditions", pt: "1. Aceitação dos Termos", ja: "1. 規約への同意", ar: "1. قبول الشروط", hi: "1. शर्तों की स्वीकृति" },
+  acceptance_text: {
+    en: "By accessing and using HobbyCalc, you accept and agree to be bound by these Terms of Service. If you do not agree, please do not use our service.",
+    es: "Al acceder y utilizar HobbyCalc, usted acepta y se compromete a cumplir estos Términos de Servicio. Si no está de acuerdo, por favor no utilice nuestro servicio.",
+    de: "Durch den Zugriff auf und die Nutzung von HobbyCalc akzeptieren Sie diese Nutzungsbedingungen und stimmen zu, an sie gebunden zu sein. Wenn Sie nicht zustimmen, nutzen Sie unseren Dienst bitte nicht.",
+    fr: "En accédant à HobbyCalc et en l'utilisant, vous acceptez d'être lié par ces Conditions d'Utilisation. Si vous n'êtes pas d'accord, veuillez ne pas utiliser notre service.",
+    pt: "Ao acessar e usar o HobbyCalc, você aceita e concorda em ficar vinculado a estes Termos de Serviço. Se você não concorda, por favor, não use nosso serviço.",
+    ja: "HobbyCalcにアクセスして利用することにより、お客様は本利用規約に拘束されることに同意したものとみなされます。同意いただけない場合は、当社のサービスを利用しないでください。",
+    ar: "من خلال الوصول إلى HobbyCalc واستخدامه، فإنك تقبل وتوافق على الالتزام بشروط الخدمة هذه. إذا كنت لا توافق، يرجى عدم استخدام خدمتنا.",
+    hi: "हॉबीकैल्क का उपयोग करके, आप इन सेवा की शर्तों से बंधे होने के लिए स्वीकार और सहमत हैं। यदि आप सहमत नहीं हैं, तो कृपया हमारी सेवा का उपयोग न करें।"
+  },
+  
+  service_heading: { en: "2. Description of Service", es: "2. Descripción del Servicio", de: "2. Beschreibung des Dienstes", fr: "2. Description du Service", pt: "2. Descrição do Serviço", ja: "2. サービスの説明", ar: "2. وصف الخدمة", hi: "2. सेवा का विवरण" },
+  service_text: {
+    en: "HobbyCalc provides free hobby cost calculation tools and information. We estimate startup costs for various hobbies and provide currency conversion features.",
+    es: "HobbyCalc proporciona herramientas e información gratuitas para el cálculo de costos de pasatiempos. Estimamos los costos iniciales para varios pasatiempos y ofrecemos funciones de conversión de moneda.",
+    de: "HobbyCalc bietet kostenlose Tools und Informationen zur Berechnung von Hobbykosten. Wir schätzen die Anlaufkosten für verschiedene Hobbys und bieten Währungsumrechnungsfunktionen.",
+    fr: "HobbyCalc fournit des outils et des informations gratuits pour le calcul des coûts des loisirs. Nous estimons les coûts de démarrage pour divers loisirs et fournissons des fonctionnalités de conversion de devises.",
+    pt: "O HobbyCalc fornece ferramentas e informações gratuitas para cálculo de custos de hobbies. Estimamos os custos iniciais para vários hobbies e fornecemos recursos de conversão de moeda.",
+    ja: "HobbyCalcは、無料の趣味費用計算ツールと情報を提供します。さまざまな趣味の開始費用を見積もり、通貨換算機能を提供します。",
+    ar: "يوفر HobbyCalc أدوات ومعلومات مجانية لحساب تكلفة الهوايات. نحن نقدر تكاليف بدء التشغيل لمختلف الهوايات ونوفر ميزات تحويل العملات.",
+    hi: "हॉबीकैल्क मुफ्त हॉबी लागत गणना उपकरण और जानकारी प्रदान करता है। हम विभिन्न शौक के लिए स्टार्टअप लागत का अनुमान लगाते हैं और मुद्रा रूपांतरण सुविधाएँ प्रदान करते हैं।"
+  },
+
+  license_heading: { en: "3. Use License", es: "3. Licencia de Uso", de: "3. Nutzungslizenz", fr: "3. Licence d'Utilisation", pt: "3. Licença de Uso", ja: "3. 使用ライセンス", ar: "3. رخصة الاستخدام", hi: "3. उपयोग लाइसेंस" },
+  license_text: {
+    en: "Permission is granted to temporarily use HobbyCalc for personal, non-commercial purposes. This license shall automatically terminate if you violate any restrictions.",
+    es: "Se concede permiso para usar temporalmente HobbyCalc con fines personales y no comerciales. Esta licencia terminará automáticamente si usted viola alguna restricción.",
+    de: "Es wird die Erlaubnis erteilt, HobbyCalc vorübergehend für persönliche, nicht kommerzielle Zwecke zu nutzen. Diese Lizenz endet automatisch, wenn Sie gegen eine der Einschränkungen verstoßen.",
+    fr: "L'autorisation est accordée d'utiliser temporairement HobbyCalc à des fins personnelles et non commerciales. Cette licence prendra fin automatiquement si vous violez l'une des restrictions.",
+    pt: "É concedida permissão para usar temporariamente o HobbyCalc para fins pessoais e não comerciais. Esta licença será rescindida automaticamente se você violar qualquer restrição.",
+    ja: "個人的、非商業的な目的でHobbyCalcを一時的に使用する許可が与えられます。制限に違反した場合、このライセンスは自動的に終了します。",
+    ar: "يُمنح الإذن باستخدام HobbyCalc مؤقتًا لأغراض شخصية وغير تجارية. ينتهي هذا الترخيص تلقائيًا إذا انتهكت أي قيود.",
+    hi: "व्यक्तिगत, गैर-व्यावसायिक उद्देश्यों के लिए हॉबीकैल्क का अस्थायी रूप से उपयोग करने की अनुमति दी जाती है। यदि आप किसी भी प्रतिबंध का उल्लंघन करते हैं तो यह लाइसेंस स्वचालित रूप से समाप्त हो जाएगा।"
+  },
+  
+  changes_heading: { en: "4. Changes to Terms", es: "4. Cambios en los Términos", de: "4. Änderungen der Bedingungen", fr: "4. Modifications des Conditions", pt: "4. Alterações nos Termos", ja: "4. 規約の変更", ar: "4. التغييرات على الشروط", hi: "4. शर्तों में बदलाव" },
+  changes_text: {
+    en: "We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting.",
+    es: "Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios entrarán en vigencia inmediatamente después de su publicación.",
+    de: "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Änderungen werden sofort nach der Veröffentlichung wirksam.",
+    fr: "Nous nous réservons le droit de modifier ces conditions à tout moment. Les changements prendront effet immédiatement après leur publication.",
+    pt: "Reservamo-nos o direito de modificar estes termos a qualquer momento. As alterações entrarão em vigor imediatamente após a publicação.",
+    ja: "当社は、いつでも本規約を変更する権利を留保します。変更は掲載後すぐに有効となります。",
+    ar: "نحتفظ بالحق في تعديل هذه الشروط في أي وقت. ستكون التغييرات فعالة فور نشرها.",
+    hi: "हम किसी भी समय इन शर्तों को संशोधित करने का अधिकार सुरक्षित रखते हैं। परिवर्तन पोस्ट करने के तुरंत बाद प्रभावी होंगे।"
+  },
+  
+  contact_heading: { en: "5. Contact Information", es: "5. Información de Contacto", de: "5. Kontaktinformationen", fr: "5. Coordonnées", pt: "5. Informações de Contato", ja: "5. 連絡先情報", ar: "5. معلومات الاتصال", hi: "5. संपर्क जानकारी" },
+  contact_text: {
+    en: "Questions about these Terms of Service should be sent to: legal@hobbycalc.com.",
+    es: "Las preguntas sobre estos Términos de Servicio deben enviarse a: legal@hobbycalc.com.",
+    de: "Fragen zu diesen Nutzungsbedingungen sind zu richten an: legal@hobbycalc.com.",
+    fr: "Les questions concernant ces Conditions d'Utilisation doivent être envoyées à : legal@hobbycalc.com.",
+    pt: "Perguntas sobre estes Termos de Serviço devem ser enviadas para: legal@hobbycalc.com.",
+    ja: "本利用規約に関するご質問は、legal@hobbycalc.comまでお送りください。",
+    ar: "يجب إرسال الأسئلة المتعلقة بشروط الخدمة هذه إلى: legal@hobbycalc.com.",
+    hi: "इन सेवा की शर्तों के बारे में प्रश्न यहां भेजे जाने चाहिए: legal@hobbycalc.com।"
+  }
+};
+
+const getText = (key) => pageContent[key]?.[lang] || pageContent[key]?.['en'];
 ---
 
-<Layout title="Terms of Service - HobbyCalc" lang={lang}>
-  <div class="container mx-auto px-6 py-12 max-w-4xl">
-    <h1 class="text-4xl font-bold mb-8 text-gray-800">Terms of Service</h1>
-    <p class="text-gray-600 mb-8">Last updated: January 2025</p>
-    
-    <div class="prose prose-lg max-w-none space-y-6">
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">1. Acceptance of Terms</h2>
-        <p class="text-gray-700 leading-relaxed">
-          By accessing and using HobbyCalc, you accept and agree to be bound by these Terms of Service. If you do not agree, please do not use our service.
-        </p>
-      </section>
+<Layout title={getText('title')} lang={lang}>
+  <div class="bg-white">
+    <div class="container mx-auto px-6 py-12 max-w-4xl">
+      <h1 class="text-4xl font-bold mb-4 text-gray-800">{getText('heading')}</h1>
+      <p class="text-gray-500 mb-8 text-sm">{getText('last_updated')}</p>
+      
+      <div class="prose prose-lg max-w-none space-y-6">
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('acceptance_heading')}</h2>
+          <p class="text-gray-700 leading-relaxed" set:html={getText('acceptance_text')}></p>
+        </section>
 
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">2. Description of Service</h2>
-        <p class="text-gray-700 leading-relaxed">
-          HobbyCalc provides free hobby cost calculation tools and information. We estimate startup costs for various hobbies and provide currency conversion features.
-        </p>
-      </section>
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('service_heading')}</h2>
+          <p class="text-gray-700 leading-relaxed" set:html={getText('service_text')}></p>
+        </section>
 
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">3. Use License</h2>
-        <p class="text-gray-700 leading-relaxed">
-          Permission is granted to temporarily use HobbyCalc for personal, non-commercial purposes. This license shall automatically terminate if you violate any restrictions.
-        </p>
-      </section>
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('license_heading')}</h2>
+          <p class="text-gray-700 leading-relaxed" set:html={getText('license_text')}></p>
+        </section>
+        
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('changes_heading')}</h2>
+          <p class="text-gray-700 leading-relaxed" set:html={getText('changes_text')}></p>
+        </section>
 
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">4. Disclaimer</h2>
-        <p class="text-gray-700 leading-relaxed">
-          Cost estimates provided are for informational purposes only. Actual costs may vary based on location, quality preferences, and market conditions. HobbyCalc does not guarantee accuracy of all cost information.
-        </p>
-      </section>
-
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">5. Limitations</h2>
-        <p class="text-gray-700 leading-relaxed">You may not:</p>
-        <ul class="list-disc pl-6 text-gray-700">
-          <li>Use the service for illegal purposes</li>
-          <li>Attempt to gain unauthorized access</li>
-          <li>Reproduce or distribute our content without permission</li>
-          <li>Use automated tools to access the service excessively</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">6. Privacy</h2>
-        <p class="text-gray-700 leading-relaxed">
-          Your privacy is important to us. Please review our Privacy Policy, which also governs your use of the service.
-        </p>
-      </section>
-
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">7. Changes to Terms</h2>
-        <p class="text-gray-700 leading-relaxed">
-          We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting.
-        </p>
-      </section>
-
-      <section>
-        <h2 class="text-2xl font-semibold mb-4 text-indigo-600">8. Contact Information</h2>
-        <p class="text-gray-700 leading-relaxed">
-          Questions about these Terms of Service should be sent to: 
-          <a href="mailto:legal@hobbycalc.com" class="text-indigo-600 hover:text-indigo-800">legal@hobbycalc.com</a>
-        </p>
-      </section>
+        <section>
+          <h2 class="text-2xl font-semibold mb-4 text-indigo-600">{getText('contact_heading')}</h2>
+          <p class="text-gray-700 leading-relaxed">
+            {getText('contact_text').replace('legal@hobbycalc.com', '')}
+            <a href="mailto:legal@hobbycalc.com" class="text-indigo-600 hover:text-indigo-800">legal@hobbycalc.com</a>
+          </p>
+        </section>
+      </div>
     </div>
+
+    <footer class="bg-gray-900 text-gray-300 py-12 mt-12">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <div class="col-span-2">
+            <h3 class="text-xl font-bold text-white mb-4">🎨 HobbyCalc</h3>
+            <p class="text-gray-400 mb-4">{ui.calculateTrueCost}</p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-white mb-3">{ui.quickLinks}</h4>
+            <div class="space-y-2 text-sm">
+              <a href={`/${lang}/`} class="block hover:text-white transition-colors">{ui.home}</a>
+              <a href={`/${lang}/hobbies`} class="block hover:text-white transition-colors">{ui.allHobbies}</a>
+            </div>
+          </div>
+          <div>
+            <h4 class="font-semibold text-white mb-3">{ui.legal}</h4>
+            <div class="space-y-2 text-sm">
+              <a href={`/${lang}/privacy`} class="block hover:text-white transition-colors">{ui.privacyPolicy}</a>
+              <a href={`/${lang}/terms`} class="block hover:text-white transition-colors">{ui.termsOfService}</a>
+              <a href={`/${lang}/disclaimer`} class="block hover:text-white transition-colors">{ui.disclaimer}</a>
+            </div>
+          </div>
+          <div>
+            <h4 class="font-semibold text-white mb-3">{ui.contact}</h4>
+            <div class="space-y-2 text-sm">
+              <a href={`/${lang}/contact`} class="block hover:text-white transition-colors">{ui.getInTouch}</a>
+              <a href={`/${lang}/about`} class="block hover:text-white transition-colors">{ui.aboutUs}</a>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+          © {new Date().getFullYear()} HobbyCalc. {ui.allRightsReserved}.
+        </div>
+      </div>
+    </footer>
   </div>
 </Layout>
